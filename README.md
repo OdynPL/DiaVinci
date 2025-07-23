@@ -2,7 +2,7 @@
 
 DiaVinci is a modern, web-based flowchart and diagram editor built with vanilla JavaScript. It provides an intuitive interface for creating, editing, and managing flowcharts with advanced features like multi-selection, drag-and-drop, and real-time editing.
 
-![DiaVinci Logo](Resources/Images/logo.svg)
+![DiaVinci Logo](Resources/branding/logo.svg)
 
 ## ✨ Features
 
