@@ -1,0 +1,125 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
+.env.test
+.env.production
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Build outputs
+dist/
+build/
+out/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Archive files
+*.zip
+*.tar.gz
+*.rar
+
+# Backup files
+*.bak
+*.backup
+
+# Local development files
+.cache/
+.parcel-cache/
+
+# Auto-generated documentation
+docs/api/
+
+# Test files and coverage
+test-results/
+playwright-report/
+test-output/
+
+# Local configuration files
+config.local.js
+config.local.json
+
+# User-specific project files
+*.user
+*.user.*
+
+# Compiled source
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Package managers
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Local storage files (if storing app data locally)
+data/
+storage/
+*.db
+*.sqlite
+*.sqlite3

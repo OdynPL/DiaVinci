@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DiaVinci</title>
+    <link rel="icon" type="image/svg+xml" href="Resources/Images/favicon.svg">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="top-menu">
+        <img src="Resources/Images/logo.svg" alt="Logo" class="logo">
+        <span class="menu-title">DiaVinci</span>
+    </div>
+    <div class="container">
+        <div class="left">
+            <h2 class="options-header">Components</h2>
+            <div class="components-grid">
+                <div class="option" draggable="true" id="node">
+                    <img src="Resources/Images/node.svg" alt="Node" class="option-icon">
+                </div>
+                <div class="option" id="text" draggable="true">
+                    <img src="Resources/Images/text.svg" alt="Text" class="option-icon">
+                </div>
+                <div class="option" draggable="true" id="start">
+                    <span class="start-stop-text">START</span>
+                </div>
+                <div class="option" draggable="true" id="stop">
+                    <span class="start-stop-text">STOP</span>
+                </div>
+                <div class="option" draggable="true" id="if">
+                    <span class="if-text">IF</span>
+                </div>
+                <div class="option" draggable="true" id="arrow-right">
+                    <span class="arrow-text">→</span>
+                </div>
+                <div class="option" draggable="true" id="arrow-both">
+                    <span class="arrow-text">↔</span>
+                </div>
+                <div class="option" draggable="true" id="line">
+                    <span class="arrow-text">—</span>
+                </div>
+            </div>
+        </div>
+        <div class="right">
+            <div class="project-name-container">
+                <span id="current-project-name" class="project-name">No Project Loaded</span>
+            </div>
+            <canvas id="drawCanvas" width="1380" height="850"></canvas>
+        </div>
+        <div class="recent-projects">
+            <div class="recent-header-container">
+                <h2 class="recent-header">Recent Projects</h2>
+                <button id="clear-all-projects-btn" class="clear-all-btn" title="Clear all projects">🗑️</button>
+            </div>
+            <div class="search-container">
+                <input type="text" id="project-search" class="search-input" placeholder="Search projects...">
+            </div>
+            <div class="recent-list" id="recent-projects-list">
+                <!-- Recent projects will be populated here -->
+            </div>
+        </div>
+    </div>
+    <!-- Core dependencies -->
+    <script src="src/core/Logger.js"></script>
+    <script src="src/core/ErrorHandler.js"></script>
+    <script src="src/core/DIContainer.js"></script>
+    <script src="src/core/EventBus.js"></script>
+    
+    <!-- Models -->
+    <script src="src/models/Node.js"></script>
+    <script src="src/models/TextElement.js"></script>
+    <script src="src/models/Transition.js"></script>
+    <script src="src/models/Project.js"></script>
+    
+    <!-- Services -->
+    <script src="src/services/StorageService.js"></script>
+    <script src="src/services/NotificationService.js"></script>
+    <script src="src/services/CanvasRenderer.js"></script>
+    <script src="src/services/ExportService.js"></script>
+    <script src="src/services/InputService.js"></script>
+    <script src="src/services/MultiSelectionManager.js"></script>
+    
+    <!-- Factories -->
+    <script src="src/factories/NodeFactory.js"></script>
+    <script src="src/factories/DialogFactory.js"></script>
+    
+    <!-- Controllers -->
+    <script src="src/controllers/DiagramController.js"></script>
+    <script src="src/controllers/UIController.js"></script>
+    
+    <!-- Main application -->
+    <script src="app.js"></script>
+</body>
+</html>
