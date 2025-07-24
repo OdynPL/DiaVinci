@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ctrl+click for individual element selection
 - Group dragging of selected elements
 - Enhanced text editing with auto-save
+- **Comprehensive Auto-Save System** - Real-time saving with crash recovery
+- **Debounced Auto-Save** - 500ms delay prevents excessive storage operations
+- **Dual Storage Auto-Save** - Both temporary and named project preservation
+- **Smart Project Naming** - Automatic switching to named project storage
 - Comprehensive error handling system
 - Event-driven architecture with EventBus
 - Dependency injection container
@@ -24,11 +28,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved canvas rendering performance
 - Enhanced user interaction responsiveness
 - Better separation of concerns across modules
+- **Auto-Save Integration** - Seamlessly integrated with all modification operations
+- **Project Management** - Enhanced save/load workflows with auto-naming
+- **Storage Architecture** - Dual-layer storage for maximum data protection
 
 ### Fixed
 - Text editing auto-save on blur events
 - Dialog closing issues
 - Image export functionality
+- Memory leaks in event handling
+- Canvas state management issues
+- **Data Loss Prevention** - Comprehensive auto-save eliminates unsaved work loss
+- **Browser Crash Recovery** - Automatic restoration of work after unexpected closure
 - Memory leaks in event handling
 - Canvas state management issues
 

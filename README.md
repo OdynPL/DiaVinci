@@ -11,12 +11,15 @@ DiaVinci is a modern, web-based flowchart and diagram editor built with vanilla 
 - **Drag & Drop** - Easy component placement from the sidebar
 - **Real-time Editing** - Double-click any element to edit text labels
 - **Project Management** - Save, load, import, and export projects
+- **Auto-Save System** - Comprehensive automatic saving with crash recovery
 
 ### Advanced Features
 - **Multi-selection** - Rectangle selection and Ctrl+click for multiple elements
 - **Group Operations** - Move multiple selected elements together
 - **Visual Feedback** - Different highlight colors for single vs multi-selection
-- **Auto-save** - Automatic project saving with localStorage
+- **Debounced Auto-save** - Smart 500ms delay prevents excessive storage operations
+- **Dual Storage** - Both temporary auto-save and named project preservation
+- **No Data Loss** - Automatic restoration after browser crashes or unexpected closure
 
 ### Component Types
 - **Nodes** - Regular process nodes with customizable colors
@@ -120,6 +123,24 @@ DiaVinci is a modern, web-based flowchart and diagram editor built with vanilla 
 - IF nodes support TRUE/FALSE branching
 - Different connection points for logical flow
 - Automatic label assignment for decision branches
+
+### Auto-Save Features
+
+#### Automatic Saving
+- **Real-time protection** - Every change is automatically saved
+- **Crash recovery** - Work is restored after unexpected browser closure
+- **No manual save needed** - Named projects are continuously updated
+
+#### How Auto-Save Works
+1. **Modification triggers** - Creating, editing, moving, or deleting elements
+2. **Debounced delay** - 500ms wait after last change to prevent excessive saves
+3. **Dual storage** - Both temporary auto-save and named project storage
+4. **Instant naming** - When you save a project with a name, auto-save switches to named storage
+
+#### Visual Feedback
+- Debug console shows auto-save operations (F12 → Console)
+- Project statistics logged with each save
+- Timestamp tracking for all operations
 
 ## 🏗️ Architecture
 

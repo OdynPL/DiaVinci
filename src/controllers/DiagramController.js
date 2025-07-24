@@ -765,6 +765,7 @@ class DiagramController {
     setProjectName(name) {
         if (name && name.trim()) {
             this.currentProject.name = name.trim();
+            this.currentProject.timestamp = new Date().toISOString();
             Logger.info('Project name set', { projectName: this.currentProject.name });
             
             // Immediately save to named project
@@ -783,18 +784,6 @@ class DiagramController {
      */
     getProjectName() {
         return this.currentProject.name;
-    }
-
-    /**
-     * Set current project name and trigger auto-save
-     */
-    setProjectName(name) {
-        this.currentProject.name = name;
-        this.currentProject.timestamp = new Date().toISOString();
-        Logger.info('Project name set', { projectName: name });
-        
-        // Immediately save when project gets a name
-        this.autoSave();
     }
 
     /**
