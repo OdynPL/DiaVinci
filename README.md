@@ -4,6 +4,22 @@ DiaVinci is a modern, web-based flowchart and diagram editor built with vanilla 
 
 ![DiaVinci Logo](Resources/branding/logo.svg)
 
+## 🆕 Recent Updates
+
+### UI/UX Improvements (Latest)
+- **Removed floating buttons** - Cleaner interface without cluttering action buttons
+- **Redesigned bottom navigation** - All controls consolidated into responsive bottom bar
+- **Context-sensitive Remove button** - Appears only when elements are selected
+- **Optimized spacing** - Reduced padding and margins for more efficient screen usage
+- **Responsive design** - Better mobile and tablet support with adaptive layouts
+- **Improved project list** - Hover effects and better visual feedback for project management
+
+### Enhanced User Experience
+- **No more floating UI** - Clean canvas area without overlapping controls
+- **Smart button visibility** - UI elements appear only when relevant
+- **Mobile-friendly navigation** - Touch-optimized controls and responsive spacing
+- **Consistent styling** - Unified design language across all interface elements
+
 ## ✨ Features
 
 ### Core Functionality
@@ -12,11 +28,14 @@ DiaVinci is a modern, web-based flowchart and diagram editor built with vanilla 
 - **Real-time Editing** - Double-click any element to edit text labels
 - **Project Management** - Save, load, import, and export projects
 - **Auto-Save System** - Comprehensive automatic saving with crash recovery
+- **Responsive Navigation** - Clean bottom navigation bar with context-sensitive controls
 
 ### Advanced Features
 - **Multi-selection** - Rectangle selection and Ctrl+click for multiple elements
 - **Group Operations** - Move multiple selected elements together
 - **Visual Feedback** - Different highlight colors for single vs multi-selection
+- **Context-Sensitive UI** - Remove button appears only when elements are selected
+- **Compact Interface** - Optimized spacing and responsive design for better user experience
 - **Debounced Auto-save** - Smart 500ms delay prevents excessive storage operations
 - **Dual Storage** - Both temporary auto-save and named project preservation
 - **No Data Loss** - Automatic restoration after browser crashes or unexpected closure
@@ -97,22 +116,54 @@ DiaVinci is a modern, web-based flowchart and diagram editor built with vanilla 
 
 ### Project Management
 
+#### Navigation Interface
+- **Bottom Navigation Bar** - Clean, responsive interface with all essential controls
+- **Context-Sensitive Controls** - Remove button appears only when elements are selected
+- **Responsive Design** - Optimized for both desktop and mobile devices
+- **Compact Layout** - Reduced spacing for more efficient use of screen space
+
 #### Saving Projects
 - Projects auto-save to localStorage
-- Use **Save Project** button for manual save
+- Use **Save Project** button in bottom navigation for manual save
 - Enter project name when prompted
 
 #### Loading Projects
-- Recent projects appear in the right sidebar
+- Recent projects appear in the right sidebar with optimized spacing
 - Click any project to load it
 - Search projects using the search bar
+- Hover over projects to reveal delete option
 
 #### Import/Export
-- **Export Image**: Save current diagram as PNG image
-- **Export JSON**: Save project data as JSON file
-- **Import JSON**: Load project from JSON file
+- **Export Image**: Save current diagram as PNG image (bottom navigation)
+- **Export JSON**: Save project data as JSON file (bottom navigation)
+- **Import JSON**: Load project from JSON file (bottom navigation)
 
-### Transitions and Connections
+### User Interface Controls
+
+#### Bottom Navigation Bar
+The application features a clean, responsive bottom navigation bar with the following controls:
+
+1. **New Project** - Create a new empty diagram
+2. **Save Project** - Save current project with a name
+3. **Load Project** - Open project selection dialog
+4. **Clear All** - Clear entire canvas
+5. **Export Image** - Export diagram as PNG image
+6. **Export File** - Export project as JSON file
+7. **Import File** - Import project from JSON file
+8. **Remove** - Delete selected elements (appears only when elements are selected)
+
+#### Responsive Design
+- **Desktop**: Full button labels and icons
+- **Mobile/Tablet**: Optimized spacing and icon-only display for some buttons
+- **Context-Sensitive**: Remove button visibility based on selection state
+
+### Element Management
+
+#### Removing Elements
+1. **Select elements** using click, Ctrl+click, or rectangle selection
+2. **Remove button appears** automatically in bottom navigation
+3. **Click Remove** to delete selected elements
+4. **Button disappears** when no elements are selected
 
 #### Creating Transitions
 1. Drag arrow components from sidebar
@@ -180,7 +231,7 @@ DiaVinci is a modern, web-based flowchart and diagram editor built with vanilla 
 
 #### Controllers
 - `DiagramController.js` - Main application logic and event handling
-- `UIController.js` - User interface and sidebar management
+- `UIController.js` - User interface, bottom navigation, and context-sensitive controls
 
 #### Core Infrastructure
 - `DIContainer.js` - Dependency injection container
@@ -302,7 +353,31 @@ git commit -m "fix(input): resolve text editing blur event issue"
 git commit -m "docs(readme): update installation instructions"
 ```
 
-## 📝 License
+## � Changelog
+
+### v2.1.0 - UI/UX Optimization (Latest)
+- **REMOVED**: Floating action buttons that cluttered the interface
+- **IMPROVED**: Bottom navigation bar with responsive design
+- **ADDED**: Context-sensitive Remove button (appears only when elements are selected)
+- **OPTIMIZED**: Spacing throughout the interface for better screen usage
+- **ENHANCED**: Mobile and tablet responsiveness
+- **FIXED**: Button wrapping issues in bottom navigation
+- **REFINED**: Project list hover effects and delete functionality
+
+### v2.0.0 - Core Features
+- Multi-selection with rectangle and Ctrl+click
+- Advanced transition system with break points
+- Auto-save with crash recovery
+- Dependency injection architecture
+- Comprehensive error handling and logging
+
+### v1.0.0 - Initial Release
+- Basic flowchart creation and editing
+- Drag and drop interface
+- Project save/load functionality
+- Canvas-based rendering
+
+## �📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 

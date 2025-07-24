@@ -21,7 +21,6 @@ class UIController {
      * Initialize UI components
      */
     initializeUI() {
-        this.createActionButtons();
         this.setupDragAndDrop();
         this.updateRecentProjectsList();
     }
@@ -45,11 +44,67 @@ class UIController {
             });
         }
 
+        // Bottom navigation buttons
+        this.setupBottomNavigation();
+
         // Event bus listeners
         this.eventBus.on('selection.changed', (data) => this.updateRemoveButton(data));
         this.eventBus.on('project.loaded', (project) => this.handleProjectLoaded(project));
         this.eventBus.on('project.created', () => this.handleProjectCreated());
         this.eventBus.on('project.cleared', () => this.handleProjectCleared());
+    }
+
+    /**
+     * Setup bottom navigation event listeners
+     */
+    setupBottomNavigation() {
+        // New Project
+        const newProjectBtn = document.getElementById('new-project-btn');
+        if (newProjectBtn) {
+            newProjectBtn.addEventListener('click', () => this.newProject());
+        }
+
+        // Save Project
+        const saveProjectBtn = document.getElementById('save-project-btn');
+        if (saveProjectBtn) {
+            saveProjectBtn.addEventListener('click', () => this.saveProject());
+        }
+
+        // Load Project
+        const loadProjectBtn = document.getElementById('load-project-btn');
+        if (loadProjectBtn) {
+            loadProjectBtn.addEventListener('click', () => this.showLoadDialog());
+        }
+
+        // Export Image
+        const exportImageBtn = document.getElementById('export-image-btn');
+        if (exportImageBtn) {
+            exportImageBtn.addEventListener('click', () => this.exportImage());
+        }
+
+        // Export File
+        const exportFileBtn = document.getElementById('export-file-btn');
+        if (exportFileBtn) {
+            exportFileBtn.addEventListener('click', () => this.exportFile());
+        }
+
+        // Import File
+        const importFileBtn = document.getElementById('import-file-btn');
+        if (importFileBtn) {
+            importFileBtn.addEventListener('click', () => this.importFile());
+        }
+
+        // Remove Button
+        const removeBtn = document.getElementById('remove-btn');
+        if (removeBtn) {
+            removeBtn.addEventListener('click', () => this.removeSelectedElement());
+        }
+
+        // Clear All Button
+        const clearAllBtn = document.getElementById('clear-all-btn');
+        if (clearAllBtn) {
+            clearAllBtn.addEventListener('click', () => this.clearProject());
+        }
     }
 
     /**
@@ -81,75 +136,18 @@ class UIController {
     }
 
     /**
-     * Create action buttons
-     */
-    createActionButtons() {
-        this.createButton('remove-btn', '✕ Remove', '#e74c3c', 'left: 20px', false, () => {
-            this.removeSelectedElement();
-        });
-
-        this.createButton('export-btn', '💾 Export', '#27ae60', 'right: 20px', true, () => {
-            this.showExportOptions();
-        });
-
-        this.createButton('clear-btn', '🗑️ Clear', '#e74c3c', 'right: 140px', true, () => {
-            this.clearProject();
-        });
-
-        this.createButton('save-btn', '💾 Save', '#3498db', 'right: 260px', true, () => {
-            this.showSaveDialog();
-        });
-
-        this.createButton('load-btn', '📁 Load', '#9b59b6', 'right: 380px', true, () => {
-            this.showLoadDialog();
-        });
-
-        this.createButton('new-btn', '📄 New', '#2ecc71', 'right: 500px', true, () => {
-            this.newProjectWithAutoSave();
-        });
-
-        this.createButton('import-btn', '📥 Import', '#9b59b6', 'right: 620px', true, () => {
-            this.showImportDialog();
-        });
-    }
-
-    /**
-     * Create button element
-     */
-    createButton(id, text, color, position, visible, onClick) {
-        const button = document.createElement('button');
-        button.id = id;
-        button.innerHTML = `<span style="font-size:1.1rem;vertical-align:middle;">${text.split(' ')[0]}</span> <span style="font-size:0.85rem;vertical-align:middle;">${text.split(' ')[1]}</span>`;
-        button.style.position = 'absolute';
-        button.style.bottom = '12px';
-        button.style.padding = '9px 19px';
-        button.style.background = color;
-        button.style.color = '#fff';
-        button.style.border = 'none';
-        button.style.borderRadius = '6px';
-        button.style.fontWeight = 'bold';
-        button.style.boxShadow = '0 1px 6px rgba(0,0,0,0.10)';
-        button.style.cursor = 'pointer';
-        button.style.display = visible ? 'block' : 'none';
-        button.style.zIndex = '30';
-        
-        // Parse position
-        const [side, value] = position.split(': ');
-        button.style[side] = value;
-        
-        button.addEventListener('click', onClick);
-        document.body.appendChild(button);
-        
-        return button;
-    }
-
-    /**
      * Update remove button visibility
      */
     updateRemoveButton(selectionData) {
         const removeBtn = document.getElementById('remove-btn');
         if (removeBtn) {
-            removeBtn.style.display = selectionData.element ? 'block' : 'none';
+            if (selectionData.element) {
+                removeBtn.classList.remove('hide');
+                removeBtn.classList.add('show');
+            } else {
+                removeBtn.classList.remove('show');
+                removeBtn.classList.add('hide');
+            }
         }
     }
 
@@ -460,8 +458,14 @@ class UIController {
 
         if (projectNames.length === 0) {
             const noProjects = document.createElement('div');
-            noProjects.className = 'no-recent';
-            noProjects.textContent = searchTerm ? 'No projects found matching your search' : 'No saved projects';
+            noProjects.className = 'flex flex-col items-center justify-center p-8 text-center bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg';
+            noProjects.innerHTML = `
+                <svg class="w-12 h-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <p class="text-gray-500 font-medium">${searchTerm ? 'No projects found matching your search' : 'No saved projects'}</p>
+                <p class="text-gray-400 text-sm mt-1">Create your first diagram to get started</p>
+            `;
             recentList.appendChild(noProjects);
             return;
         }
@@ -516,29 +520,29 @@ class UIController {
      */
     createProjectItem(project) {
         const item = document.createElement('div');
-        item.className = 'recent-item';
+        item.className = 'project-item group bg-white border border-gray-200 rounded-lg p-4 cursor-pointer hover:border-blue-300 hover:shadow-md transition-all duration-200 relative';
         
         // Highlight current project
         if (this.currentProject === project.name) {
-            item.classList.add('current-project');
+            item.classList.add('ring-2', 'ring-blue-500', 'border-blue-500', 'bg-blue-50');
         }
 
         // Delete button
         const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'recent-item-delete';
+        deleteBtn.className = 'delete-btn absolute top-2 right-2 w-6 h-6 bg-red-100 hover:bg-red-200 text-red-600 hover:text-red-700 rounded-full flex items-center justify-center transition-all duration-200 text-sm font-bold';
         deleteBtn.innerHTML = '×';
         deleteBtn.title = 'Delete project';
 
         // Content
         const contentDiv = document.createElement('div');
-        contentDiv.className = 'recent-item-content';
+        contentDiv.className = 'pr-8';
 
         const nameDiv = document.createElement('div');
-        nameDiv.className = 'recent-item-name';
+        nameDiv.className = 'font-semibold text-gray-800 text-sm mb-1 truncate';
         nameDiv.textContent = project.name;
 
         const dateDiv = document.createElement('div');
-        dateDiv.className = 'recent-item-date';
+        dateDiv.className = 'text-xs text-gray-500';
         const date = new Date(project.timestamp);
         dateDiv.textContent = date.toLocaleDateString() + ' ' + 
             date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
@@ -576,16 +580,16 @@ class UIController {
      */
     createPaginationControls(recentList, currentPageNum, totalPages, totalProjects) {
         const paginationContainer = document.createElement('div');
-        paginationContainer.className = 'pagination-container';
+        paginationContainer.className = 'flex items-center justify-between mt-4 pt-4 border-t border-gray-200';
 
         const pageInfo = document.createElement('div');
-        pageInfo.className = 'pagination-info';
+        pageInfo.className = 'text-sm text-gray-600 font-medium';
         const startProject = ((currentPageNum - 1) * this.projectsPerPage) + 1;
         const endProject = Math.min(currentPageNum * this.projectsPerPage, totalProjects);
         pageInfo.textContent = `${startProject}-${endProject} of ${totalProjects}`;
 
         const controls = document.createElement('div');
-        controls.className = 'pagination-controls';
+        controls.className = 'flex items-center space-x-2';
 
         if (totalPages > 1) {
             const prevBtn = this.createPaginationButton('‹', 'Previous page', currentPageNum === 1, () => {
@@ -596,7 +600,7 @@ class UIController {
             });
 
             const pageIndicator = document.createElement('span');
-            pageIndicator.className = 'pagination-info';
+            pageIndicator.className = 'px-3 py-1 text-sm font-medium text-gray-600 bg-gray-100 rounded';
             pageIndicator.textContent = `${currentPageNum}/${totalPages}`;
 
             const nextBtn = this.createPaginationButton('›', 'Next page', currentPageNum === totalPages, () => {
@@ -611,7 +615,7 @@ class UIController {
             controls.appendChild(nextBtn);
         } else {
             const pageIndicator = document.createElement('span');
-            pageIndicator.className = 'pagination-info';
+            pageIndicator.className = 'px-3 py-1 text-sm font-medium text-gray-600 bg-gray-100 rounded';
             pageIndicator.textContent = `${currentPageNum}/${totalPages}`;
             controls.appendChild(pageIndicator);
         }
@@ -626,11 +630,15 @@ class UIController {
      */
     createPaginationButton(text, title, disabled, onClick) {
         const button = document.createElement('button');
-        button.className = 'pagination-btn';
+        button.className = disabled 
+            ? 'w-8 h-8 flex items-center justify-center text-sm font-medium text-gray-400 bg-gray-100 rounded cursor-not-allowed'
+            : 'w-8 h-8 flex items-center justify-center text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded transition-colors duration-200 hover:shadow-sm';
         button.innerHTML = text;
         button.title = title;
         button.disabled = disabled;
-        button.addEventListener('click', onClick);
+        if (!disabled) {
+            button.addEventListener('click', onClick);
+        }
         return button;
     }
 
@@ -674,5 +682,59 @@ class UIController {
      */
     handleProjectCleared() {
         this.updateRecentProjectsList();
+    }
+
+    /**
+     * Export project as file
+     */
+    exportFile() {
+        try {
+            const fileData = this.diagramController.exportAsFile();
+            if (fileData) {
+                this.notificationService.showSuccess('Project exported successfully!');
+            }
+        } catch (error) {
+            this.errorHandler.handleError(error, 'Failed to export project');
+        }
+    }
+
+    /**
+     * Import project from file
+     */
+    importFile() {
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = '.json';
+        fileInput.style.display = 'none';
+        
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const projectData = JSON.parse(event.target.result);
+                    const project = Project.fromJSON(projectData);
+                    
+                    this.diagramController.loadProject(project);
+                    this.currentProject = project.name;
+                    this.updateProjectNameDisplay();
+                    this.updateRecentProjectsList();
+                    
+                    this.notificationService.showSuccess(`Project "${project.name}" imported successfully!`);
+                } catch (error) {
+                    this.errorHandler.handleError(error, 'Failed to import project file');
+                }
+            };
+            reader.readAsText(file);
+            
+            // Clean up
+            document.body.removeChild(fileInput);
+        });
+        
+        // Trigger file selection
+        document.body.appendChild(fileInput);
+        fileInput.click();
     }
 }
