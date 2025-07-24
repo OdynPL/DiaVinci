@@ -67,7 +67,7 @@ class UIController {
         // Save Project
         const saveProjectBtn = document.getElementById('save-project-btn');
         if (saveProjectBtn) {
-            saveProjectBtn.addEventListener('click', () => this.saveProject());
+            saveProjectBtn.addEventListener('click', () => this.showSaveDialog());
         }
 
         // Load Project
@@ -79,7 +79,7 @@ class UIController {
         // Export Image
         const exportImageBtn = document.getElementById('export-image-btn');
         if (exportImageBtn) {
-            exportImageBtn.addEventListener('click', () => this.exportImage());
+            exportImageBtn.addEventListener('click', () => this.showImageExportDialog());
         }
 
         // Export File
@@ -186,13 +186,25 @@ class UIController {
     }
 
     /**
+     * Show image export dialog
+     */
+    showImageExportDialog() {
+        DialogFactory.createExportMenu(
+            () => this.exportFile(),
+            () => this.exportImage(true),
+            () => this.exportImage(false)
+        );
+    }
+
+    /**
      * Export image
      */
     async exportImage(whiteBackground) {
         try {
             const success = await this.diagramController.exportAsImage(whiteBackground);
             if (success) {
-                this.notificationService.success('Image exported successfully!');
+                const bgType = whiteBackground ? 'white background' : 'transparent background';
+                this.notificationService.success(`Image exported successfully with ${bgType}!`);
             }
         } catch (error) {
             this.notificationService.error('Error exporting image. Please try again.');
@@ -221,9 +233,13 @@ class UIController {
 
         // Set project name and auto-save
         this.diagramController.setProjectName(projectName);
+        this.currentProject = projectName;
         
         // Show success notification
         this.notificationService.success('Project saved successfully!');
+        
+        // Update UI
+        this.updateProjectNameDisplay();
         
         // Refresh project list
         this.updateRecentProjectsList();
