@@ -2,7 +2,7 @@
  * Main controller coordinating all application components
  */
 class DiagramController {
-    constructor(canvas, eventBus, canvasRenderer, storageService, exportService, inputService, nodeFactory, dialogFactory, multiSelectionManager, breakPointService, errorHandler = null) {
+    constructor(canvas, eventBus, canvasRenderer, storageService, exportService, inputService, nodeFactory, dialogFactory, multiSelectionManager, breakPointService, gridService, errorHandler = null) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         this.eventBus = eventBus;
@@ -14,6 +14,7 @@ class DiagramController {
         this.dialogFactory = dialogFactory;
         this.multiSelectionManager = multiSelectionManager;
         this.breakPointService = breakPointService;
+        this.gridService = gridService;
         this.errorHandler = errorHandler;
         
         this.currentProject = new Project({name: null});
@@ -86,8 +87,15 @@ class DiagramController {
     handleDrop(e) {
         e.preventDefault();
         const rect = this.canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        let x = e.clientX - rect.left;
+        let y = e.clientY - rect.top;
+        
+        // Apply grid snap if enabled
+        if (this.gridService) {
+            const snapped = this.gridService.snapToGrid(x, y);
+            x = snapped.x;
+            y = snapped.y;
+        }
         
         this.createElement(this.dragState.type, x, y);
         this.dragState.type = null;
@@ -493,7 +501,40 @@ class DiagramController {
             const oldX = this.dragState.element.x;
             const oldY = this.dragState.element.y;
             
-            this.dragState.element.moveTo(newX, newY);
+            let targetX = newX;
+            let targetY = newY;
+            
+            // Apply grid snap if enabled
+            if (this.gridService) {
+                const snapped = this.gridService.snapToGrid(newX, newY);
+                targetX = snapped.x;
+                targetY = snapped.y;
+                
+                // Find smart guides for alignment
+                if (this.dragState.type === 'node' || this.dragState.type === 'text') {
+                    const allElements = [
+                        ...this.currentProject.nodes,
+                        ...this.currentProject.texts
+                    ];
+                    
+                    const guideResult = this.gridService.findSmartGuides(
+                        this.dragState.element,
+                        allElements,
+                        targetX,
+                        targetY
+                    );
+                    
+                    if (guideResult.guides.length > 0) {
+                        targetX = guideResult.snapX;
+                        targetY = guideResult.snapY;
+                        this.gridService.showSmartGuides(guideResult.guides);
+                    } else {
+                        this.gridService.clearSmartGuides();
+                    }
+                }
+            }
+            
+            this.dragState.element.moveTo(targetX, targetY);
 
             // Update break points if moving a node
             if (this.dragState.type === 'node') {
@@ -539,6 +580,12 @@ class DiagramController {
         if (this.dragState.isDragging) {
             wasModified = true;
         }
+        
+        // Clear smart guides when dragging ends
+        if (this.gridService) {
+            this.gridService.clearSmartGuides();
+        }
+        
         this.dragState.isDragging = false;
         this.dragState.element = null;
         this.dragState.type = null;

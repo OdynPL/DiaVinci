@@ -105,6 +105,18 @@ class UIController {
         if (clearAllBtn) {
             clearAllBtn.addEventListener('click', () => this.clearProject());
         }
+
+        // Grid Toggle Button
+        const gridToggleBtn = document.getElementById('grid-toggle-btn');
+        if (gridToggleBtn) {
+            gridToggleBtn.addEventListener('click', () => this.toggleGrid());
+        }
+
+        // Rulers Toggle Button
+        const rulersToggleBtn = document.getElementById('rulers-toggle-btn');
+        if (rulersToggleBtn) {
+            rulersToggleBtn.addEventListener('click', () => this.toggleRulers());
+        }
     }
 
     /**
@@ -950,5 +962,67 @@ class UIController {
         // Trigger file selection
         document.body.appendChild(fileInput);
         fileInput.click();
+    }
+
+    /**
+     * Toggle grid visibility and snap functionality
+     */
+    toggleGrid() {
+        // Access grid service through diagram controller
+        if (this.diagramController && this.diagramController.gridService) {
+            this.diagramController.gridService.toggleGrid();
+            this.updateGridButtonState();
+        }
+    }
+
+    /**
+     * Toggle rulers visibility and measurement display
+     */
+    toggleRulers() {
+        // Access grid service through diagram controller
+        if (this.diagramController && this.diagramController.gridService) {
+            this.diagramController.gridService.toggleRulers();
+            this.updateRulersButtonState();
+        }
+    }
+
+    /**
+     * Update rulers button visual state
+     */
+    updateRulersButtonState() {
+        const rulersBtn = document.getElementById('rulers-toggle-btn');
+        if (rulersBtn && this.diagramController && this.diagramController.gridService) {
+            const gridState = this.diagramController.gridService.getState();
+            
+            if (gridState.rulersVisible) {
+                rulersBtn.classList.remove('rulers-off');
+                rulersBtn.classList.add('rulers-on');
+                rulersBtn.title = 'Hide Rulers';
+            } else {
+                rulersBtn.classList.remove('rulers-on');
+                rulersBtn.classList.add('rulers-off');
+                rulersBtn.title = 'Show Rulers';
+            }
+        }
+    }
+
+    /**
+     * Update grid button visual state
+     */
+    updateGridButtonState() {
+        const gridBtn = document.getElementById('grid-toggle-btn');
+        if (gridBtn && this.diagramController && this.diagramController.gridService) {
+            const gridState = this.diagramController.gridService.getState();
+            
+            if (gridState.gridVisible) {
+                gridBtn.classList.remove('grid-off');
+                gridBtn.classList.add('grid-on');
+                gridBtn.title = 'Hide Grid';
+            } else {
+                gridBtn.classList.remove('grid-on');
+                gridBtn.classList.add('grid-off');
+                gridBtn.title = 'Show Grid';
+            }
+        }
     }
 }

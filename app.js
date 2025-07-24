@@ -52,6 +52,15 @@ document.addEventListener('DOMContentLoaded', async function() {
             )
         );
         
+        // Register grid service
+        container.registerSingleton('gridService', () => 
+            new GridService(
+                canvas,
+                container.resolve('eventBus'),
+                container.resolve('errorHandler')
+            )
+        );
+        
         // Register multi-selection manager
         container.registerSingleton('multiSelectionManager', () => 
             new MultiSelectionManager(
@@ -74,6 +83,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 container.resolve('dialogFactory'),
                 container.resolve('multiSelectionManager'),
                 container.resolve('breakPointService'),
+                container.resolve('gridService'),
                 container.resolve('errorHandler')
             )
         );
@@ -147,6 +157,11 @@ function resizeCanvas() {
         // Trigger redraw through diagram controller
         if (diagramController) {
             diagramController.render();
+            
+            // Update grid canvas size if grid service exists
+            if (diagramController.gridService) {
+                diagramController.gridService.updateGridCanvasSize();
+            }
         }
     }
 }

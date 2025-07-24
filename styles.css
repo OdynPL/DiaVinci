@@ -195,3 +195,88 @@ input[type="text"]:focus {
     background: #fecaca;
     color: #b91c1c;
 }
+
+/* Grid toggle button states */
+.grid-off {
+    color: #6b7280;
+}
+
+.grid-on {
+    color: #2563eb;
+    background-color: #dbeafe;
+}
+
+/* Rulers toggle button states */
+.rulers-off {
+    color: #6b7280;
+}
+
+.rulers-on {
+    color: #059669;
+    background-color: #d1fae5;
+}
+
+/* Grid overlay styles */
+.grid-overlay {
+    position: absolute;
+    top: 12px;  /* Account for container padding (p-3 = 12px) */
+    left: 12px; /* Account for container padding (p-3 = 12px) */
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Rulers overlay styles */
+.rulers-overlay {
+    position: absolute;
+    pointer-events: none;
+    z-index: 2;
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+}
+
+.rulers-overlay.horizontal {
+    top: 12px;  /* Account for container padding (p-3 = 12px) */
+    left: 12px; /* Account for container padding (p-3 = 12px) */
+    width: calc(100% - 24px); /* Subtract padding from both sides */
+    height: 25px;
+    border-bottom: 2px solid #374151;
+}
+
+.rulers-overlay.vertical {
+    top: 12px;  /* Account for container padding (p-3 = 12px) */
+    left: 12px; /* Account for container padding (p-3 = 12px) */
+    width: 25px;
+    height: calc(100% - 24px); /* Subtract padding from both sides */
+    border-right: 2px solid #374151;
+}
+
+/* Smart guide lines */
+.smart-guide {
+    position: absolute;
+    background-color: #3b82f6;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.smart-guide.horizontal {
+    height: 1px;
+    width: 100%;
+}
+
+.smart-guide.vertical {
+    width: 1px;
+    height: 100%;
+}
+
+/* Snap indicator */
+.snap-indicator {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background-color: #10b981;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 15;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 0 2px white;
+}
