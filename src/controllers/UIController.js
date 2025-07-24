@@ -105,7 +105,7 @@ class UIController {
         });
 
         this.createButton('new-btn', '📄 New', '#2ecc71', 'right: 500px', true, () => {
-            this.newProject();
+            this.newProjectWithAutoSave();
         });
 
         this.createButton('import-btn', '📥 Import', '#9b59b6', 'right: 620px', true, () => {
@@ -367,6 +367,37 @@ class UIController {
         this.updateProjectNameDisplay();
         this.updateRecentProjectsList();
         this.notificationService.success('New project created!');
+    }
+
+    /**
+     * Create new project and automatically save it with generated name
+     */
+    newProjectWithAutoSave() {
+        const currentProject = this.diagramController.getCurrentProject();
+        const hasContent = currentProject.nodes.length > 0 || 
+                         currentProject.transitions.length > 0 || 
+                         currentProject.texts.length > 0;
+
+        if (hasContent) {
+            const confirmed = confirm('Are you sure you want to create a new project? All unsaved changes will be lost.');
+            if (!confirmed) return;
+        }
+
+        // Generate unique project name
+        const projectName = this.storageService.generateUniqueProjectName();
+        
+        // Create new project
+        this.diagramController.newProject();
+        
+        // Set the generated name and save immediately
+        this.diagramController.setProjectName(projectName);
+        this.currentProject = this.diagramController.getCurrentProject();
+        
+        // Update UI
+        this.updateProjectNameDisplay();
+        this.updateRecentProjectsList();
+        
+        this.notificationService.success(`New project "${projectName}" created and saved!`);
     }
 
     /**

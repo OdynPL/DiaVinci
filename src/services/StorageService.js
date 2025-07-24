@@ -87,6 +87,25 @@ class StorageService {
     }
 
     /**
+     * Generate unique project name with New_ prefix
+     */
+    generateUniqueProjectName() {
+        const now = new Date();
+        const timestamp = now.toISOString().replace(/[:.]/g, '-').slice(0, 19); // Format: YYYY-MM-DDTHH-MM-SS
+        let baseName = `New_${timestamp}`;
+        let projectName = baseName;
+        let counter = 1;
+
+        // Ensure uniqueness by adding counter if needed
+        while (this.projectExists(projectName)) {
+            projectName = `${baseName}_${counter}`;
+            counter++;
+        }
+
+        return projectName;
+    }
+
+    /**
      * Clear all projects
      */
     clearAllProjects() {
