@@ -705,12 +705,21 @@ class UIController {
      */
     exportFile() {
         try {
-            const fileData = this.diagramController.exportAsFile();
-            if (fileData) {
-                this.notificationService.showSuccess('Project exported successfully!');
+            const currentProject = this.diagramController.getCurrentProject();
+            if (!currentProject || (currentProject.nodes.length === 0 && currentProject.transitions.length === 0 && currentProject.texts.length === 0)) {
+                this.notificationService.error('No content to export. Please create some elements first.');
+                return;
+            }
+
+            const success = this.diagramController.exportAsFile();
+            if (success) {
+                this.notificationService.success('Project exported successfully!');
+            } else {
+                this.notificationService.error('Failed to export project. Please try again.');
             }
         } catch (error) {
-            this.errorHandler.handleError(error, 'Failed to export project');
+            this.notificationService.error('Failed to export project. Please try again.');
+            console.error('Export error:', error);
         }
     }
 
@@ -738,9 +747,10 @@ class UIController {
                     this.updateProjectNameDisplay();
                     this.updateRecentProjectsList();
                     
-                    this.notificationService.showSuccess(`Project "${project.name}" imported successfully!`);
+                    this.notificationService.success(`Project "${project.name}" imported successfully!`);
                 } catch (error) {
-                    this.errorHandler.handleError(error, 'Failed to import project file');
+                    this.notificationService.error('Failed to import project file. Please check the file format.');
+                    console.error('Import error:', error);
                 }
             };
             reader.readAsText(file);
