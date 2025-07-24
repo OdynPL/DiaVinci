@@ -335,10 +335,22 @@ class CanvasRenderer {
         
         this.ctx.fillStyle = isSelected ? '#e6b800' : '#888';
         
+        // Get path points (including break points) for proper arrow direction
+        const pathPoints = transition.getPathPoints();
+        
         if (transition.type === 'right') {
-            this.drawArrow(endX, endY, Math.atan2(endY - startY, endX - startX), arrowLen);
+            // Calculate angle from last segment
+            let arrowAngle;
+            if (pathPoints.length >= 2) {
+                const lastPoint = pathPoints[pathPoints.length - 1];
+                const secondLastPoint = pathPoints[pathPoints.length - 2];
+                arrowAngle = Math.atan2(lastPoint.y - secondLastPoint.y, lastPoint.x - secondLastPoint.x);
+            } else {
+                arrowAngle = Math.atan2(endY - startY, endX - startX);
+            }
+            this.drawArrow(endX, endY, arrowAngle, arrowLen);
         } else if (transition.type === 'both') {
-            this.drawBothArrows(transition, startX, startY, endX, endY, arrowLen);
+            this.drawBothArrowsWithBreakPoints(transition, pathPoints, arrowLen);
         }
     }
 
@@ -376,6 +388,39 @@ class CanvasRenderer {
         
         // Left arrow
         this.drawArrow(properStartX, properStartY, angle + Math.PI, arrowLen);
+    }
+
+    /**
+     * Draw both arrows for bidirectional transitions with break points
+     */
+    drawBothArrowsWithBreakPoints(transition, pathPoints, arrowLen) {
+        if (pathPoints.length < 2) {
+            return;
+        }
+        
+        const firstPoint = pathPoints[0];
+        const secondPoint = pathPoints[1];
+        const lastPoint = pathPoints[pathPoints.length - 1];
+        const secondLastPoint = pathPoints[pathPoints.length - 2];
+        
+        // Calculate angle for end arrow (from second-to-last to last point)
+        const endAngle = Math.atan2(lastPoint.y - secondLastPoint.y, lastPoint.x - secondLastPoint.x);
+        
+        // Calculate angle for start arrow (from second to first point)
+        const startAngle = Math.atan2(firstPoint.y - secondPoint.y, firstPoint.x - secondPoint.x);
+        
+        // Get proper edge points
+        const dx = transition.to.x - transition.from.x;
+        const dy = transition.to.y - transition.from.y;
+        const generalAngle = Math.atan2(dy, dx);
+        const {properStartX, properStartY, properEndX, properEndY} = 
+            this.calculateEdgePoints(transition, generalAngle);
+        
+        // Right arrow (at end)
+        this.drawArrow(properEndX, properEndY, endAngle, arrowLen);
+        
+        // Left arrow (at start)
+        this.drawArrow(properStartX, properStartY, startAngle, arrowLen);
     }
 
     /**
