@@ -128,8 +128,7 @@ class CanvasRenderer {
         if (transition.from.type === 'if' && transition.fromCorner) {
             this.drawIFTransitionPath(startX, startY, endX, endY, transition);
         } else {
-            this.ctx.moveTo(startX, startY);
-            this.ctx.lineTo(endX, endY);
+            this.drawTransitionPath(transition, startX, startY, endX, endY);
         }
         
         this.ctx.strokeStyle = '#e6b800';
@@ -147,14 +146,129 @@ class CanvasRenderer {
         if (transition.from.type === 'if' && transition.fromCorner) {
             this.drawIFTransitionPath(startX, startY, endX, endY, transition);
         } else {
-            this.ctx.moveTo(startX, startY);
-            this.ctx.lineTo(endX, endY);
+            this.drawTransitionPath(transition, startX, startY, endX, endY);
         }
         
         const isSelected = this.selectedElement === transition && this.selectedType === 'transition';
         this.ctx.strokeStyle = isSelected ? '#e6b800' : '#888';
         this.ctx.lineWidth = isSelected ? 4 : 2;
         this.ctx.stroke();
+
+        // Draw break points if any
+        if (transition.breakPoints && transition.breakPoints.length > 0) {
+            this.drawBreakPoints(transition.breakPoints, isSelected);
+        }
+    }
+
+    /**
+     * Draw transition path based on style and break points
+     */
+    drawTransitionPath(transition, startX, startY, endX, endY) {
+        if (transition.breakPoints && transition.breakPoints.length > 0) {
+            // Draw path with break points
+            const points = transition.getPathPoints();
+            this.ctx.moveTo(points[0].x, points[0].y);
+            
+            if (transition.style === 'curved') {
+                this.drawCurvedPath(points);
+            } else {
+                // Straight lines between break points
+                for (let i = 1; i < points.length; i++) {
+                    this.ctx.lineTo(points[i].x, points[i].y);
+                }
+            }
+        } else {
+            // Simple path without break points
+            if (transition.style === 'curved') {
+                this.drawSimpleCurve(startX, startY, endX, endY);
+            } else {
+                this.ctx.moveTo(startX, startY);
+                this.ctx.lineTo(endX, endY);
+            }
+        }
+    }
+
+    /**
+     * Draw curved path through multiple points
+     */
+    drawCurvedPath(points) {
+        if (points.length < 3) {
+            // Not enough points for curves, draw straight lines
+            for (let i = 1; i < points.length; i++) {
+                this.ctx.lineTo(points[i].x, points[i].y);
+            }
+            return;
+        }
+
+        // Draw smooth curves through all points
+        for (let i = 1; i < points.length - 1; i++) {
+            const current = points[i];
+            const next = points[i + 1];
+            
+            if (i === 1) {
+                // First curve from start point
+                const prev = points[i - 1];
+                const cp1x = prev.x + (current.x - prev.x) * 0.5;
+                const cp1y = prev.y + (current.y - prev.y) * 0.5;
+                const cp2x = current.x + (next.x - current.x) * 0.25;
+                const cp2y = current.y + (next.y - current.y) * 0.25;
+                
+                this.ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, current.x, current.y);
+            }
+            
+            if (i === points.length - 2) {
+                // Last curve to end point
+                const cp1x = current.x + (next.x - current.x) * 0.25;
+                const cp1y = current.y + (next.y - current.y) * 0.25;
+                const cp2x = current.x + (next.x - current.x) * 0.75;
+                const cp2y = current.y + (next.y - current.y) * 0.75;
+                
+                this.ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, next.x, next.y);
+            }
+        }
+    }
+
+    /**
+     * Draw simple curved line between two points
+     */
+    drawSimpleCurve(startX, startY, endX, endY) {
+        const midX = (startX + endX) / 2;
+        const midY = (startY + endY) / 2;
+        
+        // Calculate perpendicular offset for curve
+        const dx = endX - startX;
+        const dy = endY - startY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const curvature = Math.min(distance * 0.2, 50); // Limit curve amount
+        
+        // Perpendicular vector for curve offset
+        const perpX = -dy / distance * curvature;
+        const perpY = dx / distance * curvature;
+        
+        const controlX = midX + perpX;
+        const controlY = midY + perpY;
+        
+        this.ctx.moveTo(startX, startY);
+        this.ctx.quadraticCurveTo(controlX, controlY, endX, endY);
+    }
+
+    /**
+     * Draw break points as small circles
+     */
+    drawBreakPoints(breakPoints, isSelected) {
+        this.ctx.save();
+        
+        breakPoints.forEach(point => {
+            this.ctx.beginPath();
+            this.ctx.arc(point.x, point.y, 4, 0, 2 * Math.PI);
+            this.ctx.fillStyle = isSelected ? '#e6b800' : '#666';
+            this.ctx.fill();
+            this.ctx.strokeStyle = '#fff';
+            this.ctx.lineWidth = 1;
+            this.ctx.stroke();
+        });
+        
+        this.ctx.restore();
     }
 
     /**

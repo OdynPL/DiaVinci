@@ -462,8 +462,16 @@ class DiagramController {
         const rect = this.canvas.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
+        
+        // Check for transition first
+        const transition = this.currentProject.findTransitionNearPosition(x, y);
+        if (transition) {
+            this.showTransitionOptions(transition, e.clientX, e.clientY, x, y);
+            return;
+        }
+        
+        // Check for node
         const node = this.currentProject.findNodeAtPosition(x, y);
-
         if (node) {
             if (node.type === 'if') {
                 this.showIFOptions(node, e.clientX, e.clientY);
@@ -551,6 +559,40 @@ class DiagramController {
     }
 
     /**
+     * Show transition style options
+     */
+    showTransitionOptions(transition, screenX, screenY, canvasX, canvasY) {
+        const options = [
+            {
+                text: transition.style === 'straight' ? 'Convert to Curved' : 'Convert to Straight',
+                action: () => this.toggleTransitionStyle(transition)
+            },
+            {
+                text: 'Add Break Point',
+                action: () => this.addTransitionBreakPoint(transition, canvasX, canvasY)
+            }
+        ];
+
+        // Add remove break point option if there are break points near click
+        if (transition.isNearBreakPoint(canvasX, canvasY)) {
+            options.push({
+                text: 'Remove Break Point',
+                action: () => this.removeTransitionBreakPoint(transition, canvasX, canvasY)
+            });
+        }
+
+        // Add clear all break points if there are any
+        if (transition.breakPoints.length > 0) {
+            options.push({
+                text: 'Clear All Break Points',
+                action: () => this.clearTransitionBreakPoints(transition)
+            });
+        }
+
+        DialogFactory.createContextMenu(screenX, screenY, options);
+    }
+
+    /**
      * Rotate IF node
      */
     rotateIFNode(ifNode) {
@@ -588,6 +630,63 @@ class DiagramController {
                 secondNode.y = ifNode.y + 60;
             }
         }
+    }
+
+    /**
+     * Toggle transition style between straight and curved
+     */
+    toggleTransitionStyle(transition) {
+        transition.toggleStyle();
+        this.triggerAutoSave();
+        this.render();
+        Logger.info('Transition style toggled', { 
+            style: transition.style, 
+            label: transition.label 
+        });
+    }
+
+    /**
+     * Add break point to transition
+     */
+    addTransitionBreakPoint(transition, x, y) {
+        transition.addBreakPoint(x, y);
+        this.triggerAutoSave();
+        this.render();
+        Logger.info('Break point added to transition', { 
+            x, y, 
+            totalPoints: transition.breakPoints.length,
+            label: transition.label 
+        });
+    }
+
+    /**
+     * Remove break point from transition
+     */
+    removeTransitionBreakPoint(transition, x, y) {
+        const removed = transition.removeBreakPoint(x, y);
+        if (removed) {
+            this.triggerAutoSave();
+            this.render();
+            Logger.info('Break point removed from transition', { 
+                x, y, 
+                remainingPoints: transition.breakPoints.length,
+                label: transition.label 
+            });
+        }
+    }
+
+    /**
+     * Clear all break points from transition
+     */
+    clearTransitionBreakPoints(transition) {
+        const previousCount = transition.breakPoints.length;
+        transition.clearBreakPoints();
+        this.triggerAutoSave();
+        this.render();
+        Logger.info('All break points cleared from transition', { 
+            previousCount,
+            label: transition.label 
+        });
     }
 
     /**

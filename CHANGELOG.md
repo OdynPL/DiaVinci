@@ -17,6 +17,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Debounced Auto-Save** - 500ms delay prevents excessive storage operations
 - **Dual Storage Auto-Save** - Both temporary and named project preservation
 - **Smart Project Naming** - Automatic switching to named project storage
+- **Advanced Transition Styling** - Convert straight transitions to curved/elliptical style
+- **Transition Break Points** - Add custom routing points to transition lines
+- **Right-Click Context Menu** - Quick access to transition styling options
+- **Smooth Curved Rendering** - Bezier curves for professional-looking diagrams
+- **Break Point Management** - Add, remove, and clear break points with visual feedback
 - Comprehensive error handling system
 - Event-driven architecture with EventBus
 - Dependency injection container

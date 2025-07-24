@@ -103,7 +103,7 @@ class MultiSelectionManager {
                 });
             }
 
-            // Bardzo ważne - ustawiamy to PRZED resztą operacji
+            // Very important - set this BEFORE other operations
             this.selectionRect.active = false;
             Logger.debug('Selection rectangle deactivated');
             
@@ -120,7 +120,7 @@ class MultiSelectionManager {
             }
             
         } catch (error) {
-            // Upewniamy się, że selection rectangle jest zawsze wyłączany nawet przy błędzie
+            // Ensure selection rectangle is always deactivated even on error
             this.selectionRect.active = false;
             Logger.error('Error ending selection', error);
             if (this.errorHandler) {

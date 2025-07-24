@@ -2,12 +2,14 @@
  * Transition model representing connections between nodes
  */
 class Transition {
-    constructor({from, to, label = 'relation', type = 'right', fromCorner = null}) {
+    constructor({from, to, label = 'relation', type = 'right', fromCorner = null, style = 'straight', breakPoints = []}) {
         this.from = from; // Node instance
         this.to = to; // Node instance
         this.label = label;
         this.type = type; // 'right', 'both', 'line'
         this.fromCorner = fromCorner; // 'top', 'bottom', 'left', 'right' for IF nodes
+        this.style = style; // 'straight', 'curved'
+        this.breakPoints = breakPoints; // Array of {x, y} points for line breaks
     }
 
     /**
@@ -178,7 +180,9 @@ class Transition {
             toId: this.to.id,
             label: this.label,
             type: this.type,
-            fromCorner: this.fromCorner
+            fromCorner: this.fromCorner,
+            style: this.style,
+            breakPoints: this.breakPoints
         };
     }
 
@@ -198,7 +202,111 @@ class Transition {
             to: toNode,
             label: data.label,
             type: data.type,
-            fromCorner: data.fromCorner
+            fromCorner: data.fromCorner,
+            style: data.style || 'straight',
+            breakPoints: data.breakPoints || []
         });
+    }
+
+    /**
+     * Toggle between straight and curved style
+     */
+    toggleStyle() {
+        this.style = this.style === 'straight' ? 'curved' : 'straight';
+        Logger.debug('Transition style toggled', { style: this.style, label: this.label });
+    }
+
+    /**
+     * Add break point at given position
+     */
+    addBreakPoint(x, y) {
+        // Find the best position to insert the break point
+        const insertIndex = this.findBreakPointInsertIndex(x, y);
+        this.breakPoints.splice(insertIndex, 0, {x, y});
+        Logger.debug('Break point added', { x, y, totalPoints: this.breakPoints.length });
+    }
+
+    /**
+     * Find best index to insert break point
+     */
+    findBreakPointInsertIndex(x, y) {
+        if (this.breakPoints.length === 0) {
+            return 0;
+        }
+
+        const {startX, startY, endX, endY} = this.getConnectionPoints();
+        const points = [{x: startX, y: startY}, ...this.breakPoints, {x: endX, y: endY}];
+        
+        let minDistance = Infinity;
+        let bestIndex = 0;
+        
+        for (let i = 0; i < points.length - 1; i++) {
+            const segmentDistance = this.pointToSegmentDistance(
+                x, y, points[i].x, points[i].y, points[i + 1].x, points[i + 1].y
+            );
+            
+            if (segmentDistance < minDistance) {
+                minDistance = segmentDistance;
+                bestIndex = i;
+            }
+        }
+        
+        return bestIndex;
+    }
+
+    /**
+     * Remove break point closest to given position
+     */
+    removeBreakPoint(x, y) {
+        if (this.breakPoints.length === 0) return false;
+        
+        let minDistance = Infinity;
+        let closestIndex = -1;
+        
+        this.breakPoints.forEach((point, index) => {
+            const distance = Math.sqrt((point.x - x) ** 2 + (point.y - y) ** 2);
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestIndex = index;
+            }
+        });
+        
+        if (closestIndex !== -1 && minDistance < 15) {
+            this.breakPoints.splice(closestIndex, 1);
+            Logger.debug('Break point removed', { index: closestIndex, remainingPoints: this.breakPoints.length });
+            return true;
+        }
+        
+        return false;
+    }
+
+    /**
+     * Get all path points including break points
+     */
+    getPathPoints() {
+        const {startX, startY, endX, endY} = this.getConnectionPoints();
+        return [
+            {x: startX, y: startY},
+            ...this.breakPoints,
+            {x: endX, y: endY}
+        ];
+    }
+
+    /**
+     * Check if point is near any break point
+     */
+    isNearBreakPoint(x, y, threshold = 15) {
+        return this.breakPoints.some(point => {
+            const distance = Math.sqrt((point.x - x) ** 2 + (point.y - y) ** 2);
+            return distance < threshold;
+        });
+    }
+
+    /**
+     * Clear all break points
+     */
+    clearBreakPoints() {
+        this.breakPoints = [];
+        Logger.debug('All break points cleared', { label: this.label });
     }
 }

@@ -528,6 +528,83 @@ class DialogFactory {
         return item;
     }
 
+    /**
+     * Create context menu with multiple options
+     */
+    static createContextMenu(x, y, options) {
+        // Remove any existing context menu
+        const existingMenu = document.getElementById('context-menu');
+        if (existingMenu) {
+            existingMenu.remove();
+        }
+
+        const menu = document.createElement('div');
+        menu.id = 'context-menu';
+        menu.style.position = 'fixed';
+        menu.style.left = x + 'px';
+        menu.style.top = y + 'px';
+        menu.style.backgroundColor = '#fff';
+        menu.style.border = '1px solid #ccc';
+        menu.style.borderRadius = '6px';
+        menu.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+        menu.style.zIndex = '10000';
+        menu.style.minWidth = '180px';
+        menu.style.overflow = 'hidden';
+
+        options.forEach((option, index) => {
+            const item = document.createElement('div');
+            item.textContent = option.text;
+            item.style.padding = '10px 15px';
+            item.style.cursor = 'pointer';
+            item.style.fontSize = '14px';
+            item.style.borderBottom = index < options.length - 1 ? '1px solid #eee' : 'none';
+            
+            item.addEventListener('mouseenter', () => {
+                item.style.backgroundColor = '#f0f8ff';
+            });
+            
+            item.addEventListener('mouseleave', () => {
+                item.style.backgroundColor = 'transparent';
+            });
+            
+            item.addEventListener('click', () => {
+                option.action();
+                menu.remove();
+            });
+            
+            menu.appendChild(item);
+        });
+
+        // Position menu to stay within viewport
+        document.body.appendChild(menu);
+        const rect = menu.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        
+        if (rect.right > viewportWidth) {
+            menu.style.left = (x - rect.width) + 'px';
+        }
+        
+        if (rect.bottom > viewportHeight) {
+            menu.style.top = (y - rect.height) + 'px';
+        }
+
+        // Close menu when clicking outside
+        const closeMenu = (e) => {
+            if (!menu.contains(e.target)) {
+                menu.remove();
+                document.removeEventListener('click', closeMenu);
+            }
+        };
+        
+        // Delay adding the click listener to prevent immediate closure
+        setTimeout(() => {
+            document.addEventListener('click', closeMenu);
+        }, 100);
+
+        return menu;
+    }
+
     static generateDefaultProjectName() {
         const now = new Date();
         const year = now.getFullYear();

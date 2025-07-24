@@ -119,6 +119,18 @@ DiaVinci is a modern, web-based flowchart and diagram editor built with vanilla 
 2. Click on source node, then target node
 3. Transitions automatically route between nodes
 
+#### Transition Styling
+1. **Right-click** any transition to open style options
+2. **Convert Style**: Switch between straight and curved transitions
+3. **Break Points**: Add points to create complex routing paths
+4. **Curved Transitions**: Smooth elliptical curves for better visual flow
+
+#### Break Point Management
+- **Add Break Point**: Right-click transition → "Add Break Point"
+- **Remove Break Point**: Right-click near a break point → "Remove Break Point"
+- **Clear All**: Remove all break points from a transition at once
+- **Visual Feedback**: Break points appear as small circles on the line
+
 #### IF Node Connections
 - IF nodes support TRUE/FALSE branching
 - Different connection points for logical flow
