@@ -192,39 +192,44 @@ class CanvasRenderer {
      * Draw curved path through multiple points
      */
     drawCurvedPath(points) {
-        if (points.length < 3) {
-            // Not enough points for curves, draw straight lines
-            for (let i = 1; i < points.length; i++) {
-                this.ctx.lineTo(points[i].x, points[i].y);
-            }
+        if (points.length < 2) {
             return;
         }
 
-        // Draw smooth curves through all points
-        for (let i = 1; i < points.length - 1; i++) {
-            const current = points[i];
-            const next = points[i + 1];
+        if (points.length === 2) {
+            // Just two points - draw simple curve
+            this.drawSimpleCurve(points[0].x, points[0].y, points[1].x, points[1].y);
+            return;
+        }
+
+        // For multiple points, draw smooth curves between each segment
+        for (let i = 0; i < points.length - 1; i++) {
+            const startPoint = points[i];
+            const endPoint = points[i + 1];
             
-            if (i === 1) {
-                // First curve from start point
-                const prev = points[i - 1];
-                const cp1x = prev.x + (current.x - prev.x) * 0.5;
-                const cp1y = prev.y + (current.y - prev.y) * 0.5;
-                const cp2x = current.x + (next.x - current.x) * 0.25;
-                const cp2y = current.y + (next.y - current.y) * 0.25;
-                
-                this.ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, current.x, current.y);
+            if (i === 0) {
+                // First segment - move to start
+                this.ctx.moveTo(startPoint.x, startPoint.y);
             }
             
-            if (i === points.length - 2) {
-                // Last curve to end point
-                const cp1x = current.x + (next.x - current.x) * 0.25;
-                const cp1y = current.y + (next.y - current.y) * 0.25;
-                const cp2x = current.x + (next.x - current.x) * 0.75;
-                const cp2y = current.y + (next.y - current.y) * 0.75;
-                
-                this.ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, next.x, next.y);
-            }
+            // Draw quadratic curve for each segment
+            const midX = (startPoint.x + endPoint.x) / 2;
+            const midY = (startPoint.y + endPoint.y) / 2;
+            
+            // Calculate perpendicular offset for curve
+            const dx = endPoint.x - startPoint.x;
+            const dy = endPoint.y - startPoint.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            const curvature = Math.min(distance * 0.15, 30); // Smaller curvature for segments
+            
+            // Perpendicular vector for curve offset
+            const perpX = -dy / distance * curvature;
+            const perpY = dx / distance * curvature;
+            
+            const controlX = midX + perpX;
+            const controlY = midY + perpY;
+            
+            this.ctx.quadraticCurveTo(controlX, controlY, endPoint.x, endPoint.y);
         }
     }
 

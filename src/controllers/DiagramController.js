@@ -319,8 +319,16 @@ class DiagramController {
         Logger.debug('Start dragging', { type, x, y, elementX: element.x, elementY: element.y });
         this.dragState.isDragging = true;
         this.dragState.element = element;
+        this.dragState.type = type;
         this.dragState.offset.x = x - element.x;
         this.dragState.offset.y = y - element.y;
+        
+        // Store initial position for break point updates
+        this.dragState.initialPosition = {
+            x: element.x,
+            y: element.y
+        };
+        
         this.setSelection(element, type);
     }
 
@@ -389,7 +397,23 @@ class DiagramController {
             this.breakPointService.moveBreakPoint(transition, breakPointIndex, validatedPos.x, validatedPos.y);
         } else {
             // Handle regular element dragging
+            const oldX = this.dragState.element.x;
+            const oldY = this.dragState.element.y;
+            
             this.dragState.element.moveTo(newX, newY);
+
+            // Update break points if moving a node
+            if (this.dragState.type === 'node') {
+                const deltaX = this.dragState.element.x - oldX;
+                const deltaY = this.dragState.element.y - oldY;
+                
+                this.breakPointService.updateBreakPointsForMovedNode(
+                    this.dragState.element,
+                    this.currentProject.transitions,
+                    deltaX,
+                    deltaY
+                );
+            }
 
             // Update IF node connections if moving IF node
             if (this.dragState.element.type === 'if') {

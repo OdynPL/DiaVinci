@@ -186,4 +186,100 @@ class BreakPointService {
             y: Math.max(margin, Math.min(canvasBounds.height - margin, y))
         };
     }
+
+    /**
+     * Update break points when connected nodes move
+     * @param {Object} movedNode - The node that was moved
+     * @param {Array} transitions - All transitions to check
+     * @param {number} deltaX - X movement
+     * @param {number} deltaY - Y movement
+     */
+    updateBreakPointsForMovedNode(movedNode, transitions, deltaX, deltaY) {
+        try {
+            const affectedTransitions = transitions.filter(tr => 
+                tr.from === movedNode || tr.to === movedNode
+            );
+
+            affectedTransitions.forEach(transition => {
+                if (transition.breakPoints && transition.breakPoints.length > 0) {
+                    // Move break points with the connected node
+                    transition.breakPoints.forEach(point => {
+                        point.x += deltaX;
+                        point.y += deltaY;
+                    });
+
+                    Logger.debug('Break points updated for node movement', {
+                        nodeId: movedNode.id,
+                        transitionLabel: transition.label,
+                        breakPointsCount: transition.breakPoints.length,
+                        delta: { deltaX, deltaY }
+                    });
+                }
+            });
+
+            if (affectedTransitions.length > 0) {
+                this.eventBus.emit('breakpoints.node.moved', {
+                    movedNode,
+                    affectedTransitions,
+                    delta: { deltaX, deltaY }
+                });
+            }
+
+        } catch (error) {
+            Logger.error('Error updating break points for moved node', error);
+            if (this.errorHandler) {
+                this.errorHandler.handleError(error, 'Failed to update break points');
+            }
+        }
+    }
+
+    /**
+     * Update break points for multiple moved nodes (group drag)
+     * @param {Array} movedNodes - Array of moved nodes
+     * @param {Array} transitions - All transitions to check  
+     * @param {number} deltaX - X movement
+     * @param {number} deltaY - Y movement
+     */
+    updateBreakPointsForMovedNodes(movedNodes, transitions, deltaX, deltaY) {
+        try {
+            const affectedTransitions = new Set();
+            
+            movedNodes.forEach(node => {
+                transitions.forEach(tr => {
+                    if (tr.from === node || tr.to === node) {
+                        affectedTransitions.add(tr);
+                    }
+                });
+            });
+
+            Array.from(affectedTransitions).forEach(transition => {
+                if (transition.breakPoints && transition.breakPoints.length > 0) {
+                    transition.breakPoints.forEach(point => {
+                        point.x += deltaX;
+                        point.y += deltaY;
+                    });
+                }
+            });
+
+            if (affectedTransitions.size > 0) {
+                Logger.debug('Break points updated for group node movement', {
+                    movedNodesCount: movedNodes.length,
+                    affectedTransitionsCount: affectedTransitions.size,
+                    delta: { deltaX, deltaY }
+                });
+
+                this.eventBus.emit('breakpoints.nodes.moved', {
+                    movedNodes,
+                    affectedTransitions: Array.from(affectedTransitions),
+                    delta: { deltaX, deltaY }
+                });
+            }
+
+        } catch (error) {
+            Logger.error('Error updating break points for moved nodes', error);
+            if (this.errorHandler) {
+                this.errorHandler.handleError(error, 'Failed to update break points');
+            }
+        }
+    }
 }
