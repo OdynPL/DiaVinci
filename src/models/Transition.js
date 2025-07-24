@@ -53,27 +53,34 @@ class Transition {
     getConnectionPoints() {
         let startX, startY, endX, endY;
 
-        // Calculate start point
-        if (this.from.type === 'if' && this.fromCorner) {
-            const corners = this.getIFNodeCorners(this.from);
-            const corner = corners[this.fromCorner];
-            startX = corner.x;
-            startY = corner.y;
-        } else {
-            startX = this.from.x;
-            startY = this.from.y;
-        }
-
-        // Calculate end point
+        // Calculate end point first to get proper angle
         if (this.from.type === 'if' && this.fromCorner && (this.label === 'TRUE' || this.label === 'FALSE')) {
             // Special handling for IF transitions
             const {x, y} = this.calculateIFEndPoint();
             endX = x;
             endY = y;
         } else {
-            const {x, y} = this.calculateStandardEndPoint(startX, startY);
+            // Calculate preliminary start point for angle calculation
+            const prelimStartX = this.from.type === 'if' && this.fromCorner ? 
+                this.getIFNodeCorners(this.from)[this.fromCorner].x : this.from.x;
+            const prelimStartY = this.from.type === 'if' && this.fromCorner ? 
+                this.getIFNodeCorners(this.from)[this.fromCorner].y : this.from.y;
+            
+            const {x, y} = this.calculateStandardEndPoint(prelimStartX, prelimStartY);
             endX = x;
             endY = y;
+        }
+
+        // Calculate start point based on end point
+        if (this.from.type === 'if' && this.fromCorner) {
+            const corners = this.getIFNodeCorners(this.from);
+            const corner = corners[this.fromCorner];
+            startX = corner.x;
+            startY = corner.y;
+        } else {
+            const {x, y} = this.calculateStandardStartPoint(endX, endY);
+            startX = x;
+            startY = y;
         }
 
         return {startX, startY, endX, endY};
@@ -132,6 +139,32 @@ class Transition {
             return {
                 x: this.to.x - Math.cos(angle) * this.to.r,
                 y: this.to.y - Math.sin(angle) * this.to.r
+            };
+        }
+    }
+
+    /**
+     * Calculate standard start point
+     */
+    calculateStandardStartPoint(endX, endY) {
+        const dx = endX - this.from.x;
+        const dy = endY - this.from.y;
+        const angle = Math.atan2(dy, dx);
+
+        if (this.from.type === 'start' || this.from.type === 'stop') {
+            const a = this.from.r * 1.5;
+            const b = this.from.r * 0.8;
+            const cosAngle = Math.cos(angle);
+            const sinAngle = Math.sin(angle);
+            const distance = (a * b) / Math.sqrt((b * cosAngle) ** 2 + (a * sinAngle) ** 2);
+            return {
+                x: this.from.x + cosAngle * distance,
+                y: this.from.y + sinAngle * distance
+            };
+        } else {
+            return {
+                x: this.from.x + Math.cos(angle) * this.from.r,
+                y: this.from.y + Math.sin(angle) * this.from.r
             };
         }
     }

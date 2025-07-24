@@ -339,18 +339,11 @@ class CanvasRenderer {
         const pathPoints = transition.getPathPoints();
         
         if (transition.type === 'right') {
-            // Calculate angle from last segment
-            let arrowAngle;
-            if (pathPoints.length >= 2) {
-                const lastPoint = pathPoints[pathPoints.length - 1];
-                const secondLastPoint = pathPoints[pathPoints.length - 2];
-                arrowAngle = Math.atan2(lastPoint.y - secondLastPoint.y, lastPoint.x - secondLastPoint.x);
-            } else {
-                arrowAngle = Math.atan2(endY - startY, endX - startX);
-            }
-            this.drawArrow(endX, endY, arrowAngle, arrowLen);
+            // Calculate arrow position at 90% of path and its angle
+            const {x, y, angle} = this.getArrowPositionAndAngle(pathPoints, 0.9, transition.style);
+            this.drawArrow(x, y, angle, arrowLen);
         } else if (transition.type === 'both') {
-            this.drawBothArrowsWithBreakPoints(transition, pathPoints, arrowLen);
+            this.drawBothArrowsOnPath(transition, pathPoints, arrowLen);
         }
     }
 
@@ -403,24 +396,109 @@ class CanvasRenderer {
         const lastPoint = pathPoints[pathPoints.length - 1];
         const secondLastPoint = pathPoints[pathPoints.length - 2];
         
-        // Calculate angle for end arrow (from second-to-last to last point)
-        const endAngle = Math.atan2(lastPoint.y - secondLastPoint.y, lastPoint.x - secondLastPoint.x);
-        
-        // Calculate angle for start arrow (from second to first point)
-        const startAngle = Math.atan2(firstPoint.y - secondPoint.y, firstPoint.x - secondPoint.x);
-        
-        // Get proper edge points
+        // Use general angle for edge point calculation (like original)
         const dx = transition.to.x - transition.from.x;
         const dy = transition.to.y - transition.from.y;
         const generalAngle = Math.atan2(dy, dx);
+        
+        // Calculate proper edge points using general angle
         const {properStartX, properStartY, properEndX, properEndY} = 
             this.calculateEdgePoints(transition, generalAngle);
         
-        // Right arrow (at end)
+        // Calculate specific angles for arrow directions based on path segments
+        const endAngle = Math.atan2(lastPoint.y - secondLastPoint.y, lastPoint.x - secondLastPoint.x);
+        const startAngle = Math.atan2(secondPoint.y - firstPoint.y, firstPoint.x - secondPoint.x);
+        
+        // Right arrow (at end) - use end segment angle
         this.drawArrow(properEndX, properEndY, endAngle, arrowLen);
         
-        // Left arrow (at start)
-        this.drawArrow(properStartX, properStartY, startAngle, arrowLen);
+        // Left arrow (at start) - use start segment angle reversed
+        this.drawArrow(properStartX, properStartY, startAngle + Math.PI, arrowLen);
+    }
+
+    /**
+     * Draw both arrows on path at specific positions
+     */
+    drawBothArrowsOnPath(transition, pathPoints, arrowLen) {
+        if (pathPoints.length < 2) {
+            return;
+        }
+        
+        // Calculate arrow positions at 10% and 90% of path
+        const arrow1 = this.getArrowPositionAndAngle(pathPoints, 0.1, transition.style);
+        const arrow2 = this.getArrowPositionAndAngle(pathPoints, 0.9, transition.style);
+        
+        // Draw arrows pointing in opposite directions
+        this.drawArrow(arrow1.x, arrow1.y, arrow1.angle + Math.PI, arrowLen); // Start arrow (reversed)
+        this.drawArrow(arrow2.x, arrow2.y, arrow2.angle, arrowLen); // End arrow
+    }
+
+    /**
+     * Get arrow position and angle at specific point along path
+     */
+    getArrowPositionAndAngle(pathPoints, t, style) {
+        if (pathPoints.length < 2) {
+            const point = pathPoints[0] || {x: 0, y: 0};
+            return {x: point.x, y: point.y, angle: 0};
+        }
+
+        if (style === 'curved') {
+            return this.getArrowOnCurvedPath(pathPoints, t);
+        } else {
+            return this.getArrowOnStraightPath(pathPoints, t);
+        }
+    }
+
+    /**
+     * Get arrow position and angle on straight path
+     */
+    getArrowOnStraightPath(pathPoints, t) {
+        // Calculate total path length
+        let totalLength = 0;
+        const segments = [];
+        
+        for (let i = 0; i < pathPoints.length - 1; i++) {
+            const start = pathPoints[i];
+            const end = pathPoints[i + 1];
+            const length = Math.sqrt((end.x - start.x) ** 2 + (end.y - start.y) ** 2);
+            segments.push({start, end, length});
+            totalLength += length;
+        }
+        
+        // Find target distance
+        const targetDistance = totalLength * t;
+        
+        // Find which segment contains the target point
+        let currentDistance = 0;
+        for (const segment of segments) {
+            if (currentDistance + segment.length >= targetDistance) {
+                // Found the segment
+                const segmentT = (targetDistance - currentDistance) / segment.length;
+                const x = segment.start.x + (segment.end.x - segment.start.x) * segmentT;
+                const y = segment.start.y + (segment.end.y - segment.start.y) * segmentT;
+                const angle = Math.atan2(segment.end.y - segment.start.y, segment.end.x - segment.start.x);
+                
+                return {x, y, angle};
+            }
+            currentDistance += segment.length;
+        }
+        
+        // Fallback to last point
+        const lastSegment = segments[segments.length - 1];
+        return {
+            x: lastSegment.end.x,
+            y: lastSegment.end.y,
+            angle: Math.atan2(lastSegment.end.y - lastSegment.start.y, lastSegment.end.x - lastSegment.start.x)
+        };
+    }
+
+    /**
+     * Get arrow position and angle on curved path
+     */
+    getArrowOnCurvedPath(pathPoints, t) {
+        // For curved paths, approximate using straight segments
+        // This is a simplified approach - for perfect curves we'd need to calculate along the actual curve
+        return this.getArrowOnStraightPath(pathPoints, t);
     }
 
     /**
