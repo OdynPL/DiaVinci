@@ -409,29 +409,58 @@ class UIController {
         try {
             const project = await this.storageService.importProjectFromFile(file);
             
-            // Ask for confirmation if canvas is not empty
-            const currentProject = this.diagramController.getCurrentProject();
-            const hasContent = currentProject.nodes.length > 0 || 
-                             currentProject.transitions.length > 0 || 
-                             currentProject.texts.length > 0;
-            
-            if (hasContent) {
-                DialogFactory.createConfirmDialog(
-                    'Import Project',
-                    'Importing will replace the current project.<br><br>Do you want to continue?',
-                    () => {
-                        this.performImport(project);
+            // Check if project is private and requires password
+            if (project.isPrivate && project.passwordHash) {
+                DialogFactory.createPasswordDialog(
+                    project.name,
+                    (enteredPassword) => {
+                        const hashedEnteredPassword = this.hashPassword(enteredPassword);
+                        if (hashedEnteredPassword === project.passwordHash) {
+                            // Password correct, proceed with import
+                            this.proceedWithImport(project);
+                        } else {
+                            this.notificationService.error('Incorrect password. Import cancelled.');
+                        }
                     },
-                    null,
-                    'Continue',
-                    'Cancel'
+                    () => {
+                        // User cancelled password dialog
+                        this.notificationService.info('Import cancelled.');
+                    }
                 );
                 return;
-            } else {
-                this.performImport(project);
             }
+            
+            // For non-private projects, proceed normally
+            this.proceedWithImport(project);
         } catch (error) {
             this.notificationService.error('Error importing project. Please check the file format.');
+        }
+    }
+
+    /**
+     * Proceed with import after password verification (if needed)
+     */
+    proceedWithImport(project) {
+        // Ask for confirmation if canvas is not empty
+        const currentProject = this.diagramController.getCurrentProject();
+        const hasContent = currentProject.nodes.length > 0 || 
+                         currentProject.transitions.length > 0 || 
+                         currentProject.texts.length > 0;
+        
+        if (hasContent) {
+            DialogFactory.createConfirmDialog(
+                'Import Project',
+                'Importing will replace the current project.<br><br>Do you want to continue?',
+                () => {
+                    this.performImport(project);
+                },
+                null,
+                'Continue',
+                'Cancel'
+            );
+            return;
+        } else {
+            this.performImport(project);
         }
     }
 
@@ -904,31 +933,15 @@ class UIController {
     importFile() {
         const fileInput = document.createElement('input');
         fileInput.type = 'file';
-        fileInput.accept = '.json';
+        fileInput.accept = '.json,.lcp';
         fileInput.style.display = 'none';
         
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
             
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                try {
-                    const projectData = JSON.parse(event.target.result);
-                    const project = Project.fromJSON(projectData);
-                    
-                    this.diagramController.loadProject(project);
-                    this.currentProject = project.name;
-                    this.updateProjectNameDisplay();
-                    this.updateRecentProjectsList();
-                    
-                    this.notificationService.success(`Project "${project.name}" imported successfully!`);
-                } catch (error) {
-                    this.notificationService.error('Failed to import project file. Please check the file format.');
-                    console.error('Import error:', error);
-                }
-            };
-            reader.readAsText(file);
+            // Use the updated importProject method that handles private projects
+            this.importProject(file);
             
             // Clean up
             document.body.removeChild(fileInput);
