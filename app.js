@@ -122,9 +122,27 @@ document.addEventListener('DOMContentLoaded', async function() {
 function resizeCanvas() {
     const canvas = document.getElementById('drawCanvas');
     if (canvas) {
-        const rect = canvas.getBoundingClientRect();
-        canvas.width = rect.width;
-        canvas.height = rect.height;
+        const container = canvas.parentElement;
+        if (container) {
+            // Set minimum dimensions for mobile
+            const minWidth = 320;
+            const minHeight = 400;
+            
+            // Calculate available space
+            const containerRect = container.getBoundingClientRect();
+            const availableWidth = Math.max(containerRect.width - 32, minWidth); // 32px for padding
+            const availableHeight = Math.max(
+                window.innerHeight - 250, // Account for headers and margins
+                minHeight
+            );
+            
+            canvas.width = availableWidth;
+            canvas.height = availableHeight;
+            
+            // Update canvas style for responsive display
+            canvas.style.maxWidth = '100%';
+            canvas.style.height = 'auto';
+        }
         
         // Trigger redraw through diagram controller
         if (diagramController) {

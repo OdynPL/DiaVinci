@@ -641,7 +641,12 @@ class DiagramController {
         const {element, type} = this.selection;
         
         if (type === 'node') {
-            this.currentProject.removeNode(element);
+            if (element.type === 'if') {
+                // For IF nodes, remove the IF node and its associated TRUE/FALSE nodes
+                this.removeIFNodeWithChildren(element);
+            } else {
+                this.currentProject.removeNode(element);
+            }
         } else if (type === 'text') {
             this.currentProject.removeText(element);
         } else if (type === 'transition') {
@@ -657,6 +662,35 @@ class DiagramController {
         
         // Trigger auto-save after deleting element
         this.triggerAutoSave();
+    }
+
+    /**
+     * Remove IF node with its TRUE/FALSE children
+     */
+    removeIFNodeWithChildren(ifNode) {
+        // Find outgoing transitions from the IF node
+        const outgoingTransitions = this.currentProject.transitions.filter(tr => tr.from === ifNode);
+        
+        // Find TRUE/FALSE nodes connected to this IF node
+        const connectedNodes = outgoingTransitions.map(tr => tr.to);
+        
+        // Remove the IF node itself
+        this.currentProject.removeNode(ifNode);
+        
+        // Remove connected TRUE/FALSE nodes that are part of this IF structure
+        connectedNodes.forEach(node => {
+            if (node && (node.label === 'TRUE' || node.label === 'FALSE')) {
+                // Check if this node is only connected to the IF node we're removing
+                const otherConnections = this.currentProject.transitions.filter(tr => 
+                    (tr.from === node || tr.to === node) && tr.from !== ifNode && tr.to !== ifNode
+                );
+                
+                // If no other connections, it's safe to remove this TRUE/FALSE node
+                if (otherConnections.length === 0) {
+                    this.currentProject.removeNode(node);
+                }
+            }
+        });
     }
 
     /**
