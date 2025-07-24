@@ -82,18 +82,18 @@ class NodeFactory {
                 type: 'node'
             });
         } else {
-            // Horizontal orientation (default)
+            // Horizontal orientation (default) - TRUE and FALSE on same horizontal line
             trueNode = new Node({
-                x: x - 120, y: y - 60, r: 30,
+                x: x - 120, y: y, r: 30,
                 id: Date.now() + 1,
-                label: 'TRUE',
+                label: 'Step1',
                 color: '#27ae60',
                 type: 'node'
             });
             falseNode = new Node({
-                x: x + 120, y: y + 60, r: 30,
+                x: x + 120, y: y, r: 30,
                 id: Date.now() + 2,
-                label: 'FALSE',
+                label: 'Step2',
                 color: '#e74c3c',
                 type: 'node'
             });
@@ -146,11 +146,11 @@ class NodeFactory {
             trueTransition.fromCorner = 'top';
             falseTransition.fromCorner = 'bottom';
         } else {
-            // Horizontal: TRUE on left, FALSE on right
+            // Horizontal: TRUE on left, FALSE on right - same horizontal line
             trueNode.x = ifNode.x - 120;
-            trueNode.y = ifNode.y - 60;
+            trueNode.y = ifNode.y;
             falseNode.x = ifNode.x + 120;
-            falseNode.y = ifNode.y + 60;
+            falseNode.y = ifNode.y;
             trueTransition.fromCorner = 'left';
             falseTransition.fromCorner = 'right';
         }

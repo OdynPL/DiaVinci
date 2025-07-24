@@ -617,6 +617,12 @@ class CanvasRenderer {
      * Render transition label
      */
     renderTransitionLabel(transition, startX, startY, endX, endY) {
+        // Special handling for IF transition labels - show them as small editable labels
+        if (transition.from.type === 'if' && transition.fromCorner && (transition.label === 'TRUE' || transition.label === 'FALSE')) {
+            this.renderIFTransitionLabel(transition, startX, startY, endX, endY);
+            return;
+        }
+        
         if (!transition.label || (transition.from.type === 'if' && transition.fromCorner)) {
             return;
         }
@@ -650,7 +656,7 @@ class CanvasRenderer {
         this.ctx.save();
         this.ctx.translate(midX, midY);
         this.ctx.fillStyle = '#333';
-        this.ctx.font = '15px Arial';
+        this.ctx.font = '18px Arial';
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'bottom';
         
@@ -662,6 +668,46 @@ class CanvasRenderer {
         // Draw the text
         this.ctx.fillStyle = '#333';
         this.ctx.fillText(transition.label, 0, 0);
+        this.ctx.restore();
+    }
+
+    /**
+     * Render label for IF transition (TRUE/FALSE)
+     */
+    renderIFTransitionLabel(transition, startX, startY, endX, endY) {
+        let labelX, labelY;
+        
+        // Position label near the start of the transition
+        if (transition.fromCorner === 'left') {
+            labelX = startX - 25;
+            labelY = startY - 15;
+        } else if (transition.fromCorner === 'right') {
+            labelX = startX + 25;
+            labelY = startY - 15;
+        } else if (transition.fromCorner === 'top') {
+            labelX = startX;
+            labelY = startY - 25;
+        } else if (transition.fromCorner === 'bottom') {
+            labelX = startX;
+            labelY = startY + 25;
+        } else {
+            return; // No position available
+        }
+        
+        this.ctx.save();
+        this.ctx.fillStyle = '#666';
+        this.ctx.font = '14px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        
+        // Add small background for better visibility
+        const textWidth = this.ctx.measureText(transition.label).width;
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        this.ctx.fillRect(labelX - textWidth/2 - 3, labelY - 8, textWidth + 6, 16);
+        
+        // Draw the text
+        this.ctx.fillStyle = '#666';
+        this.ctx.fillText(transition.label, labelX, labelY);
         this.ctx.restore();
     }
 
@@ -723,16 +769,25 @@ class CanvasRenderer {
     drawNodeLabel(node) {
         if (node.type === 'start' || node.type === 'stop' || node.type === 'if') {
             this.ctx.fillStyle = '#fff';
-            this.ctx.font = '16px Arial';
+            this.ctx.font = '18px Arial';
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
             this.ctx.fillText(node.label || 'Node', node.x, node.y);
         } else {
-            this.ctx.fillStyle = '#333';
-            this.ctx.font = '16px Arial';
-            this.ctx.textAlign = 'center';
-            this.ctx.textBaseline = 'bottom';
-            this.ctx.fillText(node.label || 'Node', node.x, node.y - node.r - 8);
+            // For regular nodes, check if they're TRUE/FALSE nodes and render white text inside
+            if (node.label === 'Step1' || node.label === 'Step2') {
+                this.ctx.fillStyle = '#fff';
+                this.ctx.font = '18px Arial';
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'middle';
+                this.ctx.fillText(node.label, node.x, node.y);
+            } else {
+                this.ctx.fillStyle = '#333';
+                this.ctx.font = '18px Arial';
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'bottom';
+                this.ctx.fillText(node.label || 'Node', node.x, node.y - node.r - 8);
+            }
         }
     }
 
