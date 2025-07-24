@@ -496,9 +496,85 @@ class CanvasRenderer {
      * Get arrow position and angle on curved path
      */
     getArrowOnCurvedPath(pathPoints, t) {
-        // For curved paths, approximate using straight segments
-        // This is a simplified approach - for perfect curves we'd need to calculate along the actual curve
-        return this.getArrowOnStraightPath(pathPoints, t);
+        if (pathPoints.length === 2) {
+            // Simple curve between two points
+            return this.getArrowOnSimpleCurve(pathPoints[0], pathPoints[1], t);
+        } else {
+            // Multiple segments - find the appropriate segment and calculate
+            return this.getArrowOnMultiSegmentCurve(pathPoints, t);
+        }
+    }
+
+    /**
+     * Get arrow position and angle on simple quadratic curve
+     */
+    getArrowOnSimpleCurve(startPoint, endPoint, t) {
+        // Calculate control point (same logic as drawSimpleCurve)
+        const midX = (startPoint.x + endPoint.x) / 2;
+        const midY = (startPoint.y + endPoint.y) / 2;
+        
+        const dx = endPoint.x - startPoint.x;
+        const dy = endPoint.y - startPoint.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const curvature = Math.min(distance * 0.2, 50);
+        
+        const perpX = -dy / distance * curvature;
+        const perpY = dx / distance * curvature;
+        
+        const controlX = midX + perpX;
+        const controlY = midY + perpY;
+        
+        // Calculate point on quadratic Bezier curve: P(t) = (1-t)²P₀ + 2(1-t)tP₁ + t²P₂
+        const u = 1 - t;
+        const tt = t * t;
+        const uu = u * u;
+        const ut2 = 2 * u * t;
+        
+        const x = uu * startPoint.x + ut2 * controlX + tt * endPoint.x;
+        const y = uu * startPoint.y + ut2 * controlY + tt * endPoint.y;
+        
+        // Calculate tangent vector (derivative): P'(t) = 2(1-t)(P₁-P₀) + 2t(P₂-P₁)
+        const tangentX = 2 * u * (controlX - startPoint.x) + 2 * t * (endPoint.x - controlX);
+        const tangentY = 2 * u * (controlY - startPoint.y) + 2 * t * (endPoint.y - controlY);
+        
+        const angle = Math.atan2(tangentY, tangentX);
+        
+        return {x, y, angle};
+    }
+
+    /**
+     * Get arrow position and angle on multi-segment curve
+     */
+    getArrowOnMultiSegmentCurve(pathPoints, t) {
+        // For multi-segment curves, calculate total "curve length" approximately
+        // and find which segment contains the target point
+        
+        let totalLength = 0;
+        const segments = [];
+        
+        for (let i = 0; i < pathPoints.length - 1; i++) {
+            const start = pathPoints[i];
+            const end = pathPoints[i + 1];
+            
+            // Approximate curve length (using straight line as approximation for now)
+            const length = Math.sqrt((end.x - start.x) ** 2 + (end.y - start.y) ** 2);
+            segments.push({start, end, length, startDistance: totalLength});
+            totalLength += length;
+        }
+        
+        const targetDistance = totalLength * t;
+        
+        // Find which segment contains the target point
+        for (const segment of segments) {
+            if (segment.startDistance + segment.length >= targetDistance) {
+                const segmentT = (targetDistance - segment.startDistance) / segment.length;
+                return this.getArrowOnSimpleCurve(segment.start, segment.end, segmentT);
+            }
+        }
+        
+        // Fallback to last segment
+        const lastSegment = segments[segments.length - 1];
+        return this.getArrowOnSimpleCurve(lastSegment.start, lastSegment.end, 1.0);
     }
 
     /**
