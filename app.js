@@ -44,10 +44,19 @@ document.addEventListener('DOMContentLoaded', async function() {
         );
         container.registerTransient('dialogFactory', () => new DialogFactory());
         
+        // Register break point service first (needed by MultiSelectionManager)
+        container.registerSingleton('breakPointService', () => 
+            new BreakPointService(
+                container.resolve('eventBus'),
+                container.resolve('errorHandler')
+            )
+        );
+        
         // Register multi-selection manager
         container.registerSingleton('multiSelectionManager', () => 
             new MultiSelectionManager(
                 container.resolve('eventBus'),
+                container.resolve('breakPointService'),
                 container.resolve('errorHandler')
             )
         );
@@ -64,6 +73,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 container.resolve('nodeFactory'),
                 container.resolve('dialogFactory'),
                 container.resolve('multiSelectionManager'),
+                container.resolve('breakPointService'),
                 container.resolve('errorHandler')
             )
         );

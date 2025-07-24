@@ -2,8 +2,9 @@
  * Multi-selection manager for group operations
  */
 class MultiSelectionManager {
-    constructor(eventBus, errorHandler = null) {
+    constructor(eventBus, breakPointService, errorHandler = null) {
         this.eventBus = eventBus;
+        this.breakPointService = breakPointService;
         this.errorHandler = errorHandler;
         
         // Selection rectangle state
@@ -23,7 +24,9 @@ class MultiSelectionManager {
             active: false,
             startX: 0,
             startY: 0,
-            initialPositions: new Map()
+            initialPositions: new Map(),
+            selectedBreakPoints: [], // Track break points in group drag
+            initialBreakPointPositions: new Map() // Track initial break point positions
         };
         
         Logger.info('MultiSelectionManager initialized');
@@ -224,8 +227,10 @@ class MultiSelectionManager {
             this.groupDrag.startX = x;
             this.groupDrag.startY = y;
             this.groupDrag.initialPositions.clear();
+            this.groupDrag.selectedBreakPoints = [];
+            this.groupDrag.initialBreakPointPositions.clear();
 
-            // Store initial positions
+            // Store initial positions for regular elements
             this.selectedElements.forEach(element => {
                 this.groupDrag.initialPositions.set(element, {
                     x: element.x,
@@ -233,8 +238,30 @@ class MultiSelectionManager {
                 });
             });
 
+            // Collect break points from selected transitions and store their initial positions
+            if (this.breakPointService) {
+                const transitions = Array.from(this.selectedElements).filter(el => el.breakPoints);
+                this.groupDrag.selectedBreakPoints = this.breakPointService.getSelectedBreakPoints(
+                    this.selectedElements, 
+                    transitions
+                );
+
+                // Store initial positions of break points
+                this.groupDrag.selectedBreakPoints.forEach((bpRef, index) => {
+                    const { transition, breakPointIndex } = bpRef;
+                    if (transition.breakPoints && transition.breakPoints[breakPointIndex]) {
+                        const bp = transition.breakPoints[breakPointIndex];
+                        this.groupDrag.initialBreakPointPositions.set(index, {
+                            x: bp.x,
+                            y: bp.y
+                        });
+                    }
+                });
+            }
+
             Logger.userAction('Group drag started', { 
-                elementsCount: this.selectedElements.size 
+                elementsCount: this.selectedElements.size,
+                breakPointsCount: this.groupDrag.selectedBreakPoints.length
             });
             
             return true;
@@ -256,6 +283,7 @@ class MultiSelectionManager {
         const deltaX = x - this.groupDrag.startX;
         const deltaY = y - this.groupDrag.startY;
 
+        // Move regular elements
         this.selectedElements.forEach(element => {
             const initialPos = this.groupDrag.initialPositions.get(element);
             if (initialPos) {
@@ -263,6 +291,23 @@ class MultiSelectionManager {
                 element.y = initialPos.y + deltaY;
             }
         });
+
+        // Move break points manually instead of using delta-based method
+        if (this.breakPointService && this.groupDrag.selectedBreakPoints.length > 0) {
+            this.groupDrag.selectedBreakPoints.forEach((bpRef, index) => {
+                const { transition, breakPointIndex } = bpRef;
+                const initialPos = this.groupDrag.initialBreakPointPositions.get(index);
+                
+                if (initialPos && transition.breakPoints && transition.breakPoints[breakPointIndex]) {
+                    const newX = initialPos.x + deltaX;
+                    const newY = initialPos.y + deltaY;
+                    
+                    // Direct assignment to avoid triggering events during drag
+                    transition.breakPoints[breakPointIndex].x = newX;
+                    transition.breakPoints[breakPointIndex].y = newY;
+                }
+            });
+        }
     }
 
     /**
@@ -272,6 +317,8 @@ class MultiSelectionManager {
         if (!this.groupDrag.active) return;
 
         this.groupDrag.active = false;
+        this.groupDrag.selectedBreakPoints = [];
+        this.groupDrag.initialBreakPointPositions.clear();
         
         Logger.userAction('Group drag completed', { 
             elementsCount: this.selectedElements.size 

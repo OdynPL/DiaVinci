@@ -2,7 +2,7 @@
  * Main controller coordinating all application components
  */
 class DiagramController {
-    constructor(canvas, eventBus, canvasRenderer, storageService, exportService, inputService, nodeFactory, dialogFactory, multiSelectionManager, errorHandler = null) {
+    constructor(canvas, eventBus, canvasRenderer, storageService, exportService, inputService, nodeFactory, dialogFactory, multiSelectionManager, breakPointService, errorHandler = null) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         this.eventBus = eventBus;
@@ -13,6 +13,7 @@ class DiagramController {
         this.nodeFactory = nodeFactory;
         this.dialogFactory = dialogFactory;
         this.multiSelectionManager = multiSelectionManager;
+        this.breakPointService = breakPointService;
         this.errorHandler = errorHandler;
         
         this.currentProject = new Project({name: null});
@@ -67,6 +68,8 @@ class DiagramController {
         this.eventBus.on('element.edited', (data) => this.handleElementEdited(data));
         this.eventBus.on('drag.started', (data) => this.handleDragStarted(data));
         this.eventBus.on('transition.mode', (data) => this.handleTransitionMode(data));
+        this.eventBus.on('breakpoint.moved', (data) => this.handleBreakPointMoved(data));
+        this.eventBus.on('breakpoints.moved', (data) => this.handleBreakPointsMoved(data));
     }
 
     /**
@@ -235,6 +238,15 @@ class DiagramController {
                 return;
             }
 
+            // Check for break point Ctrl+click
+            const breakPointHit = this.breakPointService.findBreakPointAtPosition(this.currentProject.transitions, x, y);
+            if (breakPointHit) {
+                Logger.debug('Ctrl+click on break point - add transition to selection');
+                this.multiSelectionManager.toggleElementSelection(breakPointHit.transition, 'transition');
+                this.render();
+                return;
+            }
+
             const transition = this.currentProject.findTransitionNearPosition(x, y);
             if (transition) {
                 Logger.debug('Ctrl+click on transition');
@@ -276,6 +288,15 @@ class DiagramController {
             return;
         }
 
+        // Check for break point click
+        const breakPointHit = this.breakPointService.findBreakPointAtPosition(this.currentProject.transitions, x, y);
+        if (breakPointHit) {
+            Logger.debug('Single click on break point - start dragging');
+            this.multiSelectionManager.clearSelection();
+            this.startDraggingBreakPoint(breakPointHit, x, y);
+            return;
+        }
+
         const transition = this.currentProject.findTransitionNearPosition(x, y);
         if (transition) {
             Logger.debug('Single click on transition');
@@ -311,6 +332,27 @@ class DiagramController {
     }
 
     /**
+     * Start dragging break point
+     */
+    startDraggingBreakPoint(breakPointHit, x, y) {
+        Logger.debug('Start dragging break point', { 
+            transition: breakPointHit.transition.label, 
+            index: breakPointHit.breakPointIndex, 
+            x, y 
+        });
+        
+        this.dragState.isDragging = true;
+        this.dragState.element = breakPointHit.breakPoint;
+        this.dragState.type = 'breakpoint';
+        this.dragState.breakPointData = breakPointHit;
+        this.dragState.offset.x = x - breakPointHit.breakPoint.x;
+        this.dragState.offset.y = y - breakPointHit.breakPoint.y;
+        
+        // Select the transition containing this break point
+        this.setSelection(breakPointHit.transition, 'transition');
+    }
+
+    /**
      * Handle mouse move
      */
     handleMouseMove(e) {
@@ -338,11 +380,21 @@ class DiagramController {
         const newX = x - this.dragState.offset.x;
         const newY = y - this.dragState.offset.y;
 
-        this.dragState.element.moveTo(newX, newY);
+        // Handle break point dragging
+        if (this.dragState.type === 'breakpoint') {
+            const { transition, breakPointIndex } = this.dragState.breakPointData;
+            const canvasBounds = { width: this.canvas.width, height: this.canvas.height };
+            const validatedPos = this.breakPointService.validateBreakPointPosition(newX, newY, canvasBounds);
+            
+            this.breakPointService.moveBreakPoint(transition, breakPointIndex, validatedPos.x, validatedPos.y);
+        } else {
+            // Handle regular element dragging
+            this.dragState.element.moveTo(newX, newY);
 
-        // Update IF node connections if moving IF node
-        if (this.dragState.element.type === 'if') {
-            this.updateIFNodeConnections(this.dragState.element);
+            // Update IF node connections if moving IF node
+            if (this.dragState.element.type === 'if') {
+                this.updateIFNodeConnections(this.dragState.element);
+            }
         }
 
         this.render();
@@ -372,6 +424,8 @@ class DiagramController {
         }
         this.dragState.isDragging = false;
         this.dragState.element = null;
+        this.dragState.type = null;
+        this.dragState.breakPointData = null;
         
         // Trigger auto-save if elements were moved
         if (wasModified) {
@@ -731,6 +785,24 @@ class DiagramController {
         if (data.transitionType) {
             this.transitionDrawing.type = data.transitionType;
         }
+    }
+
+    /**
+     * Handle break point moved event
+     */
+    handleBreakPointMoved(data) {
+        Logger.debug('Break point moved event received', data);
+        this.render();
+        this.triggerAutoSave();
+    }
+
+    /**
+     * Handle multiple break points moved event
+     */
+    handleBreakPointsMoved(data) {
+        Logger.debug('Multiple break points moved event received', data);
+        this.render();
+        this.triggerAutoSave();
     }
 
     /**
