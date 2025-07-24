@@ -376,27 +376,6 @@ class UIController {
             if (!confirmed) return;
         }
 
-        this.diagramController.newProject();
-        this.currentProject = null;
-        this.updateProjectNameDisplay();
-        this.updateRecentProjectsList();
-        this.notificationService.success('New project created!');
-    }
-
-    /**
-     * Create new project and automatically save it with generated name
-     */
-    newProjectWithAutoSave() {
-        const currentProject = this.diagramController.getCurrentProject();
-        const hasContent = currentProject.nodes.length > 0 || 
-                         currentProject.transitions.length > 0 || 
-                         currentProject.texts.length > 0;
-
-        if (hasContent) {
-            const confirmed = confirm('Are you sure you want to create a new project? All unsaved changes will be lost.');
-            if (!confirmed) return;
-        }
-
         // Generate unique project name
         const projectName = this.storageService.generateUniqueProjectName();
         
@@ -405,7 +384,7 @@ class UIController {
         
         // Set the generated name and save immediately
         this.diagramController.setProjectName(projectName);
-        this.currentProject = this.diagramController.getCurrentProject();
+        this.currentProject = projectName;
         
         // Update UI
         this.updateProjectNameDisplay();
