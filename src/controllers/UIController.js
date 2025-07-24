@@ -216,7 +216,7 @@ class UIController {
      */
     showSaveDialog() {
         DialogFactory.createSaveDialog(
-            (projectName) => this.saveProject(projectName),
+            (projectName, isPrivate, password) => this.saveProject(projectName, isPrivate, password),
             () => {}
         );
     }
@@ -224,27 +224,59 @@ class UIController {
     /**
      * Save project
      */
-    saveProject(projectName) {
+    saveProject(projectName, isPrivate = false, password = null) {
         // Check if project exists
         if (this.storageService.projectExists(projectName)) {
-            const overwrite = confirm(`A project named "${projectName}" already exists. Do you want to overwrite it?`);
-            if (!overwrite) return false;
+            DialogFactory.createConfirmDialog(
+                'Project Already Exists',
+                `A project named <strong>"${projectName}"</strong> already exists.<br><br>Do you want to overwrite it?`,
+                () => {
+                    this.performSave(projectName, isPrivate, password);
+                },
+                null,
+                'Overwrite',
+                'Cancel'
+            );
+            return true; // Return true to keep dialog open until user decides
+        } else {
+            this.performSave(projectName, isPrivate, password);
+            return true;
         }
+    }
 
-        // Set project name and auto-save
-        this.diagramController.setProjectName(projectName);
-        this.currentProject = projectName;
-        
-        // Show success notification
-        this.notificationService.success('Project saved successfully!');
-        
-        // Update UI
-        this.updateProjectNameDisplay();
-        
-        // Refresh project list
-        this.updateRecentProjectsList();
-        
-        return true;
+    /**
+     * Perform the actual save operation
+     */
+    performSave(projectName, isPrivate = false, password = null) {
+        try {
+            // Get current project and set privacy settings
+            const project = this.diagramController.getCurrentProject();
+            project.isPrivate = isPrivate;
+            if (isPrivate && password) {
+                project.passwordHash = this.hashPassword(password);
+            } else {
+                // Clear password if saving as public
+                project.passwordHash = null;
+            }
+            
+            // Set project name and save
+            this.diagramController.setProjectName(projectName);
+            
+            // Force save again to ensure privacy settings are persisted
+            this.storageService.saveProject(project);
+            
+            this.currentProject = projectName;
+            
+            // Show success notification
+            const statusText = isPrivate ? 'private' : 'public';
+            this.notificationService.success(`${statusText.charAt(0).toUpperCase() + statusText.slice(1)} project saved successfully!`);
+            
+            // Update UI
+            this.updateProjectNameDisplay();
+            this.updateRecentProjectsList();
+        } catch (error) {
+            this.notificationService.error('Error saving project: ' + error.message);
+        }
     }
 
     /**
@@ -267,14 +299,56 @@ class UIController {
      */
     loadProject(projectName) {
         const project = this.storageService.loadProject(projectName);
-        if (project) {
+        if (!project) {
+            this.notificationService.error('Project not found or corrupted.');
+            return false;
+        }
+
+        // Check if project is private and requires password
+        if (project.isPrivate && project.passwordHash) {
+            this.promptForPasswordAndLoad(projectName, project);
+            return true; // Return true to indicate dialog was shown
+        } else {
+            // Load public project directly
+            return this.loadProjectDirectly(projectName, project);
+        }
+    }
+
+    /**
+     * Prompt for password and load private project
+     */
+    promptForPasswordAndLoad(projectName, project) {
+        DialogFactory.createPasswordDialog(
+            projectName,
+            (password) => {
+                const hashedPassword = this.hashPassword(password);
+                if (hashedPassword === project.passwordHash) {
+                    this.loadProjectDirectly(projectName, project);
+                    return true; // Password correct
+                } else {
+                    return false; // Password incorrect - error will be shown in dialog
+                }
+            },
+            () => {
+                // User cancelled password dialog
+            }
+        );
+    }
+
+    /**
+     * Load project directly without password check
+     */
+    loadProjectDirectly(projectName, project) {
+        try {
             this.currentProject = projectName;
             this.diagramController.loadProject(project);
             setTimeout(() => this.updateRecentProjectsList(), 100);
-            this.notificationService.success(`Project "${projectName}" loaded successfully!`);
+            
+            const statusText = project.isPrivate ? 'private' : 'public';
+            this.notificationService.success(`${statusText.charAt(0).toUpperCase() + statusText.slice(1)} project "${projectName}" loaded successfully!`);
             return true;
-        } else {
-            this.notificationService.error('Project not found or corrupted.');
+        } catch (error) {
+            this.notificationService.error('Error loading project: ' + error.message);
             return false;
         }
     }
@@ -342,10 +416,30 @@ class UIController {
                              currentProject.texts.length > 0;
             
             if (hasContent) {
-                const confirmed = confirm('Importing will replace the current project. Do you want to continue?');
-                if (!confirmed) return;
+                DialogFactory.createConfirmDialog(
+                    'Import Project',
+                    'Importing will replace the current project.<br><br>Do you want to continue?',
+                    () => {
+                        this.performImport(project);
+                    },
+                    null,
+                    'Continue',
+                    'Cancel'
+                );
+                return;
+            } else {
+                this.performImport(project);
             }
+        } catch (error) {
+            this.notificationService.error('Error importing project. Please check the file format.');
+        }
+    }
 
+    /**
+     * Perform the actual import operation
+     */
+    performImport(project) {
+        try {
             // Save to local storage
             const projectName = project.name.replace(/\.lcp$/, '');
             project.name = projectName;
@@ -358,7 +452,7 @@ class UIController {
             
             this.notificationService.success(`Project "${projectName}" imported successfully!`);
         } catch (error) {
-            this.notificationService.error('Error importing project. Please check the file format.');
+            this.notificationService.error('Error importing project: ' + error.message);
         }
     }
 
@@ -366,66 +460,138 @@ class UIController {
      * Create new project
      */
     newProject() {
-        const currentProject = this.diagramController.getCurrentProject();
-        const hasContent = currentProject.nodes.length > 0 || 
-                         currentProject.transitions.length > 0 || 
-                         currentProject.texts.length > 0;
+        // Show enhanced new project dialog directly
+        DialogFactory.createNewProjectDialog(
+            (projectName, isPrivate, password) => {
+                return this.createProject(projectName, isPrivate, password);
+            },
+            () => {
+                // User cancelled - nothing to do
+            }
+        );
+    }
 
-        if (hasContent) {
-            const confirmed = confirm('Are you sure you want to create a new project? All unsaved changes will be lost.');
-            if (!confirmed) return;
+    /**
+     * Create project with privacy settings
+     */
+    createProject(projectName, isPrivate = false, password = null) {
+        try {
+            // Check if current project has content and warn user
+            const currentProject = this.diagramController.getCurrentProject();
+            const hasContent = currentProject.nodes.length > 0 || 
+                             currentProject.transitions.length > 0 || 
+                             currentProject.texts.length > 0;
+
+            if (hasContent) {
+                DialogFactory.createConfirmDialog(
+                    'Clear Current Project',
+                    'Creating a new project will clear the current canvas.<br><br>Do you want to continue?',
+                    () => {
+                        this.performCreateProject(projectName, isPrivate, password);
+                    },
+                    null,
+                    'Continue',
+                    'Cancel'
+                );
+                return true;
+            } else {
+                this.performCreateProject(projectName, isPrivate, password);
+                return true;
+            }
+        } catch (error) {
+            this.notificationService.error('Error creating project: ' + error.message);
+            return false;
         }
+    }
 
-        // Generate unique project name
-        const projectName = this.storageService.generateUniqueProjectName();
-        
+    /**
+     * Perform the actual project creation
+     */
+    performCreateProject(projectName, isPrivate = false, password = null) {
         // Create new project
         this.diagramController.newProject();
         
-        // Set the generated name and save immediately
+        // Get the project instance and set privacy settings FIRST
+        const project = this.diagramController.getCurrentProject();
+        project.isPrivate = isPrivate;
+        if (isPrivate && password) {
+            // Store hashed password (simple hash for this demo)
+            project.passwordHash = this.hashPassword(password);
+        }
+        
+        // NOW set the project name and save (this will save with privacy settings)
         this.diagramController.setProjectName(projectName);
+        
+        // Force save again to ensure privacy settings are persisted
+        this.storageService.saveProject(project);
+        
         this.currentProject = projectName;
         
         // Update UI
         this.updateProjectNameDisplay();
         this.updateRecentProjectsList();
         
-        this.notificationService.success(`New project "${projectName}" created and saved!`);
+        const statusText = isPrivate ? 'private' : 'public';
+        this.notificationService.success(`New ${statusText} project "${projectName}" created and saved!`);
+    }
+
+    /**
+     * Simple password hashing (for demo purposes - in production use proper hashing)
+     */
+    hashPassword(password) {
+        let hash = 0;
+        for (let i = 0; i < password.length; i++) {
+            const char = password.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // Convert to 32-bit integer
+        }
+        return hash.toString();
     }
 
     /**
      * Clear project
      */
     clearProject() {
-        const confirmed = confirm('Are you sure you want to clear all elements from the canvas? This action cannot be undone.');
-        if (confirmed) {
-            this.diagramController.clearProject();
-            this.currentProject = null;
-            this.updateProjectNameDisplay();
-            this.updateRecentProjectsList();
-            this.notificationService.success('Canvas cleared successfully!');
-        }
+        DialogFactory.createConfirmDialog(
+            'Clear Canvas',
+            'Are you sure you want to clear all elements from the canvas?<br><br><strong>This action cannot be undone.</strong>',
+            () => {
+                this.diagramController.clearProject();
+                this.currentProject = null;
+                this.updateProjectNameDisplay();
+                this.updateRecentProjectsList();
+                this.notificationService.success('Canvas cleared successfully!');
+            },
+            null,
+            'Clear Canvas',
+            'Cancel'
+        );
     }
 
     /**
      * Clear all projects
      */
     clearAllProjects() {
-        const confirmed = confirm('Are you sure you want to delete ALL saved projects and clear the canvas? This action cannot be undone!');
-        
-        if (confirmed) {
-            const success = this.storageService.clearAllProjects();
-            if (success) {
-                this.diagramController.clearProject();
-                this.currentProject = null;
-                this.currentPage = 1;
-                this.updateRecentProjectsList();
-                this.updateProjectNameDisplay();
-                this.notificationService.success('All projects and canvas cleared successfully!');
-            } else {
-                this.notificationService.error('Error clearing projects. Please try again.');
-            }
-        }
+        DialogFactory.createConfirmDialog(
+            'Delete All Projects',
+            'Are you sure you want to delete <strong>ALL</strong> saved projects and clear the canvas?<br><br><strong>This action cannot be undone!</strong>',
+            () => {
+                const success = this.storageService.clearAllProjects();
+                if (success) {
+                    this.diagramController.clearProject();
+                    this.currentProject = null;
+                    this.currentPage = 1;
+                    this.updateRecentProjectsList();
+                    this.updateProjectNameDisplay();
+                    this.notificationService.success('All projects and canvas cleared successfully!');
+                } else {
+                    this.notificationService.error('Error clearing projects. Please try again.');
+                }
+            },
+            null,
+            'Delete All',
+            'Cancel'
+        );
     }
 
     /**
@@ -536,21 +702,51 @@ class UIController {
         nameDiv.className = 'font-semibold text-gray-800 text-sm mb-1 truncate';
         nameDiv.textContent = project.name;
 
+        // Bottom row with date and status
+        const bottomRow = document.createElement('div');
+        bottomRow.className = 'flex justify-between items-center';
+
         const dateDiv = document.createElement('div');
         dateDiv.className = 'text-xs text-gray-500';
         const date = new Date(project.timestamp);
         dateDiv.textContent = date.toLocaleDateString() + ' ' + 
             date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
 
+        // Privacy status badge
+        const statusDiv = document.createElement('div');
+        const isPrivate = project.isPrivate || false;
+        statusDiv.textContent = isPrivate ? 'PRIVATE' : 'PUBLIC';
+        statusDiv.className = 'text-xs px-2 py-1 rounded ml-2';
+        
+        if (isPrivate) {
+            statusDiv.className += ' text-red-600 bg-red-50 border border-red-200';
+        } else {
+            statusDiv.className += ' text-green-600 bg-green-50 border border-green-200';
+        }
+
+        const dateStatusContainer = document.createElement('div');
+        dateStatusContainer.className = 'flex items-center';
+        dateStatusContainer.appendChild(dateDiv);
+        dateStatusContainer.appendChild(statusDiv);
+
+        bottomRow.appendChild(dateStatusContainer);
+
         contentDiv.appendChild(nameDiv);
-        contentDiv.appendChild(dateDiv);
+        contentDiv.appendChild(bottomRow);
 
         // Event handlers
         deleteBtn.addEventListener('click', (event) => {
             event.stopPropagation();
-            if (confirm(`Are you sure you want to delete project "${project.name}"?`)) {
-                this.deleteProject(project.name);
-            }
+            DialogFactory.createConfirmDialog(
+                'Delete Project',
+                `Are you sure you want to delete project <strong>"${project.name}"</strong>?<br><br>This action cannot be undone.`,
+                () => {
+                    this.deleteProject(project.name);
+                },
+                null,
+                'Delete',
+                'Cancel'
+            );
         });
 
         contentDiv.addEventListener('click', (event) => {

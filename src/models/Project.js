@@ -2,7 +2,7 @@
  * Project model representing a complete diagram project
  */
 class Project {
-    constructor({name, nodes = [], transitions = [], texts = [], nodeCounter = 1, timestamp = null}) {
+    constructor({name, nodes = [], transitions = [], texts = [], nodeCounter = 1, timestamp = null, isPrivate = false, passwordHash = null}) {
         this.name = name;
         this.nodes = nodes;
         this.transitions = transitions;
@@ -10,6 +10,8 @@ class Project {
         this.nodeCounter = nodeCounter;
         this.timestamp = timestamp || new Date().toISOString();
         this.version = '1.0';
+        this.isPrivate = isPrivate;
+        this.passwordHash = passwordHash;
     }
 
     /**
@@ -135,6 +137,8 @@ class Project {
             nodeCounter: this.nodeCounter,
             timestamp: this.timestamp,
             version: this.version,
+            isPrivate: this.isPrivate || false,
+            passwordHash: this.passwordHash || null,
             exported: true
         };
     }
@@ -175,7 +179,9 @@ class Project {
             transitions,
             texts,
             nodeCounter: data.nodeCounter || 1,
-            timestamp: data.timestamp
+            timestamp: data.timestamp,
+            isPrivate: data.isPrivate || false,
+            passwordHash: data.passwordHash || null
         });
     }
 }
