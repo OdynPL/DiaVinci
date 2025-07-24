@@ -221,12 +221,13 @@ class UIController {
             if (!overwrite) return false;
         }
 
-        const project = this.diagramController.getCurrentProject();
-        project.name = projectName;
-        project.updateTimestamp();
-
-        const success = this.storageService.saveProject(project);
+        // Use DiagramController's new method to set project name and save
+        const success = this.diagramController.setProjectName(projectName);
+        
         if (success) {
+            const project = this.diagramController.getCurrentProject();
+            project.updateTimestamp();
+            
             this.currentProject = projectName;
             this.currentPage = 1;
             this.updateRecentProjectsList();

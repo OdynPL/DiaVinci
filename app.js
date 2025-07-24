@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Initialize dependency injection container
         container = new DIContainer();
         
+        // Set debug logging to see auto-save in action
+        Logger.setLevel(Logger.logLevel.DEBUG);
+        
         // Register core services
         container.registerSingleton('eventBus', () => new EventBus());
         

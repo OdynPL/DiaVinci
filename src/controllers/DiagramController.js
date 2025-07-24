@@ -16,6 +16,7 @@ class DiagramController {
         this.errorHandler = errorHandler;
         
         this.currentProject = new Project({name: null});
+        this.autoSaveTimeout = null; // For debouncing auto-save
         this.dragState = {
             type: null,
             isDragging: false,
@@ -112,6 +113,9 @@ class DiagramController {
                 this.startTransitionDrawing();
                 break;
         }
+        
+        // Trigger auto-save after creating element
+        this.triggerAutoSave();
     }
 
     /**
@@ -348,6 +352,8 @@ class DiagramController {
      * Handle mouse up
      */
     handleMouseUp(e) {
+        let wasModified = false;
+        
         // End selection rectangle
         if (this.multiSelectionManager.isSelecting()) {
             this.multiSelectionManager.endSelection(this.currentProject);
@@ -357,11 +363,20 @@ class DiagramController {
         // End group dragging
         if (this.multiSelectionManager.isGroupDragging()) {
             this.multiSelectionManager.endGroupDrag();
+            wasModified = true;
         }
 
         // End single element dragging
+        if (this.dragState.isDragging) {
+            wasModified = true;
+        }
         this.dragState.isDragging = false;
         this.dragState.element = null;
+        
+        // Trigger auto-save if elements were moved
+        if (wasModified) {
+            this.triggerAutoSave();
+        }
     }
 
     /**
@@ -400,6 +415,9 @@ class DiagramController {
         
         this.currentProject.addTransition(transition);
         this.render();
+        
+        // Trigger auto-save after creating transition
+        this.triggerAutoSave();
     }
 
     /**
@@ -484,6 +502,9 @@ class DiagramController {
         
         this.clearSelection();
         this.render();
+        
+        // Trigger auto-save after deleting element
+        this.triggerAutoSave();
     }
 
     /**
@@ -598,6 +619,9 @@ class DiagramController {
     handleElementEdited(data) {
         Logger.debug('Element edited event received', { type: data.type, newValue: data.newValue });
         this.render();
+        
+        // Trigger auto-save after editing element
+        this.triggerAutoSave();
     }
 
     /**
@@ -672,7 +696,29 @@ class DiagramController {
      * Auto-save current state
      */
     autoSave() {
+        // Auto-save to temporary storage
         this.storageService.autoSave(this.currentProject);
+        
+        // If project has a name, also save to named project
+        if (this.currentProject.name) {
+            this.storageService.saveProject(this.currentProject);
+            Logger.debug('Auto-saved to named project', { projectName: this.currentProject.name });
+        }
+    }
+
+    /**
+     * Trigger auto-save after any modification
+     */
+    triggerAutoSave() {
+        // Debounce auto-save to prevent excessive saves
+        if (this.autoSaveTimeout) {
+            clearTimeout(this.autoSaveTimeout);
+        }
+        
+        this.autoSaveTimeout = setTimeout(() => {
+            this.autoSave();
+            Logger.debug('Auto-save triggered after modification');
+        }, 500); // Wait 500ms after last change
     }
 
     /**
@@ -711,5 +757,38 @@ class DiagramController {
      */
     exportAsFile() {
         return this.storageService.exportProject(this.currentProject);
+    }
+
+    /**
+     * Set project name and trigger auto-save to named project
+     */
+    setProjectName(name) {
+        if (name && name.trim()) {
+            this.currentProject.name = name.trim();
+            Logger.info('Project name set', { projectName: this.currentProject.name });
+            
+            // Immediately save to named project
+            this.storageService.saveProject(this.currentProject);
+            
+            // Also update auto-save
+            this.triggerAutoSave();
+            
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Get current project name
+     */
+    getProjectName() {
+        return this.currentProject.name;
+    }
+
+    /**
+     * Check if current project has a name (is saved)
+     */
+    isProjectNamed() {
+        return this.currentProject.name && this.currentProject.name.trim() !== '';
     }
 }
