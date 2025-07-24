@@ -26,7 +26,11 @@ class CanvasRenderer {
     renderNodes(nodes, multiSelectionManager) {
         multiSelectionManager = multiSelectionManager || null;
         nodes.forEach(node => {
-            this.renderNode(node, multiSelectionManager);
+            if (node && node.x !== undefined && node.y !== undefined && node.r !== undefined) {
+                this.renderNode(node, multiSelectionManager);
+            } else {
+                Logger.error('Invalid node detected', null, { node });
+            }
         });
     }
 
@@ -89,7 +93,11 @@ class CanvasRenderer {
      */
     renderTransitions(transitions, multiSelectionManager = null) {
         transitions.forEach(transition => {
-            this.renderTransition(transition, multiSelectionManager);
+            if (transition && transition.from && transition.to) {
+                this.renderTransition(transition, multiSelectionManager);
+            } else {
+                Logger.error('Invalid transition detected', null, { transition });
+            }
         });
     }
 
@@ -97,11 +105,27 @@ class CanvasRenderer {
      * Render single transition
      */
     renderTransition(transition, multiSelectionManager = null) {
-        const {startX, startY, endX, endY} = transition.getConnectionPoints();
-        
-        // Check highlighting conditions
-        const isSingleSelected = this.selectedElement === transition && this.selectedType === 'transition';
-        const isMultiSelected = multiSelectionManager && multiSelectionManager.isSelected(transition);
+        try {
+            const {startX, startY, endX, endY} = transition.getConnectionPoints();
+            
+            // Validate connection points
+            if (isNaN(startX) || isNaN(startY) || isNaN(endX) || isNaN(endY)) {
+                Logger.error('Invalid connection points', null, { 
+                    startX, startY, endX, endY, 
+                    transition: {
+                        id: transition.id,
+                        label: transition.label,
+                        fromCorner: transition.fromCorner,
+                        from: transition.from ? {id: transition.from.id, type: transition.from.type, x: transition.from.x, y: transition.from.y, rotation: transition.from.rotation} : null,
+                        to: transition.to ? {id: transition.to.id, type: transition.to.type, x: transition.to.x, y: transition.to.y} : null
+                    }
+                });
+                return;
+            }
+            
+            // Check highlighting conditions
+            const isSingleSelected = this.selectedElement === transition && this.selectedType === 'transition';
+            const isMultiSelected = multiSelectionManager && multiSelectionManager.isSelected(transition);
         
         // Highlight if selected
         if (isSingleSelected || isMultiSelected) {
@@ -116,6 +140,18 @@ class CanvasRenderer {
         
         // Draw label
         this.renderTransitionLabel(transition, startX, startY, endX, endY);
+        
+        } catch (error) {
+            Logger.error('Error rendering transition', error, { 
+                transition: {
+                    id: transition.id,
+                    label: transition.label,
+                    fromCorner: transition.fromCorner,
+                    from: transition.from ? {id: transition.from.id, type: transition.from.type, x: transition.from.x, y: transition.from.y, rotation: transition.from.rotation} : null,
+                    to: transition.to ? {id: transition.to.id, type: transition.to.type, x: transition.to.x, y: transition.to.y} : null
+                }
+            });
+        }
     }
 
     /**
@@ -277,47 +313,50 @@ class CanvasRenderer {
     }
 
     /**
-     * Draw IF transition path (robot arm style)
+     * Draw IF transition path (robot arm style) - always L-shaped
      */
     drawIFTransitionPath(startX, startY, endX, endY, transition) {
         this.ctx.moveTo(startX, startY);
         
         const armLength = 60;
+        const targetCenterX = transition.to.x;
+        const targetCenterY = transition.to.y;
         
-        if (transition.label === 'TRUE' && transition.fromCorner === 'left') {
-            const cornerX = startX - armLength;
-            const cornerY = endY;
-            this.ctx.lineTo(cornerX, startY);
-            this.ctx.lineTo(cornerX, cornerY);
-            this.ctx.lineTo(endX, endY);
-        } else if (transition.label === 'FALSE' && transition.fromCorner === 'right') {
-            const cornerX = startX + armLength;
-            const cornerY = endY;
-            this.ctx.lineTo(cornerX, startY);
-            this.ctx.lineTo(cornerX, cornerY);
-            this.ctx.lineTo(endX, endY);
-        } else if (transition.label === 'TRUE' && transition.fromCorner === 'top') {
-            const cornerX = endX;
-            const cornerY = startY - armLength;
-            this.ctx.lineTo(startX, cornerY);
-            this.ctx.lineTo(cornerX, cornerY);
-            this.ctx.lineTo(endX, endY);
-        } else if (transition.label === 'FALSE' && transition.fromCorner === 'bottom') {
-            const cornerX = endX;
-            const cornerY = startY + armLength;
-            this.ctx.lineTo(startX, cornerY);
-            this.ctx.lineTo(cornerX, cornerY);
-            this.ctx.lineTo(endX, endY);
-        } else {
-            if (transition.fromCorner === 'top' || transition.fromCorner === 'bottom') {
-                const cornerX = startX;
-                const cornerY = startY + (transition.fromCorner === 'top' ? -armLength : armLength);
-                this.ctx.lineTo(cornerX, cornerY);
-                this.ctx.lineTo(endX, cornerY);
-                this.ctx.lineTo(endX, endY);
+        // Always draw L-shaped robot arm regardless of rotation
+        // Calculate the corner position based on actual target position
+        let cornerX, cornerY;
+        
+        if (transition.fromCorner === 'left' || transition.fromCorner === 'right') {
+            // Horizontal first, then vertical
+            if (transition.fromCorner === 'left') {
+                cornerX = startX - armLength;
             } else {
-                this.ctx.lineTo(endX, endY);
+                cornerX = startX + armLength;
             }
+            cornerY = startY;
+            
+            // Draw: start -> horizontal -> vertical -> target
+            this.ctx.lineTo(cornerX, cornerY);
+            this.ctx.lineTo(cornerX, targetCenterY);
+            this.ctx.lineTo(endX, endY);
+            
+        } else if (transition.fromCorner === 'top' || transition.fromCorner === 'bottom') {
+            // Vertical first, then horizontal
+            cornerX = startX;
+            if (transition.fromCorner === 'top') {
+                cornerY = startY - armLength;
+            } else {
+                cornerY = startY + armLength;
+            }
+            
+            // Draw: start -> vertical -> horizontal -> target
+            this.ctx.lineTo(cornerX, cornerY);
+            this.ctx.lineTo(targetCenterX, cornerY);
+            this.ctx.lineTo(endX, endY);
+            
+        } else {
+            // Fallback - straight line
+            this.ctx.lineTo(endX, endY);
         }
     }
 
@@ -618,7 +657,7 @@ class CanvasRenderer {
      */
     renderTransitionLabel(transition, startX, startY, endX, endY) {
         // Special handling for IF transition labels - show them as small editable labels
-        if (transition.from.type === 'if' && transition.fromCorner && (transition.label === 'TRUE' || transition.label === 'FALSE')) {
+        if (transition.from.type === 'if' && transition.fromCorner && (transition.label === 'Step1' || transition.label === 'Step2')) {
             this.renderIFTransitionLabel(transition, startX, startY, endX, endY);
             return;
         }
@@ -700,14 +739,17 @@ class CanvasRenderer {
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
         
+        // Display TRUE for Step1, FALSE for Step2
+        const displayLabel = transition.label === 'Step1' ? 'TRUE' : 'FALSE';
+        
         // Add small background for better visibility
-        const textWidth = this.ctx.measureText(transition.label).width;
+        const textWidth = this.ctx.measureText(displayLabel).width;
         this.ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
         this.ctx.fillRect(labelX - textWidth/2 - 3, labelY - 8, textWidth + 6, 16);
         
         // Draw the text
         this.ctx.fillStyle = '#666';
-        this.ctx.fillText(transition.label, labelX, labelY);
+        this.ctx.fillText(displayLabel, labelX, labelY);
         this.ctx.restore();
     }
 
@@ -717,31 +759,35 @@ class CanvasRenderer {
     renderNode(node, multiSelectionManager) {
         multiSelectionManager = multiSelectionManager || null;
         
-        // Draw shape
-        this.drawNodeShape(node);
-        
-        // Fill and stroke
-        const isSelected = this.selectedElement === node && this.selectedType === 'node';
-        const isMultiSelected = multiSelectionManager && multiSelectionManager.isElementSelected(node, 'node');
-        
-        if (isMultiSelected) {
-            this.ctx.fillStyle = '#4A90E2';
-            this.ctx.globalAlpha = 0.7;
-            this.ctx.fill();
-            this.ctx.strokeStyle = '#2563EB';
-            this.ctx.lineWidth = 3;
-            this.ctx.globalAlpha = 1;
-            this.ctx.stroke();
-        } else {
-            this.ctx.fillStyle = isSelected ? '#ffe066' : node.color;
-            this.ctx.fill();
-            this.ctx.strokeStyle = isSelected ? '#e6b800' : '#333';
-            this.ctx.lineWidth = isSelected ? 4 : 2;
-            this.ctx.stroke();
+        try {
+            // Draw shape
+            this.drawNodeShape(node);
+            
+            // Fill and stroke
+            const isSelected = this.selectedElement === node && this.selectedType === 'node';
+            const isMultiSelected = multiSelectionManager && multiSelectionManager.isElementSelected(node, 'node');
+            
+            if (isMultiSelected) {
+                this.ctx.fillStyle = '#4A90E2';
+                this.ctx.globalAlpha = 0.7;
+                this.ctx.fill();
+                this.ctx.strokeStyle = '#2563EB';
+                this.ctx.lineWidth = 3;
+                this.ctx.globalAlpha = 1;
+                this.ctx.stroke();
+            } else {
+                this.ctx.fillStyle = isSelected ? '#ffe066' : node.color;
+                this.ctx.fill();
+                this.ctx.strokeStyle = isSelected ? '#e6b800' : '#333';
+                this.ctx.lineWidth = isSelected ? 4 : 2;
+                this.ctx.stroke();
+            }
+            
+            // Draw label
+            this.drawNodeLabel(node);
+        } catch (error) {
+            Logger.error('Error rendering node', error, { node });
         }
-        
-        // Draw label
-        this.drawNodeLabel(node);
     }
 
     /**
@@ -753,11 +799,19 @@ class CanvasRenderer {
         if (node.type === 'start' || node.type === 'stop') {
             this.ctx.ellipse(node.x, node.y, node.r * 1.5, node.r * 0.8, 0, 0, 2 * Math.PI);
         } else if (node.type === 'if') {
+            // Rotate the diamond based on node rotation like letter "C"
+            this.ctx.save();
+            this.ctx.translate(node.x, node.y);
+            this.ctx.rotate((node.rotation || 0) * Math.PI / 180);
+            this.ctx.translate(-node.x, -node.y);
+            
             this.ctx.moveTo(node.x, node.y - node.r);
             this.ctx.lineTo(node.x + node.r, node.y);
             this.ctx.lineTo(node.x, node.y + node.r);
             this.ctx.lineTo(node.x - node.r, node.y);
             this.ctx.closePath();
+            
+            this.ctx.restore();
         } else {
             this.ctx.arc(node.x, node.y, node.r, 0, 2 * Math.PI);
         }
@@ -797,7 +851,11 @@ class CanvasRenderer {
     renderTexts(texts, multiSelectionManager) {
         multiSelectionManager = multiSelectionManager || null;
         texts.forEach(text => {
-            this.renderText(text, multiSelectionManager);
+            if (text && text.x !== undefined && text.y !== undefined) {
+                this.renderText(text, multiSelectionManager);
+            } else {
+                Logger.error('Invalid text element detected', null, { text });
+            }
         });
     }
 
@@ -806,24 +864,29 @@ class CanvasRenderer {
      */
     renderText(text, multiSelectionManager) {
         multiSelectionManager = multiSelectionManager || null;
-        const isSelected = this.selectedElement === text && this.selectedType === 'text';
-        const isMultiSelected = multiSelectionManager && multiSelectionManager.isElementSelected(text, 'text');
         
-        if (isSelected || isMultiSelected) {
-            this.ctx.save();
-            this.ctx.beginPath();
-            this.ctx.rect(text.x - 60, text.y - 22, 120, 32);
-            this.ctx.fillStyle = isMultiSelected ? '#4A90E2' : '#ffe066';
-            this.ctx.globalAlpha = isMultiSelected ? 0.3 : 1;
-            this.ctx.fill();
-            this.ctx.restore();
+        try {
+            const isSelected = this.selectedElement === text && this.selectedType === 'text';
+            const isMultiSelected = multiSelectionManager && multiSelectionManager.isElementSelected(text, 'text');
+            
+            if (isSelected || isMultiSelected) {
+                this.ctx.save();
+                this.ctx.beginPath();
+                this.ctx.rect(text.x - 60, text.y - 22, 120, 32);
+                this.ctx.fillStyle = isMultiSelected ? '#4A90E2' : '#ffe066';
+                this.ctx.globalAlpha = isMultiSelected ? 0.3 : 1;
+                this.ctx.fill();
+                this.ctx.restore();
+            }
+            
+            this.ctx.fillStyle = '#333';
+            this.ctx.font = '18px Arial';
+            this.ctx.textAlign = 'center';
+            this.ctx.textBaseline = 'middle';
+            this.ctx.fillText(text.label, text.x, text.y);
+        } catch (error) {
+            Logger.error('Error rendering text', error, { text });
         }
-        
-        this.ctx.fillStyle = '#333';
-        this.ctx.font = '18px Arial';
-        this.ctx.textAlign = 'center';
-        this.ctx.textBaseline = 'middle';
-        this.ctx.fillText(text.label, text.x, text.y);
     }
 
     /**

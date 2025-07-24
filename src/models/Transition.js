@@ -67,12 +67,34 @@ class Transition {
      * Get start and end points for drawing
      */
     getConnectionPoints() {
+        // Validate that we have valid from and to nodes
+        if (!this.from || !this.to) {
+            console.error('Transition missing from or to node', { from: this.from, to: this.to, transition: this });
+            return { startX: 0, startY: 0, endX: 0, endY: 0 };
+        }
+        
+        if (this.from.x === undefined || this.from.y === undefined || this.to.x === undefined || this.to.y === undefined) {
+            console.error('Transition nodes missing coordinates', { 
+                from: { x: this.from.x, y: this.from.y, id: this.from.id },
+                to: { x: this.to.x, y: this.to.y, id: this.to.id },
+                transition: this 
+            });
+            return { startX: 0, startY: 0, endX: 0, endY: 0 };
+        }
+        
         let startX, startY, endX, endY;
 
         // Calculate end point first to get proper angle
-        if (this.from.type === 'if' && this.fromCorner && (this.label === 'TRUE' || this.label === 'FALSE')) {
-            // Special handling for IF transitions
-            const {x, y} = this.calculateIFEndPoint();
+        if (this.from.type === 'if' && this.fromCorner && (this.label === 'Step1' || this.label === 'Step2')) {
+            // For IF to Step transitions, calculate proper angle-based end point
+            // First get preliminary start point for angle calculation
+            const corners = this.getIFNodeCorners(this.from);
+            const corner = corners[this.fromCorner];
+            const prelimStartX = corner ? corner.x : this.from.x;
+            const prelimStartY = corner ? corner.y : this.from.y;
+            
+            // Use standard calculation for proper edge intersection
+            const {x, y} = this.calculateStandardEndPoint(prelimStartX, prelimStartY);
             endX = x;
             endY = y;
         } else {
@@ -91,8 +113,14 @@ class Transition {
         if (this.from.type === 'if' && this.fromCorner) {
             const corners = this.getIFNodeCorners(this.from);
             const corner = corners[this.fromCorner];
-            startX = corner.x;
-            startY = corner.y;
+            if (corner) {
+                startX = corner.x;
+                startY = corner.y;
+            } else {
+                // Fallback to center if corner is invalid
+                startX = this.from.x;
+                startY = this.from.y;
+            }
         } else {
             const {x, y} = this.calculateStandardStartPoint(endX, endY);
             startX = x;
@@ -112,25 +140,6 @@ class Transition {
             left: {x: ifNode.x - ifNode.r, y: ifNode.y},
             right: {x: ifNode.x + ifNode.r, y: ifNode.y}
         };
-    }
-
-    /**
-     * Calculate end point for IF transitions
-     */
-    calculateIFEndPoint() {
-        if (this.label === 'TRUE' && this.fromCorner === 'left') {
-            return {x: this.to.x - this.to.r, y: this.to.y};
-        } else if (this.label === 'FALSE' && this.fromCorner === 'right') {
-            return {x: this.to.x - this.to.r, y: this.to.y};
-        } else if (this.label === 'TRUE' && this.fromCorner === 'top') {
-            return {x: this.to.x, y: this.to.y - this.to.r};
-        } else if (this.label === 'FALSE' && this.fromCorner === 'bottom') {
-            return {x: this.to.x, y: this.to.y + this.to.r};
-        }
-        
-        // Fallback
-        const {startX, startY} = this.getConnectionPoints();
-        return this.calculateStandardEndPoint(startX, startY);
     }
 
     /**
@@ -261,6 +270,15 @@ class Transition {
      * Toggle between straight and curved style
      */
     toggleStyle() {
+        // Block style changes for IF transitions - they must stay as robot arms
+        if (this.from.type === 'if' && (this.label === 'Step1' || this.label === 'Step2')) {
+            Logger.debug('Blocked style toggle for IF transition - robot arms cannot be modified', {
+                label: this.label,
+                fromType: this.from.type
+            });
+            return;
+        }
+        
         this.style = this.style === 'straight' ? 'curved' : 'straight';
         Logger.debug('Transition style toggled', { style: this.style, label: this.label });
     }
@@ -269,6 +287,15 @@ class Transition {
      * Add break point at given position
      */
     addBreakPoint(x, y) {
+        // Block break points for IF transitions - they must stay as robot arms
+        if (this.from.type === 'if' && (this.label === 'Step1' || this.label === 'Step2')) {
+            Logger.debug('Blocked break point for IF transition - robot arms cannot be modified', {
+                label: this.label,
+                fromType: this.from.type
+            });
+            return;
+        }
+        
         // Find the best position to insert the break point
         const insertIndex = this.findBreakPointInsertIndex(x, y);
         this.breakPoints.splice(insertIndex, 0, {x, y});

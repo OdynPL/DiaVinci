@@ -252,7 +252,7 @@ class DialogFactory {
     /**
      * Create IF node options menu
      */
-    static createIFOptionsMenu(node, x, y, onRotate, onChangeColor) {
+    static createIFOptionsMenu(node, x, y, onRotateClockwise, onRotateCounterClockwise, onChangeColor) {
         const menu = document.createElement('div');
         menu.id = 'if-options-menu';
         menu.style.position = 'absolute';
@@ -266,20 +266,23 @@ class DialogFactory {
         menu.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
         menu.style.minWidth = '120px';
         
-        const rotateBtn = this.createMenuItem(
-            node.rotation === 90 ? 'Rotate to Horizontal' : 'Rotate to Vertical',
-            () => {
-                onRotate();
-                menu.remove();
-            }
-        );
+        const rotateRightBtn = this.createMenuItem('Rotate Right (90°)', () => {
+            onRotateClockwise();
+            menu.remove();
+        });
+        
+        const rotateLeftBtn = this.createMenuItem('Rotate Left (90°)', () => {
+            onRotateCounterClockwise();
+            menu.remove();
+        });
         
         const colorBtn = this.createMenuItem('Change Color', () => {
             menu.remove();
             onChangeColor();
         });
         
-        menu.appendChild(rotateBtn);
+        menu.appendChild(rotateRightBtn);
+        menu.appendChild(rotateLeftBtn);
         menu.appendChild(colorBtn);
         document.body.appendChild(menu);
         

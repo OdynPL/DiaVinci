@@ -56,11 +56,20 @@ class Node {
     }
 
     /**
-     * Toggle rotation for IF nodes
+     * Toggle rotation for IF nodes (rotate 90 degrees clockwise)
      */
     toggleRotation() {
         if (this.type === 'if') {
-            this.rotation = this.rotation === 90 ? 0 : 90;
+            this.rotation = (this.rotation + 90) % 360;
+        }
+    }
+
+    /**
+     * Rotate IF node counter-clockwise (90 degrees)
+     */
+    rotateCounterClockwise() {
+        if (this.type === 'if') {
+            this.rotation = (this.rotation - 90 + 360) % 360;
         }
     }
 

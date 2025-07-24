@@ -153,13 +153,41 @@ class DiagramController {
      * Create IF node with children
      */
     createIFNode(x, y) {
+        Logger.debug('Creating IF node', { x, y });
+        
         const {ifNode, trueNode, falseNode} = NodeFactory.createIFNode(x, y);
         
+        Logger.debug('Created IF nodes', { 
+            ifNode: { id: ifNode.id, x: ifNode.x, y: ifNode.y, rotation: ifNode.rotation },
+            trueNode: { id: trueNode.id, x: trueNode.x, y: trueNode.y },
+            falseNode: { id: falseNode.id, x: falseNode.x, y: falseNode.y }
+        });
+        
+        // Add nodes first
         this.currentProject.addNode(ifNode);
         this.currentProject.addNode(trueNode);
         this.currentProject.addNode(falseNode);
         
+        // Create transitions after nodes are added
         const {trueTransition, falseTransition} = NodeFactory.createIFTransitions(ifNode, trueNode, falseNode);
+        
+        Logger.debug('Created IF transitions', { 
+            trueTransition: { 
+                id: trueTransition.id, 
+                label: trueTransition.label, 
+                fromCorner: trueTransition.fromCorner,
+                from: trueTransition.from ? trueTransition.from.id : null,
+                to: trueTransition.to ? trueTransition.to.id : null
+            },
+            falseTransition: { 
+                id: falseTransition.id, 
+                label: falseTransition.label, 
+                fromCorner: falseTransition.fromCorner,
+                from: falseTransition.from ? falseTransition.from.id : null,
+                to: falseTransition.to ? falseTransition.to.id : null
+            }
+        });
+        
         this.currentProject.addTransition(trueTransition);
         this.currentProject.addTransition(falseTransition);
         
@@ -679,7 +707,7 @@ class DiagramController {
         
         // Remove connected TRUE/FALSE nodes that are part of this IF structure
         connectedNodes.forEach(node => {
-            if (node && (node.label === 'TRUE' || node.label === 'FALSE')) {
+            if (node && (node.label === 'Step1' || node.label === 'Step2')) {
                 // Check if this node is only connected to the IF node we're removing
                 const otherConnections = this.currentProject.transitions.filter(tr => 
                     (tr.from === node || tr.to === node) && tr.from !== ifNode && tr.to !== ifNode
@@ -732,14 +760,57 @@ class DiagramController {
         DialogFactory.createIFOptionsMenu(
             node, x, y,
             () => this.rotateIFNode(node),
+            () => this.rotateIFNodeCounterClockwise(node),
             () => this.showColorPicker(node, x, y)
         );
+    }
+
+    /**
+     * Rotate IF node counter-clockwise (90 degrees)
+     */
+    rotateIFNodeCounterClockwise(ifNode) {
+        Logger.debug('Rotating IF node counter-clockwise', { 
+            ifNodeId: ifNode.id, 
+            currentRotation: ifNode.rotation
+        });
+        
+        ifNode.rotateCounterClockwise();
+        
+        const allIFTransitions = this.currentProject.transitions.filter(tr => tr.from === ifNode);
+        const trueTransition = allIFTransitions.find(tr => tr.label === 'Step1');
+        const falseTransition = allIFTransitions.find(tr => tr.label === 'Step2');
+        
+        Logger.debug('Found transitions for counter-clockwise rotation', { 
+            trueTransition: trueTransition ? trueTransition.label : null,
+            falseTransition: falseTransition ? falseTransition.label : null,
+            newRotation: ifNode.rotation
+        });
+        
+        if (trueTransition && falseTransition) {
+            NodeFactory.updateIFNodePositioning(ifNode, trueTransition, falseTransition);
+        } else {
+            Logger.error('Missing transitions for IF counter-clockwise rotation', { 
+                ifNodeId: ifNode.id,
+                foundTransitions: allIFTransitions.map(tr => tr.label)
+            });
+        }
+        
+        this.render();
     }
 
     /**
      * Show transition style options
      */
     showTransitionOptions(transition, screenX, screenY, canvasX, canvasY) {
+        // Block options for IF transitions - they must stay as robot arms
+        if (transition.from.type === 'if' && (transition.label === 'Step1' || transition.label === 'Step2')) {
+            Logger.debug('Blocking options for IF transition - robot arms cannot be modified', {
+                label: transition.label,
+                fromType: transition.from.type
+            });
+            return; // No options for IF transitions
+        }
+        
         const options = [
             {
                 text: transition.style === 'straight' ? 'Convert to Curved' : 'Convert to Straight',
@@ -774,12 +845,33 @@ class DiagramController {
      * Rotate IF node
      */
     rotateIFNode(ifNode) {
+        Logger.debug('Rotating IF node', { 
+            ifNodeId: ifNode.id, 
+            currentRotation: ifNode.rotation,
+            allTransitions: this.currentProject.transitions.filter(tr => tr.from === ifNode).map(tr => ({id: tr.id, label: tr.label}))
+        });
+        
         ifNode.toggleRotation();
         
-        const trueTransition = this.currentProject.transitions.find(tr => tr.from === ifNode && tr.label === 'TRUE');
-        const falseTransition = this.currentProject.transitions.find(tr => tr.from === ifNode && tr.label === 'FALSE');
+        const allIFTransitions = this.currentProject.transitions.filter(tr => tr.from === ifNode);
+        const trueTransition = allIFTransitions.find(tr => tr.label === 'Step1');
+        const falseTransition = allIFTransitions.find(tr => tr.label === 'Step2');
         
-        NodeFactory.updateIFNodePositioning(ifNode, trueTransition, falseTransition);
+        Logger.debug('Found transitions for rotation', { 
+            trueTransition: trueTransition ? trueTransition.label : null,
+            falseTransition: falseTransition ? falseTransition.label : null,
+            newRotation: ifNode.rotation
+        });
+        
+        if (trueTransition && falseTransition) {
+            NodeFactory.updateIFNodePositioning(ifNode, trueTransition, falseTransition);
+        } else {
+            Logger.error('Missing transitions for IF rotation', { 
+                ifNodeId: ifNode.id,
+                foundTransitions: allIFTransitions.map(tr => tr.label)
+            });
+        }
+        
         this.render();
     }
 
@@ -790,22 +882,12 @@ class DiagramController {
         const outgoingTransitions = this.currentProject.transitions.filter(tr => tr.from === ifNode);
         
         if (outgoingTransitions.length >= 2) {
-            const firstTransition = outgoingTransitions[0];
-            const secondTransition = outgoingTransitions[1];
+            const step1Transition = outgoingTransitions.find(tr => tr.label === 'Step1');
+            const step2Transition = outgoingTransitions.find(tr => tr.label === 'Step2');
             
-            const firstNode = firstTransition.to;
-            const secondNode = secondTransition.to;
-            
-            if (ifNode.rotation === 90) {
-                firstNode.x = ifNode.x;
-                firstNode.y = ifNode.y - 120;
-                secondNode.x = ifNode.x;
-                secondNode.y = ifNode.y + 120;
-            } else {
-                firstNode.x = ifNode.x - 120;
-                firstNode.y = ifNode.y - 60;
-                secondNode.x = ifNode.x + 120;
-                secondNode.y = ifNode.y + 60;
+            if (step1Transition && step2Transition) {
+                // Use the same rotation logic as NodeFactory
+                NodeFactory.updateIFNodePositioning(ifNode, step1Transition, step2Transition);
             }
         }
     }
