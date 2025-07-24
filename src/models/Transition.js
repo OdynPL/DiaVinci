@@ -69,12 +69,12 @@ class Transition {
     getConnectionPoints() {
         // Validate that we have valid from and to nodes
         if (!this.from || !this.to) {
-            console.error('Transition missing from or to node', { from: this.from, to: this.to, transition: this });
+            Logger.error('Transition missing from or to node', { from: this.from, to: this.to, transition: this });
             return { startX: 0, startY: 0, endX: 0, endY: 0 };
         }
         
         if (this.from.x === undefined || this.from.y === undefined || this.to.x === undefined || this.to.y === undefined) {
-            console.error('Transition nodes missing coordinates', { 
+            Logger.error('Transition nodes missing coordinates', { 
                 from: { x: this.from.x, y: this.from.y, id: this.from.id },
                 to: { x: this.to.x, y: this.to.y, id: this.to.id },
                 transition: this 

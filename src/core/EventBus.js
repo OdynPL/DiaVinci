@@ -39,7 +39,7 @@ class EventBus {
             try {
                 callback(...args);
             } catch (error) {
-                console.error(`Error in event listener for '${event}':`, error);
+                Logger.error('Error in event listener', error, { event });
             }
         });
     }

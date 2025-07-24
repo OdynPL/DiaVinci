@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             new ExportService(canvas, container.resolve('canvasRenderer'), container.resolve('errorHandler'))
         );
         container.registerSingleton('inputService', () => 
-            new InputService(canvas, container.resolve('eventBus'))
+            new InputService(canvas, container.resolve('eventBus'), container.resolve('errorHandler'))
         );
         
         // Register factories
@@ -93,7 +93,8 @@ document.addEventListener('DOMContentLoaded', async function() {
                 container.resolve('eventBus'),
                 container.resolve('diagramController'),
                 container.resolve('storageService'),
-                container.resolve('notificationService')
+                container.resolve('notificationService'),
+                container.resolve('errorHandler')
             )
         );
         

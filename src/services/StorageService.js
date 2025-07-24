@@ -45,7 +45,7 @@ class StorageService {
             }
             return Project.fromJSON(projectData);
         } catch (error) {
-            console.error('Error loading project:', error);
+            Logger.error('Error loading project', error, { projectName });
             return null;
         }
     }
@@ -58,7 +58,7 @@ class StorageService {
             const data = localStorage.getItem(this.storageKey) || '{}';
             return JSON.parse(data);
         } catch (error) {
-            console.error('Error getting projects:', error);
+            Logger.error('Error getting projects', error);
             return {};
         }
     }
@@ -73,7 +73,7 @@ class StorageService {
             localStorage.setItem(this.storageKey, JSON.stringify(savedProjects));
             return true;
         } catch (error) {
-            console.error('Error deleting project:', error);
+            Logger.error('Error deleting project', error, { projectName });
             return false;
         }
     }
@@ -114,7 +114,7 @@ class StorageService {
             localStorage.removeItem(this.autoSaveKey);
             return true;
         } catch (error) {
-            console.error('Error clearing projects:', error);
+            Logger.error('Error clearing projects', error);
             return false;
         }
     }
@@ -161,7 +161,7 @@ class StorageService {
             }
             return null;
         } catch (error) {
-            console.warn('Failed to load auto-save:', error);
+            Logger.warn('Failed to load auto-save', error);
             return null;
         }
     }
@@ -187,7 +187,7 @@ class StorageService {
             URL.revokeObjectURL(url);
             return true;
         } catch (error) {
-            console.error('Error exporting project:', error);
+            Logger.error('Error exporting project', error, { projectName: project.name });
             return false;
         }
     }

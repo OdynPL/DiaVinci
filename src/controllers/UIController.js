@@ -2,11 +2,12 @@
  * UI Controller managing user interface interactions
  */
 class UIController {
-    constructor(eventBus, diagramController, storageService, notificationService) {
+    constructor(eventBus, diagramController, storageService, notificationService, errorHandler = null) {
         this.eventBus = eventBus;
         this.diagramController = diagramController;
         this.storageService = storageService;
         this.notificationService = notificationService;
+        this.errorHandler = errorHandler;
         
         this.currentProject = null;
         this.currentPage = 1;
@@ -212,14 +213,29 @@ class UIController {
      * Export image
      */
     async exportImage(whiteBackground) {
-        try {
-            const success = await this.diagramController.exportAsImage(whiteBackground);
-            if (success) {
-                const bgType = whiteBackground ? 'white background' : 'transparent background';
-                this.notificationService.success(`Image exported successfully with ${bgType}!`);
+        if (this.errorHandler) {
+            return await this.errorHandler.executeWithErrorHandling(async () => {
+                const success = await this.diagramController.exportAsImage(whiteBackground);
+                if (success) {
+                    const bgType = whiteBackground ? 'white background' : 'transparent background';
+                    this.notificationService.success(`Image exported successfully with ${bgType}!`);
+                }
+                return success;
+            }, 'Error exporting image. Please try again.');
+        } else {
+            // Fallback without error handler
+            try {
+                const success = await this.diagramController.exportAsImage(whiteBackground);
+                if (success) {
+                    const bgType = whiteBackground ? 'white background' : 'transparent background';
+                    this.notificationService.success(`Image exported successfully with ${bgType}!`);
+                }
+                return success;
+            } catch (error) {
+                this.notificationService.error('Error exporting image. Please try again.');
+                Logger.error('Export image error', error);
+                return false;
             }
-        } catch (error) {
-            this.notificationService.error('Error exporting image. Please try again.');
         }
     }
 
@@ -920,22 +936,40 @@ class UIController {
      * Export project as file
      */
     exportFile() {
-        try {
-            const currentProject = this.diagramController.getCurrentProject();
-            if (!currentProject || (currentProject.nodes.length === 0 && currentProject.transitions.length === 0 && currentProject.texts.length === 0)) {
-                this.notificationService.error('No content to export. Please create some elements first.');
-                return;
-            }
+        if (this.errorHandler) {
+            this.errorHandler.executeSync(() => {
+                const currentProject = this.diagramController.getCurrentProject();
+                if (!currentProject || (currentProject.nodes.length === 0 && currentProject.transitions.length === 0 && currentProject.texts.length === 0)) {
+                    this.notificationService.error('No content to export. Please create some elements first.');
+                    return;
+                }
 
-            const success = this.diagramController.exportAsFile();
-            if (success) {
-                this.notificationService.success('Project exported successfully!');
-            } else {
+                const success = this.diagramController.exportAsFile();
+                if (success) {
+                    this.notificationService.success('Project exported successfully!');
+                } else {
+                    this.notificationService.error('Failed to export project. Please try again.');
+                }
+            }, 'Failed to export project. Please try again.');
+        } else {
+            // Fallback without error handler
+            try {
+                const currentProject = this.diagramController.getCurrentProject();
+                if (!currentProject || (currentProject.nodes.length === 0 && currentProject.transitions.length === 0 && currentProject.texts.length === 0)) {
+                    this.notificationService.error('No content to export. Please create some elements first.');
+                    return;
+                }
+
+                const success = this.diagramController.exportAsFile();
+                if (success) {
+                    this.notificationService.success('Project exported successfully!');
+                } else {
+                    this.notificationService.error('Failed to export project. Please try again.');
+                }
+            } catch (error) {
                 this.notificationService.error('Failed to export project. Please try again.');
+                Logger.error('Export error', error);
             }
-        } catch (error) {
-            this.notificationService.error('Failed to export project. Please try again.');
-            console.error('Export error:', error);
         }
     }
 

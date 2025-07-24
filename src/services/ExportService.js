@@ -122,7 +122,7 @@ class ExportService {
             
             return true;
         } catch (error) {
-            console.error('Error in fallback export:', error);
+            Logger.error('Error in fallback export', error);
             
             // Last resort
             const fallbackFilename = `diagram-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.png`;

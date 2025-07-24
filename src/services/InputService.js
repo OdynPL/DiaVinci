@@ -2,78 +2,102 @@
  * Input management service for inline editing
  */
 class InputService {
-    constructor(canvas, eventBus) {
+    constructor(canvas, eventBus, errorHandler = null) {
         this.canvas = canvas;
         this.eventBus = eventBus;
+        this.errorHandler = errorHandler;
         this.activeInput = null;
         this.editingElement = null;
+        
+        Logger.info('InputService initialized');
     }
 
     /**
      * Show input for node editing
      */
     showNodeInput(node) {
-        this.hideInput();
-        
-        const input = this.createInput('node-label-input', '16px');
-        input.value = node.label;
-        
-        const canvasRect = this.canvas.getBoundingClientRect();
-        input.style.left = `${canvasRect.left + node.x - 60}px`;
-        input.style.top = `${canvasRect.top + node.y - node.r - 32}px`;
-        input.style.width = '120px';
-        
-        this.setupInput(input, node, 'node');
+        try {
+            this.hideInput();
+            
+            const input = this.createInput('node-label-input', '16px');
+            input.value = node.label;
+            
+            const canvasRect = this.canvas.getBoundingClientRect();
+            input.style.left = `${canvasRect.left + node.x - 60}px`;
+            input.style.top = `${canvasRect.top + node.y - node.r - 32}px`;
+            input.style.width = '120px';
+            
+            this.setupInput(input, node, 'node');
+        } catch (error) {
+            Logger.error('Error showing node input', error);
+            if (this.errorHandler) {
+                this.errorHandler.handleError(error, 'Failed to show node editor');
+            }
+        }
     }
 
     /**
      * Show input for text editing
      */
     showTextInput(text) {
-        Logger.debug('showTextInput called', { text: text.label, x: text.x, y: text.y });
-        this.hideInput();
-        
-        const input = this.createInput('text-label-input', '18px');
-        input.value = text.label;
-        
-        const canvasRect = this.canvas.getBoundingClientRect();
-        const leftPos = canvasRect.left + text.x - 60;
-        const topPos = canvasRect.top + text.y - 22;
-        
-        Logger.debug('Input positioning', { 
-            canvasLeft: canvasRect.left, 
-            canvasTop: canvasRect.top,
-            textX: text.x, 
-            textY: text.y,
-            leftPos, 
-            topPos 
-        });
-        
-        input.style.left = `${leftPos}px`;
-        input.style.top = `${topPos}px`;
-        input.style.width = '120px';
-        
-        this.setupInput(input, text, 'text');
-        Logger.debug('Input setup completed');
+        try {
+            Logger.debug('showTextInput called', { text: text.label, x: text.x, y: text.y });
+            this.hideInput();
+            
+            const input = this.createInput('text-label-input', '18px');
+            input.value = text.label;
+            
+            const canvasRect = this.canvas.getBoundingClientRect();
+            const leftPos = canvasRect.left + text.x - 60;
+            const topPos = canvasRect.top + text.y - 22;
+            
+            Logger.debug('Input positioning', { 
+                canvasLeft: canvasRect.left, 
+                canvasTop: canvasRect.top,
+                textX: text.x, 
+                textY: text.y,
+                leftPos, 
+                topPos 
+            });
+            
+            input.style.left = `${leftPos}px`;
+            input.style.top = `${topPos}px`;
+            input.style.width = '120px';
+            
+            this.setupInput(input, text, 'text');
+            Logger.debug('Input setup completed');
+        } catch (error) {
+            Logger.error('Error showing text input', error);
+            if (this.errorHandler) {
+                this.errorHandler.handleError(error, 'Failed to show text editor');
+            }
+        }
     }
 
     /**
      * Show input for transition editing
      */
     showTransitionInput(transition) {
-        this.hideInput();
-        
-        const input = this.createInput('transition-label-input', '16px');
-        input.value = transition.label || '';
-        
-        const canvasRect = this.canvas.getBoundingClientRect();
-        const midX = (transition.from.x + transition.to.x) / 2;
-        const midY = (transition.from.y + transition.to.y) / 2 - 28;
-        input.style.left = `${canvasRect.left + midX - 60}px`;
-        input.style.top = `${canvasRect.top + midY - 22}px`;
-        input.style.width = '120px';
-        
-        this.setupInput(input, transition, 'transition');
+        try {
+            this.hideInput();
+            
+            const input = this.createInput('transition-label-input', '16px');
+            input.value = transition.label || '';
+            
+            const canvasRect = this.canvas.getBoundingClientRect();
+            const midX = (transition.from.x + transition.to.x) / 2;
+            const midY = (transition.from.y + transition.to.y) / 2 - 28;
+            input.style.left = `${canvasRect.left + midX - 60}px`;
+            input.style.top = `${canvasRect.top + midY - 22}px`;
+            input.style.width = '120px';
+            
+            this.setupInput(input, transition, 'transition');
+        } catch (error) {
+            Logger.error('Error showing transition input', error);
+            if (this.errorHandler) {
+                this.errorHandler.handleError(error, 'Failed to show transition editor');
+            }
+        }
     }
 
     /**
