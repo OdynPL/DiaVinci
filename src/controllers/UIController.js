@@ -225,10 +225,10 @@ class UIController {
         this.diagramController.setProjectName(projectName);
         
         // Show success notification
-        this.notificationService.showSuccess('Project saved successfully!');
+        this.notificationService.success('Project saved successfully!');
         
         // Refresh project list
-        this.loadProjectList();
+        this.updateRecentProjectsList();
         
         return true;
     }
