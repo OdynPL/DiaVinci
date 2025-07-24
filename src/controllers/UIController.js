@@ -221,27 +221,16 @@ class UIController {
             if (!overwrite) return false;
         }
 
-        // Use DiagramController's new method to set project name and save
-        const success = this.diagramController.setProjectName(projectName);
+        // Set project name and auto-save
+        this.diagramController.setProjectName(projectName);
         
-        if (success) {
-            const project = this.diagramController.getCurrentProject();
-            project.updateTimestamp();
-            
-            this.currentProject = projectName;
-            this.currentPage = 1;
-            this.updateRecentProjectsList();
-            this.updateProjectNameDisplay();
-            
-            const message = this.storageService.projectExists(projectName)
-                ? `Project "${projectName}" updated successfully!`
-                : `Project "${projectName}" saved successfully!`;
-            this.notificationService.success(message);
-            return true;
-        } else {
-            this.notificationService.error('Error saving project. Please try again.');
-            return false;
-        }
+        // Show success notification
+        this.notificationService.showSuccess('Project saved successfully!');
+        
+        // Refresh project list
+        this.loadProjectList();
+        
+        return true;
     }
 
     /**

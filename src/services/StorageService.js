@@ -110,9 +110,16 @@ class StorageService {
                 timestamp: new Date().toISOString()
             };
             localStorage.setItem(this.autoSaveKey, JSON.stringify(autoSaveData));
+            Logger.debug('Auto-save completed', { 
+                projectName: project.name || 'Untitled',
+                nodeCount: project.nodes.length,
+                transitionCount: project.transitions.length,
+                textCount: project.texts.length,
+                timestamp: autoSaveData.timestamp
+            });
             return true;
         } catch (error) {
-            console.warn('Auto-save failed:', error);
+            Logger.error('Auto-save failed', error);
             return false;
         }
     }
