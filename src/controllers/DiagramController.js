@@ -22,7 +22,8 @@ class DiagramController {
             type: null,
             isDragging: false,
             element: null,
-            offset: {x: 0, y: 0}
+            offset: {x: 0, y: 0},
+            pendingDrag: null
         };
         this.transitionDrawing = {
             active: false,
@@ -302,6 +303,13 @@ class DiagramController {
             Logger.debug('Single click on transition');
             this.multiSelectionManager.clearSelection();
             this.setSelection(transition, 'transition');
+            // Don't start dragging immediately - wait for mouse move
+            this.dragState.pendingDrag = {
+                element: transition,
+                type: 'transition',
+                startX: x,
+                startY: y
+            };
             return;
         }
 
@@ -361,12 +369,51 @@ class DiagramController {
     }
 
     /**
+     * Start dragging transition (moves all break points together)
+     */
+    startDraggingTransition(transition, x, y) {
+        Logger.debug('Start dragging transition', { 
+            transition: transition.label, 
+            breakPointsCount: transition.breakPoints.length,
+            x, y 
+        });
+        
+        this.dragState.isDragging = true;
+        this.dragState.element = transition;
+        this.dragState.type = 'transition';
+        this.dragState.offset.x = x;
+        this.dragState.offset.y = y;
+        
+        // Store initial positions of all break points for relative movement
+        this.dragState.initialBreakPoints = transition.breakPoints.map(bp => ({
+            x: bp.x,
+            y: bp.y
+        }));
+    }
+
+    /**
      * Handle mouse move
      */
     handleMouseMove(e) {
         const rect = this.canvas.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
+
+        // Check for pending drag - start dragging if mouse moved enough
+        if (this.dragState.pendingDrag) {
+            const deltaX = Math.abs(x - this.dragState.pendingDrag.startX);
+            const deltaY = Math.abs(y - this.dragState.pendingDrag.startY);
+            const dragThreshold = 5; // pixels
+            
+            if (deltaX > dragThreshold || deltaY > dragThreshold) {
+                const { element, type } = this.dragState.pendingDrag;
+                if (type === 'transition') {
+                    this.startDraggingTransition(element, this.dragState.pendingDrag.startX, this.dragState.pendingDrag.startY);
+                }
+                this.dragState.pendingDrag = null;
+            }
+            return;
+        }
 
         // Handle selection rectangle
         if (this.multiSelectionManager.isSelecting()) {
@@ -395,6 +442,24 @@ class DiagramController {
             const validatedPos = this.breakPointService.validateBreakPointPosition(newX, newY, canvasBounds);
             
             this.breakPointService.moveBreakPoint(transition, breakPointIndex, validatedPos.x, validatedPos.y);
+        } else if (this.dragState.type === 'transition') {
+            // Handle transition dragging - move all break points together
+            const deltaX = x - this.dragState.offset.x;
+            const deltaY = y - this.dragState.offset.y;
+            
+            this.dragState.element.breakPoints.forEach((breakPoint, index) => {
+                const initialBp = this.dragState.initialBreakPoints[index];
+                if (initialBp) {
+                    const canvasBounds = { width: this.canvas.width, height: this.canvas.height };
+                    const validatedPos = this.breakPointService.validateBreakPointPosition(
+                        initialBp.x + deltaX, 
+                        initialBp.y + deltaY, 
+                        canvasBounds
+                    );
+                    breakPoint.x = validatedPos.x;
+                    breakPoint.y = validatedPos.y;
+                }
+            });
         } else {
             // Handle regular element dragging
             const oldX = this.dragState.element.x;
@@ -450,6 +515,7 @@ class DiagramController {
         this.dragState.element = null;
         this.dragState.type = null;
         this.dragState.breakPointData = null;
+        this.dragState.pendingDrag = null; // Clear pending drag state
         
         // Trigger auto-save if elements were moved
         if (wasModified) {

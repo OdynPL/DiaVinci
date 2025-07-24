@@ -132,7 +132,7 @@ class CanvasRenderer {
         }
         
         this.ctx.strokeStyle = '#e6b800';
-        this.ctx.lineWidth = 6;
+        this.ctx.lineWidth = 7; // Increased from 6 to 7
         this.ctx.stroke();
         this.ctx.restore();
     }
@@ -151,7 +151,7 @@ class CanvasRenderer {
         
         const isSelected = this.selectedElement === transition && this.selectedType === 'transition';
         this.ctx.strokeStyle = isSelected ? '#e6b800' : '#888';
-        this.ctx.lineWidth = isSelected ? 4 : 2;
+        this.ctx.lineWidth = isSelected ? 5 : 3; // Increased from 4:2 to 5:3
         this.ctx.stroke();
 
         // Draw break points if any
@@ -621,8 +621,31 @@ class CanvasRenderer {
             return;
         }
         
-        const midX = (startX + endX) / 2;
-        const midY = (startY + endY) / 2 - 18;
+        let midX, midY;
+        
+        // Calculate label position based on transition path
+        if (transition.breakPoints && transition.breakPoints.length > 0) {
+            // For transitions with break points, use the middle point of the path
+            const pathPoints = transition.getPathPoints();
+            const midIndex = Math.floor(pathPoints.length / 2);
+            
+            if (pathPoints.length % 2 === 0) {
+                // Even number of points - interpolate between middle two
+                const p1 = pathPoints[midIndex - 1];
+                const p2 = pathPoints[midIndex];
+                midX = (p1.x + p2.x) / 2;
+                midY = (p1.y + p2.y) / 2 - 18;
+            } else {
+                // Odd number of points - use the middle point
+                const midPoint = pathPoints[midIndex];
+                midX = midPoint.x;
+                midY = midPoint.y - 18;
+            }
+        } else {
+            // For simple transitions, use the traditional midpoint
+            midX = (startX + endX) / 2;
+            midY = (startY + endY) / 2 - 18;
+        }
         
         this.ctx.save();
         this.ctx.translate(midX, midY);
@@ -630,6 +653,14 @@ class CanvasRenderer {
         this.ctx.font = '15px Arial';
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'bottom';
+        
+        // Add background for better visibility
+        const textWidth = this.ctx.measureText(transition.label).width;
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        this.ctx.fillRect(-textWidth/2 - 2, -15, textWidth + 4, 16);
+        
+        // Draw the text
+        this.ctx.fillStyle = '#333';
         this.ctx.fillText(transition.label, 0, 0);
         this.ctx.restore();
     }

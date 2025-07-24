@@ -16,7 +16,7 @@ class Transition {
      * Check if point is near this transition line
      */
     containsPoint(x, y) {
-        return this.calculateDistanceFromPoint(x, y) < 10 || this.containsLabelPoint(x, y);
+        return this.calculateDistanceFromPoint(x, y) < 15 || this.containsLabelPoint(x, y); // Increased from 10 to 15
     }
 
     /**
@@ -43,8 +43,24 @@ class Transition {
      * Calculate distance from point to transition line
      */
     calculateDistanceFromPoint(px, py) {
-        const {startX, startY, endX, endY} = this.getConnectionPoints();
-        return this.pointToSegmentDistance(px, py, startX, startY, endX, endY);
+        if (this.breakPoints && this.breakPoints.length > 0) {
+            // Calculate distance from point to path with break points
+            const pathPoints = this.getPathPoints();
+            let minDistance = Infinity;
+            
+            for (let i = 0; i < pathPoints.length - 1; i++) {
+                const start = pathPoints[i];
+                const end = pathPoints[i + 1];
+                const distance = this.pointToSegmentDistance(px, py, start.x, start.y, end.x, end.y);
+                minDistance = Math.min(minDistance, distance);
+            }
+            
+            return minDistance;
+        } else {
+            // Simple line without break points
+            const {startX, startY, endX, endY} = this.getConnectionPoints();
+            return this.pointToSegmentDistance(px, py, startX, startY, endX, endY);
+        }
     }
 
     /**
