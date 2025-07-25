@@ -117,6 +117,7 @@ class InputService {
             input.style.padding = '2px 6px';
             input.style.borderRadius = '4px';
             input.style.border = '1px solid #888';
+            input.style.transition = 'border-color 0.2s ease';
             document.body.appendChild(input);
         } else {
             Logger.debug('Reusing existing input element');
@@ -153,21 +154,45 @@ class InputService {
         const handleComplete = () => {
             Logger.debug('Input completed', { newValue: input.value.trim() });
             if (this.editingElement) {
-                const newValue = input.value.trim();
-                if (newValue) {
+                const rawValue = input.value.trim();
+                
+                // Sanitize input based on element type
+                const sanitizedValue = InputValidator.sanitize(rawValue, type);
+                
+                // Validate the sanitized value
+                if (!InputValidator.validateLength(sanitizedValue, type)) {
+                    const rules = InputValidator.getValidationRules(type);
+                    Logger.warn('Input too long, truncating', { 
+                        original: rawValue.length, 
+                        maxLength: rules.maxLength,
+                        type 
+                    });
+                }
+                
+                // Only proceed if we have a valid value
+                if (sanitizedValue && sanitizedValue !== rawValue) {
+                    Logger.info('Input sanitized', { 
+                        original: rawValue, 
+                        sanitized: sanitizedValue,
+                        type 
+                    });
+                }
+                
+                if (sanitizedValue) {
                     if (type === 'node' || type === 'text') {
-                        Logger.debug('Setting label', { type, newValue });
-                        this.editingElement.setLabel(newValue);
+                        Logger.debug('Setting label', { type, newValue: sanitizedValue });
+                        this.editingElement.setLabel(sanitizedValue);
                     } else if (type === 'transition') {
-                        Logger.debug('Setting transition label', { newValue });
-                        this.editingElement.setLabel(newValue);
+                        Logger.debug('Setting transition label', { newValue: sanitizedValue });
+                        this.editingElement.setLabel(sanitizedValue);
                     }
                 }
                 
                 this.eventBus.emit('element.edited', {
                     element: this.editingElement,
                     type: type,
-                    newValue: newValue
+                    newValue: sanitizedValue,
+                    originalValue: rawValue
                 });
                 
                 this.editingElement = null;
@@ -183,14 +208,47 @@ class InputService {
                 this.hideInput();
             }
         };
+
+        // Real-time validation feedback
+        const handleInput = (ev) => {
+            const currentValue = ev.target.value;
+            const rules = InputValidator.getValidationRules(type);
+            
+            // Hide any existing validation tooltip
+            this.hideValidationTooltip();
+            
+            // Visual feedback for length
+            if (currentValue.length > rules.maxLength) {
+                input.style.borderColor = '#e74c3c';
+                input.title = `Maximum ${rules.maxLength} characters allowed`;
+                this.showValidationTooltip(input, `Too long! Max ${rules.maxLength} characters`, 'error');
+            } else if (!InputValidator.isSafe(currentValue, type)) {
+                input.style.borderColor = '#f39c12';
+                input.title = `Only ${rules.allowedChars.toLowerCase()} allowed`;
+                this.showValidationTooltip(input, 'Some characters are not allowed', 'warning');
+            } else {
+                input.style.borderColor = '#27ae60';
+                input.title = rules.description;
+            }
+        };
         
         // Remove any existing event listeners before adding new ones
         input.onblur = null;
         input.onkeydown = null;
+        input.oninput = null;
         
         // Add new event listeners
         input.onblur = handleComplete;
         input.onkeydown = handleKeydown;
+        input.oninput = handleInput;
+        
+        // Set initial validation state
+        const rules = InputValidator.getValidationRules(type);
+        input.title = rules.description;
+        input.placeholder = `Max ${rules.maxLength} chars`;
+        
+        // Set max length attribute as additional safeguard
+        input.maxLength = rules.maxLength;
     }
 
     /**
@@ -203,6 +261,7 @@ class InputService {
             this.activeInput = null;
         }
         this.editingElement = null;
+        this.hideValidationTooltip();
     }
 
     /**
@@ -244,5 +303,49 @@ class InputService {
         this.activeInput = null;
         this.editingElement = null;
         Logger.info('InputService destroyed');
+    }
+
+    /**
+     * Show validation tooltip
+     */
+    showValidationTooltip(input, message, type = 'warning') {
+        const tooltip = document.createElement('div');
+        tooltip.id = 'validation-tooltip';
+        tooltip.style.position = 'absolute';
+        tooltip.style.background = type === 'error' ? '#e74c3c' : '#f39c12';
+        tooltip.style.color = 'white';
+        tooltip.style.padding = '4px 8px';
+        tooltip.style.borderRadius = '4px';
+        tooltip.style.fontSize = '12px';
+        tooltip.style.zIndex = '25';
+        tooltip.style.whiteSpace = 'nowrap';
+        tooltip.textContent = message;
+        
+        const rect = input.getBoundingClientRect();
+        tooltip.style.left = rect.left + 'px';
+        tooltip.style.top = (rect.bottom + 5) + 'px';
+        
+        // Remove existing tooltip
+        const existing = document.getElementById('validation-tooltip');
+        if (existing) existing.remove();
+        
+        document.body.appendChild(tooltip);
+        
+        // Auto-remove after 3 seconds
+        setTimeout(() => {
+            if (tooltip.parentNode) {
+                tooltip.remove();
+            }
+        }, 3000);
+    }
+
+    /**
+     * Hide validation tooltip
+     */
+    hideValidationTooltip() {
+        const tooltip = document.getElementById('validation-tooltip');
+        if (tooltip) {
+            tooltip.remove();
+        }
     }
 }
