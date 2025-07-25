@@ -45,7 +45,7 @@ class CanvasRenderer {
     /**
      * Render complete project
      */
-    render(project, multiSelectionManager = null) {
+    render(project, multiSelectionManager = null, transitionDrawing = null) {
         try {
             const startTime = performance.now();
             this.clearCanvas();
@@ -59,6 +59,11 @@ class CanvasRenderer {
             this.renderTransitions(project.transitions, multiSelectionManager);
             this.renderNodes(project.nodes, multiSelectionManager);
             this.renderTexts(project.texts, multiSelectionManager);
+            
+            // Render transition drawing previews on top
+            if (transitionDrawing) {
+                this.renderTransitionDrawingPreview(transitionDrawing);
+            }
             
             Logger.performance('Canvas Render', startTime);
         } catch (error) {
@@ -943,6 +948,120 @@ class CanvasRenderer {
         this.ctx.lineWidth = 1;
         this.ctx.setLineDash([5, 5]);
         this.ctx.strokeRect(rect.x, rect.y, rect.width, rect.height);
+        
+        this.ctx.restore();
+    }
+
+    /**
+     * Render transition drawing preview
+     */
+    renderTransitionDrawingPreview(transitionDrawing) {
+        if (!transitionDrawing.active) return;
+        
+        // Highlight hovered node
+        if (transitionDrawing.hoveredNode) {
+            this.renderNodeHoverHighlight(transitionDrawing.hoveredNode);
+        }
+        
+        // Draw preview line from start node to mouse
+        if (transitionDrawing.startNode && transitionDrawing.mouseX !== null && transitionDrawing.mouseY !== null) {
+            this.renderTransitionPreviewLine(
+                transitionDrawing.startNode, 
+                transitionDrawing.mouseX, 
+                transitionDrawing.mouseY
+            );
+        }
+    }
+
+    /**
+     * Render hover highlight for nodes during transition drawing
+     */
+    renderNodeHoverHighlight(node) {
+        this.ctx.save();
+        
+        // Outer glow
+        this.ctx.shadowColor = '#ff6b6b';
+        this.ctx.shadowBlur = 20;
+        this.ctx.shadowOffsetX = 0;
+        this.ctx.shadowOffsetY = 0;
+        
+        // Highlight ring
+        this.ctx.beginPath();
+        if (node.type === 'start' || node.type === 'stop') {
+            this.ctx.ellipse(node.x, node.y, node.r * 1.8, node.r * 1.1, 0, 0, 2 * Math.PI);
+        } else if (node.type === 'if') {
+            // Diamond shape highlight
+            const size = node.r * 1.3;
+            this.ctx.moveTo(node.x, node.y - size);
+            this.ctx.lineTo(node.x + size, node.y);
+            this.ctx.lineTo(node.x, node.y + size);
+            this.ctx.lineTo(node.x - size, node.y);
+            this.ctx.closePath();
+        } else {
+            this.ctx.arc(node.x, node.y, node.r * 1.3, 0, 2 * Math.PI);
+        }
+        
+        this.ctx.strokeStyle = '#ff6b6b';
+        this.ctx.lineWidth = 3;
+        this.ctx.stroke();
+        
+        this.ctx.restore();
+    }
+
+    /**
+     * Render preview line for transition drawing
+     */
+    renderTransitionPreviewLine(startNode, mouseX, mouseY) {
+        this.ctx.save();
+        
+        // Dashed line style
+        this.ctx.setLineDash([8, 6]);
+        this.ctx.strokeStyle = '#ff6b6b';
+        this.ctx.lineWidth = 3;
+        this.ctx.lineCap = 'round';
+        
+        // Add subtle glow
+        this.ctx.shadowColor = '#ff6b6b';
+        this.ctx.shadowBlur = 8;
+        
+        // Draw line from node edge to mouse
+        const startX = startNode.x;
+        const startY = startNode.y;
+        
+        this.ctx.beginPath();
+        this.ctx.moveTo(startX, startY);
+        this.ctx.lineTo(mouseX, mouseY);
+        this.ctx.stroke();
+        
+        // Draw arrow at mouse position
+        const angle = Math.atan2(mouseY - startY, mouseX - startX);
+        this.drawPreviewArrow(mouseX, mouseY, angle);
+        
+        this.ctx.restore();
+    }
+
+    /**
+     * Draw preview arrow at mouse position
+     */
+    drawPreviewArrow(x, y, angle) {
+        const length = 15;
+        
+        this.ctx.save();
+        this.ctx.setLineDash([]); // Solid arrow
+        this.ctx.fillStyle = '#ff6b6b';
+        
+        this.ctx.beginPath();
+        this.ctx.moveTo(x, y);
+        this.ctx.lineTo(
+            x - length * Math.cos(angle - Math.PI / 6),
+            y - length * Math.sin(angle - Math.PI / 6)
+        );
+        this.ctx.lineTo(
+            x - length * Math.cos(angle + Math.PI / 6),
+            y - length * Math.sin(angle + Math.PI / 6)
+        );
+        this.ctx.closePath();
+        this.ctx.fill();
         
         this.ctx.restore();
     }

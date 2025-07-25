@@ -36,7 +36,23 @@ class Project {
      * Add a transition to the project
      */
     addTransition(transition) {
+        // Check for duplicate transitions between same nodes
+        const existingTransition = this.transitions.find(tr => 
+            tr.from === transition.from && tr.to === transition.to
+        );
+        
+        if (existingTransition) {
+            Logger.warn('Duplicate transition prevented', {
+                from: transition.from ? transition.from.id : null,
+                to: transition.to ? transition.to.id : null,
+                existingLabel: existingTransition.label,
+                newLabel: transition.label
+            });
+            return false; // Return false to indicate transition was not added
+        }
+        
         this.transitions.push(transition);
+        return true; // Return true to indicate successful addition
     }
 
     /**

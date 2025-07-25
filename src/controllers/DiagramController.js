@@ -29,7 +29,8 @@ class DiagramController {
         this.transitionDrawing = {
             active: false,
             startNode: null,
-            type: 'right'
+            type: 'right',
+            hoveredNode: null // Track hovered node during transition drawing
         };
         this.selection = {
             element: null,
@@ -216,7 +217,57 @@ class DiagramController {
      */
     startTransitionDrawing() {
         this.transitionDrawing.active = true;
-        this.showTransitionInfo(true);
+        this.showTransitionInfo(true, 'start');
+        
+        // Change cursor to indicate transition drawing mode
+        this.canvas.style.cursor = 'crosshair';
+        this.canvas.classList.add('transition-drawing-mode');
+        
+        Logger.info('Transition drawing mode started');
+    }
+
+    /**
+     * Cancel transition drawing mode
+     */
+    cancelTransitionDrawing() {
+        this.transitionDrawing.active = false;
+        this.transitionDrawing.startNode = null;
+        this.transitionDrawing.hoveredNode = null;
+        this.transitionDrawing.mouseX = null;
+        this.transitionDrawing.mouseY = null;
+        this.showTransitionInfo(false);
+        
+        // Restore normal cursor and styling
+        this.canvas.style.cursor = 'default';
+        this.canvas.classList.remove('transition-drawing-mode');
+        
+        // Clear any selection from the start node
+        this.clearSelection();
+        this.render();
+        
+        Logger.info('Transition drawing cancelled');
+    }
+
+    /**
+     * Finish transition drawing mode
+     */
+    finishTransitionDrawing() {
+        this.transitionDrawing.active = false;
+        this.transitionDrawing.startNode = null;
+        this.transitionDrawing.hoveredNode = null;
+        this.transitionDrawing.mouseX = null;
+        this.transitionDrawing.mouseY = null;
+        this.showTransitionInfo(false);
+        
+        // Restore normal cursor and styling
+        this.canvas.style.cursor = 'default';
+        this.canvas.classList.remove('transition-drawing-mode');
+        
+        // Clear selection
+        this.clearSelection();
+        this.render();
+        
+        Logger.info('Transition drawing completed');
     }
 
     /**
@@ -435,6 +486,23 @@ class DiagramController {
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
 
+        // Handle transition drawing mode - show preview and highlight nodes
+        if (this.transitionDrawing.active) {
+            const hoveredNode = this.currentProject.findNodeAtPosition(x, y);
+            
+            // Update hovered node if changed
+            if (this.transitionDrawing.hoveredNode !== hoveredNode) {
+                this.transitionDrawing.hoveredNode = hoveredNode;
+                this.render(); // Re-render to show/hide highlighting
+            }
+            
+            // Store mouse position for preview line
+            this.transitionDrawing.mouseX = x;
+            this.transitionDrawing.mouseY = y;
+            this.render();
+            return;
+        }
+
         // Check for pending drag - start dragging if mouse moved enough
         if (this.dragState.pendingDrag) {
             const deltaX = Math.abs(x - this.dragState.pendingDrag.startX);
@@ -609,15 +677,53 @@ class DiagramController {
         const y = e.clientY - rect.top;
         const node = this.currentProject.findNodeAtPosition(x, y);
 
-        if (!node) return;
+        // If clicking outside any node, cancel transition drawing
+        if (!node) {
+            this.cancelTransitionDrawing();
+            return;
+        }
 
         if (!this.transitionDrawing.startNode) {
+            // First node selection
             this.transitionDrawing.startNode = node;
+            this.showTransitionInfo(true, 'waiting');
+            
+            // Highlight selected start node
+            this.setSelection(node, 'node');
+            this.render();
+            
+            Logger.debug('Transition start node selected', { nodeId: node.id, nodeType: node.type });
+            
         } else if (this.transitionDrawing.startNode !== node) {
-            this.createTransition(this.transitionDrawing.startNode, node);
-            this.transitionDrawing.startNode = null;
-            this.transitionDrawing.active = false;
-            this.showTransitionInfo(false);
+            // Second node selection - create transition
+            // Additional validation before attempting to create transition
+            if (!this.transitionDrawing.startNode) {
+                Logger.error('StartNode is null when trying to create transition');
+                this.cancelTransitionDrawing();
+                return;
+            }
+            
+            const transitionCreated = this.createTransition(this.transitionDrawing.startNode, node);
+            
+            if (transitionCreated) {
+                Logger.info('Transition created successfully', { 
+                    from: this.transitionDrawing.startNode.id, 
+                    to: node.id 
+                });
+            } else {
+                Logger.warn('Transition creation failed or duplicate detected', {
+                    from: this.transitionDrawing.startNode ? this.transitionDrawing.startNode.id : 'null',
+                    to: node.id
+                });
+            }
+            
+            // Always finish transition drawing regardless of success
+            this.finishTransitionDrawing();
+            
+        } else {
+            // Clicking the same node - cancel transition drawing
+            this.cancelTransitionDrawing();
+            Logger.debug('Transition cancelled - same node clicked twice');
         }
     }
 
@@ -625,6 +731,26 @@ class DiagramController {
      * Create transition between nodes
      */
     createTransition(fromNode, toNode) {
+        // Validate nodes before creating transition
+        if (!fromNode || !toNode) {
+            Logger.error('Cannot create transition - invalid nodes', { fromNode, toNode });
+            return false;
+        }
+        
+        // Check for duplicate transition
+        const existingTransition = this.currentProject.transitions.find(tr => 
+            tr.from === fromNode && tr.to === toNode
+        );
+        
+        if (existingTransition) {
+            Logger.warn('Transition already exists between these nodes', {
+                from: fromNode.id,
+                to: toNode.id,
+                existingLabel: existingTransition.label
+            });
+            return false;
+        }
+        
         const transition = new Transition({
             from: fromNode,
             to: toNode,
@@ -632,11 +758,19 @@ class DiagramController {
             type: this.transitionDrawing.type
         });
         
-        this.currentProject.addTransition(transition);
-        this.render();
+        const added = this.currentProject.addTransition(transition);
+        if (added) {
+            this.render();
+            // Trigger auto-save after creating transition
+            this.triggerAutoSave();
+            Logger.info('Transition created successfully', {
+                from: fromNode.id,
+                to: toNode.id,
+                label: transition.label
+            });
+        }
         
-        // Trigger auto-save after creating transition
-        this.triggerAutoSave();
+        return added;
     }
 
     /**
@@ -678,6 +812,13 @@ class DiagramController {
      */
     handleContextMenu(e) {
         e.preventDefault();
+        
+        // If in transition drawing mode, cancel it on right click
+        if (this.transitionDrawing.active) {
+            this.cancelTransitionDrawing();
+            return; // Don't show context menu
+        }
+        
         const rect = this.canvas.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
@@ -704,8 +845,31 @@ class DiagramController {
      * Handle keyboard events
      */
     handleKeyDown(e) {
+        // Handle Delete key for selected elements
         if (e.key === 'Delete' && this.selection.element) {
             this.deleteSelectedElement();
+            return;
+        }
+        
+        // Handle Escape key for canceling transition drawing
+        if (e.key === 'Escape' && this.transitionDrawing.active) {
+            this.cancelTransitionDrawing();
+            return;
+        }
+        
+        // Handle Escape key for canceling other operations
+        if (e.key === 'Escape') {
+            // Cancel any active input editing
+            if (this.inputService.isEditing()) {
+                this.inputService.hideInput();
+            }
+            
+            // Clear multi-selection
+            if (this.multiSelectionManager.hasSelection()) {
+                this.multiSelectionManager.clearSelection();
+                this.clearSelection();
+                this.render();
+            }
         }
     }
 
@@ -999,24 +1163,72 @@ class DiagramController {
     /**
      * Show transition info
      */
-    showTransitionInfo(show) {
+    showTransitionInfo(show, phase = 'start') {
         let info = document.getElementById('transition-info');
         if (!info) {
             info = document.createElement('div');
             info.id = 'transition-info';
-            info.style.position = 'absolute';
-            info.style.top = '10px';
-            info.style.right = '30px';
-            info.style.background = '#ffe0e0';
-            info.style.color = '#a00';
-            info.style.padding = '8px 16px';
-            info.style.borderRadius = '6px';
-            info.style.zIndex = '10';
-            info.style.fontWeight = 'bold';
-            info.innerText = 'Tryb rysowania relacji: kliknij dwa węzły';
+            info.style.cssText = `
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                font-weight: 600;
+                z-index: 1000;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                font-size: 14px;
+                line-height: 1.4;
+                max-width: 280px;
+            `;
             document.body.appendChild(info);
+            
+            // Add CSS animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideInRight {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                #transition-info {
+                    animation: slideInRight 0.3s ease-out;
+                }
+            `;
+            document.head.appendChild(style);
         }
-        info.style.display = show ? 'block' : 'none';
+        
+        if (show) {
+            const messages = {
+                start: {
+                    title: '🔗 Kliknij pierwszy węzeł',
+                    subtitle: 'Rozpocznij rysowanie relacji'
+                },
+                waiting: {
+                    title: '🎯 Kliknij węzeł docelowy',
+                    subtitle: 'Zakończ rysowanie relacji'
+                }
+            };
+            
+            const message = messages[phase] || messages.start;
+            
+            info.innerHTML = `
+                <div style="font-size: 16px; margin-bottom: 6px;">
+                    ${message.title}
+                </div>
+                <div style="font-size: 12px; opacity: 0.9; margin-bottom: 8px;">
+                    ${message.subtitle}
+                </div>
+                <div style="font-size: 11px; opacity: 0.8; border-top: 1px solid rgba(255,255,255,0.3); padding-top: 6px;">
+                    ESC lub prawy klik - anuluj
+                </div>
+            `;
+            info.style.display = 'block';
+        } else {
+            info.style.display = 'none';
+        }
     }
 
     /**
@@ -1069,12 +1281,9 @@ class DiagramController {
      * Render current state
      */
     render() {
-        this.canvasRenderer.render(this.currentProject, this.multiSelectionManager);
-        
-        // Render selection rectangle if active
-        if (this.multiSelectionManager.isSelecting()) {
-            this.canvasRenderer.renderSelectionRect(this.multiSelectionManager.getSelectionRect());
-        }
+        // Pass transition drawing state to renderer for preview effects
+        const transitionDrawingState = this.transitionDrawing.active ? this.transitionDrawing : null;
+        this.canvasRenderer.render(this.currentProject, this.multiSelectionManager, transitionDrawingState);
         
         // Don't hide input during editing - removed this.inputService.hideInput();
         this.autoSave();
