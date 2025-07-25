@@ -174,9 +174,8 @@ class InputService {
                 this.hideInput();
             }
         };
-        
-        input.onblur = handleComplete;
-        input.onkeydown = (ev) => {
+
+        const handleKeydown = (ev) => {
             if (ev.key === 'Enter') {
                 input.blur();
             } else if (ev.key === 'Escape') {
@@ -184,6 +183,14 @@ class InputService {
                 this.hideInput();
             }
         };
+        
+        // Remove any existing event listeners before adding new ones
+        input.onblur = null;
+        input.onkeydown = null;
+        
+        // Add new event listeners
+        input.onblur = handleComplete;
+        input.onkeydown = handleKeydown;
     }
 
     /**
@@ -217,5 +224,25 @@ class InputService {
      */
     getActiveInput() {
         return this.activeInput;
+    }
+
+    /**
+     * Cleanup resources and remove any active inputs
+     */
+    destroy() {
+        this.hideInput();
+        
+        // Remove any remaining input elements created by this service
+        const inputIds = ['node-label-input', 'text-label-input', 'transition-label-input'];
+        inputIds.forEach(id => {
+            const element = document.getElementById(id);
+            if (element && element.parentNode) {
+                element.parentNode.removeChild(element);
+            }
+        });
+        
+        this.activeInput = null;
+        this.editingElement = null;
+        Logger.info('InputService destroyed');
     }
 }

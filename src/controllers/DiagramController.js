@@ -1216,4 +1216,40 @@ class DiagramController {
     isProjectNamed() {
         return this.currentProject.name && this.currentProject.name.trim() !== '';
     }
+
+    /**
+     * Cleanup resources and event listeners
+     */
+    destroy() {
+        // Clear any pending auto-save timeout
+        if (this.autoSaveTimeout) {
+            clearTimeout(this.autoSaveTimeout);
+            this.autoSaveTimeout = null;
+        }
+
+        // Remove window event listeners
+        window.removeEventListener('keydown', (e) => this.handleKeyDown(e));
+
+        // Remove canvas event listeners
+        if (this.canvas) {
+            this.canvas.removeEventListener('dragover', (e) => this.handleDragOver(e));
+            this.canvas.removeEventListener('drop', (e) => this.handleDrop(e));
+            this.canvas.removeEventListener('mousedown', (e) => this.handleMouseDown(e));
+            this.canvas.removeEventListener('mousemove', (e) => this.handleMouseMove(e));
+            this.canvas.removeEventListener('mouseup', (e) => this.handleMouseUp(e));
+            this.canvas.removeEventListener('click', (e) => this.handleClick(e));
+            this.canvas.removeEventListener('dblclick', (e) => this.handleDoubleClick(e));
+            this.canvas.removeEventListener('contextmenu', (e) => this.handleContextMenu(e));
+        }
+
+        // Cleanup services
+        if (this.inputService && this.inputService.destroy) {
+            this.inputService.destroy();
+        }
+        if (this.gridService && this.gridService.destroy) {
+            this.gridService.destroy();
+        }
+
+        Logger.info('DiagramController destroyed');
+    }
 }

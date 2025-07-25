@@ -364,14 +364,20 @@ class DialogFactory {
         document.body.appendChild(menu);
         
         // Close menu when clicking outside
-        setTimeout(() => {
-            document.addEventListener('click', function closeMenu(e) {
+        let closeMenuHandler = null;
+        const setupCloseHandler = () => {
+            closeMenuHandler = function closeMenu(e) {
                 if (!menu.contains(e.target) && e.target.id !== 'export-btn') {
                     menu.remove();
-                    document.removeEventListener('click', closeMenu);
+                    if (closeMenuHandler) {
+                        document.removeEventListener('click', closeMenuHandler);
+                        closeMenuHandler = null;
+                    }
                 }
-            });
-        }, 100);
+            };
+            document.addEventListener('click', closeMenuHandler);
+        };
+        setTimeout(setupCloseHandler, 100);
         
         return menu;
     }
@@ -417,16 +423,20 @@ class DialogFactory {
         menu.appendChild(customContainer);
         
         document.body.appendChild(menu);
-        
+
         // Remove when clicking elsewhere
-        setTimeout(() => {
-            document.addEventListener('click', function removeColorPicker() {
+        let removeColorPickerHandler = null;
+        const setupRemoveHandler = () => {
+            removeColorPickerHandler = function removeColorPicker() {
                 menu.remove();
-                document.removeEventListener('click', removeColorPicker);
-            });
-        }, 100);
-        
-        return menu;
+                if (removeColorPickerHandler) {
+                    document.removeEventListener('click', removeColorPickerHandler);
+                    removeColorPickerHandler = null;
+                }
+            };
+            document.addEventListener('click', removeColorPickerHandler);
+        };
+        setTimeout(setupRemoveHandler, 100);        return menu;
     }
 
     /**
@@ -465,16 +475,20 @@ class DialogFactory {
         menu.appendChild(rotateLeftBtn);
         menu.appendChild(colorBtn);
         document.body.appendChild(menu);
-        
+
         // Remove when clicking elsewhere
-        setTimeout(() => {
-            document.addEventListener('click', function removeMenu() {
+        let removeMenuHandler = null;
+        const setupRemoveHandler = () => {
+            removeMenuHandler = function removeMenu() {
                 menu.remove();
-                document.removeEventListener('click', removeMenu);
-            });
-        }, 100);
-        
-        return menu;
+                if (removeMenuHandler) {
+                    document.removeEventListener('click', removeMenuHandler);
+                    removeMenuHandler = null;
+                }
+            };
+            document.addEventListener('click', removeMenuHandler);
+        };
+        setTimeout(setupRemoveHandler, 100);        return menu;
     }
 
     // Helper methods
@@ -1204,11 +1218,13 @@ class DialogFactory {
         
         const handleConfirm = () => {
             dialog.remove();
+            document.removeEventListener('keydown', handleKeydown);
             if (onConfirm) onConfirm();
         };
         
         const handleCancel = () => {
             dialog.remove();
+            document.removeEventListener('keydown', handleKeydown);
             if (onCancel) onCancel();
         };
         
@@ -1219,7 +1235,6 @@ class DialogFactory {
         const handleKeydown = (e) => {
             if (e.key === 'Escape') {
                 handleCancel();
-                document.removeEventListener('keydown', handleKeydown);
             }
         };
         document.addEventListener('keydown', handleKeydown);
