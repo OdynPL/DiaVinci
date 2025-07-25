@@ -22,6 +22,7 @@ class DialogFactory {
         input.type = 'text';
         input.placeholder = 'Enter project name...';
         input.value = this.generateDefaultProjectName();
+        input.maxLength = 200; // Limit project name length
         input.style.width = '100%';
         input.style.padding = '10px 12px';
         input.style.border = '2px solid #e1e8ed';
@@ -41,9 +42,30 @@ class DialogFactory {
         });
         
         input.addEventListener('input', () => {
-            if (input.value.trim()) {
+            const currentValue = input.value;
+            const sanitizedValue = InputValidator.sanitize(currentValue, 'text');
+            const isValid = InputValidator.validateLength(sanitizedValue, 'text') && InputValidator.isSafe(currentValue, 'text');
+            
+            if (currentValue !== sanitizedValue) {
+                input.value = sanitizedValue;
+            }
+            
+            if (sanitizedValue.trim()) {
                 errorMsg.style.display = 'none';
-                input.style.borderColor = '#3498db';
+                if (isValid) {
+                    input.style.borderColor = '#27ae60'; // Green for valid
+                } else {
+                    input.style.borderColor = '#f39c12'; // Orange for warnings
+                }
+            } else {
+                input.style.borderColor = '#e1e8ed';
+            }
+            
+            // Show character count for long names
+            if (currentValue.length > 20) {
+                input.title = `${currentValue.length}/200 characters`;
+            } else {
+                input.title = '';
             }
         });
         
@@ -861,6 +883,7 @@ class DialogFactory {
         nameInput.type = 'text';
         nameInput.placeholder = 'Enter project name...';
         nameInput.value = this.generateDefaultProjectName();
+        nameInput.maxLength = 200; // Limit project name length
         nameInput.style.width = '100%';
         nameInput.style.padding = '10px 12px';
         nameInput.style.border = '2px solid #e1e8ed';
@@ -880,9 +903,30 @@ class DialogFactory {
         });
         
         nameInput.addEventListener('input', () => {
-            if (nameInput.value.trim()) {
+            const currentValue = nameInput.value;
+            const sanitizedValue = InputValidator.sanitize(currentValue, 'text');
+            const isValid = InputValidator.validateLength(sanitizedValue, 'text') && InputValidator.isSafe(currentValue, 'text');
+            
+            if (currentValue !== sanitizedValue) {
+                nameInput.value = sanitizedValue;
+            }
+            
+            if (sanitizedValue.trim()) {
                 nameError.style.display = 'none'; // Hide error when user types
-                nameInput.style.borderColor = '#3498db';
+                if (isValid) {
+                    nameInput.style.borderColor = '#27ae60'; // Green for valid
+                } else {
+                    nameInput.style.borderColor = '#f39c12'; // Orange for warnings
+                }
+            } else {
+                nameInput.style.borderColor = '#e1e8ed';
+            }
+            
+            // Show character count for long names
+            if (currentValue.length > 20) {
+                nameInput.title = `${currentValue.length}/200 characters`;
+            } else {
+                nameInput.title = '';
             }
         });
         

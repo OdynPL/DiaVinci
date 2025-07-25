@@ -758,6 +758,7 @@ class UIController {
         const nameDiv = document.createElement('div');
         nameDiv.className = 'font-semibold text-gray-800 text-sm mb-1 truncate';
         nameDiv.textContent = project.name;
+        nameDiv.title = project.name; // Show full name on hover
 
         // Bottom row with date and status
         const bottomRow = document.createElement('div');
@@ -891,19 +892,43 @@ class UIController {
     }
 
     /**
+     * Truncate text with ellipsis if too long
+     */
+    truncateText(text, maxLength = 30) {
+        if (!text || text.length <= maxLength) {
+            return text;
+        }
+        return text.substring(0, maxLength - 3) + '...';
+    }
+
+    /**
      * Update project name display
      */
     updateProjectNameDisplay() {
         const projectNameElement = document.getElementById('current-project-name');
         if (projectNameElement) {
             if (this.currentProject) {
-                projectNameElement.textContent = this.currentProject;
+                const fullName = this.currentProject;
+                const truncatedName = this.truncateText(fullName, 120); // Limit to 120 chars for header
+                const wasTruncated = fullName !== truncatedName;
+                
+                projectNameElement.textContent = truncatedName;
+                projectNameElement.title = wasTruncated ? `Full name: ${fullName}` : fullName; // Show full name on hover
                 projectNameElement.style.color = '#2a3a4d';
                 projectNameElement.style.fontWeight = '600';
+                
+                // Add visual indicator if truncated
+                if (wasTruncated) {
+                    projectNameElement.style.cursor = 'help';
+                } else {
+                    projectNameElement.style.cursor = 'default';
+                }
             } else {
                 projectNameElement.textContent = 'No Project Loaded';
+                projectNameElement.title = '';
                 projectNameElement.style.color = '#999';
                 projectNameElement.style.fontWeight = '500';
+                projectNameElement.style.cursor = 'default';
             }
         }
     }
