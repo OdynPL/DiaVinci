@@ -96,7 +96,14 @@ class DataModelEditor {
                             <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                             </svg>
-                            Properties
+                            Fields
+                        </button>
+                        <button class="tab-btn px-6 py-3 text-sm font-medium border-b-2 transition-colors focus:outline-none" 
+                                data-tab="json">
+                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                            </svg>
+                            JSON
                         </button>
                         <button class="tab-btn px-6 py-3 text-sm font-medium border-b-2 transition-colors focus:outline-none" 
                                 data-tab="settings">
@@ -133,6 +140,51 @@ class DataModelEditor {
                             <div class="fields-container pb-6">
                                 <!-- Fields will be rendered here -->
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- JSON Tab -->
+                    <div class="tab-content hidden" data-tab="json">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center">
+                                    <svg class="w-5 h-5 text-gray-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                                    </svg>
+                                    <h3 class="text-lg font-medium text-gray-900">JSON Schema</h3>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button class="import-json-btn bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all flex items-center shadow-md hover:shadow-lg text-sm">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
+                                        </svg>
+                                        Import JSON
+                                    </button>
+                                    <button class="copy-json-btn bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-lg hover:from-green-600 hover:to-green-700 transition-all flex items-center shadow-md hover:shadow-lg text-sm">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                        </svg>
+                                        Copy JSON
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-gray-50 rounded-lg border border-gray-200 p-4 mb-4">
+                                <div class="flex items-center text-sm text-gray-600 mb-2">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    You can edit the JSON below or paste your own schema to import fields
+                                </div>
+                            </div>
+                            
+                            <div class="json-container">
+                                <textarea class="json-editor w-full h-96 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all font-mono text-sm bg-gray-50" 
+                                          placeholder="JSON schema will appear here..."
+                                          spellcheck="false"></textarea>
+                            </div>
+                            
+                            <div class="json-validation-message mt-2 text-sm hidden"></div>
                         </div>
                     </div>
 
@@ -224,6 +276,11 @@ class DataModelEditor {
             this.currentNode.setLabel(e.target.value);
         });
         
+        // JSON tab event listeners
+        this.modal.querySelector('.import-json-btn').addEventListener('click', () => this.importFromJSON());
+        this.modal.querySelector('.copy-json-btn').addEventListener('click', () => this.copyJSONToClipboard());
+        this.modal.querySelector('.json-editor').addEventListener('input', () => this.validateJSON());
+        
         // Tab switching
         this.modal.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -271,6 +328,11 @@ class DataModelEditor {
                 content.classList.add('hidden');
             }
         });
+        
+        // Update JSON content when switching to JSON tab
+        if (tabName === 'json') {
+            this.updateJSONContent();
+        }
     }
 
     /**
@@ -670,5 +732,248 @@ class DataModelEditor {
         
         // Re-render to update field numbers and maintain state
         this.renderFields();
+    }
+
+    /**
+     * Generate JSON schema from current fields
+     */
+    generateJSONSchema() {
+        const schema = {
+            type: "object",
+            title: this.currentNode.label || "DataModel",
+            properties: {},
+            required: []
+        };
+
+        this.currentNode.fields.forEach(field => {
+            const property = {
+                type: this.mapFieldTypeToJSON(field.type),
+                description: `${field.name} field`
+            };
+
+            // Add default value if provided
+            if (field.initialValue && field.initialValue.trim() !== '') {
+                property.default = this.parseDefaultValue(field.initialValue, field.type);
+            }
+
+            // Add to required array if field is required
+            if (field.required) {
+                schema.required.push(field.name);
+            }
+
+            // Add readOnly property
+            if (field.readOnly) {
+                property.readOnly = true;
+            }
+
+            schema.properties[field.name] = property;
+        });
+
+        return schema;
+    }
+
+    /**
+     * Map internal field types to JSON schema types
+     */
+    mapFieldTypeToJSON(fieldType) {
+        const typeMapping = {
+            'String': 'string',
+            'Number': 'number',
+            'Boolean': 'boolean',
+            'Date': 'string',
+            'Object': 'object',
+            'Array': 'array',
+            'Text': 'string',
+            'Email': 'string',
+            'URL': 'string',
+            'Phone': 'string',
+            'Currency': 'number'
+        };
+        return typeMapping[fieldType] || 'string';
+    }
+
+    /**
+     * Map JSON schema types back to internal field types
+     */
+    mapJSONTypeToField(jsonType, format = null) {
+        if (format) {
+            const formatMapping = {
+                'email': 'Email',
+                'uri': 'URL',
+                'date': 'Date',
+                'date-time': 'Date'
+            };
+            if (formatMapping[format]) {
+                return formatMapping[format];
+            }
+        }
+
+        const typeMapping = {
+            'string': 'String',
+            'number': 'Number',
+            'integer': 'Number',
+            'boolean': 'Boolean',
+            'object': 'Object',
+            'array': 'Array'
+        };
+        return typeMapping[jsonType] || 'String';
+    }
+
+    /**
+     * Parse default value based on field type
+     */
+    parseDefaultValue(value, type) {
+        try {
+            switch (type) {
+                case 'Number':
+                case 'Currency':
+                    return parseFloat(value) || value;
+                case 'Boolean':
+                    return value.toLowerCase() === 'true';
+                case 'Object':
+                case 'Array':
+                    return JSON.parse(value);
+                default:
+                    return value;
+            }
+        } catch (e) {
+            return value;
+        }
+    }
+
+    /**
+     * Update JSON content in the editor
+     */
+    updateJSONContent() {
+        const jsonEditor = this.modal.querySelector('.json-editor');
+        if (jsonEditor) {
+            const schema = this.generateJSONSchema();
+            jsonEditor.value = JSON.stringify(schema, null, 2);
+            this.clearValidationMessage();
+        }
+    }
+
+    /**
+     * Import fields from JSON schema
+     */
+    importFromJSON() {
+        const jsonEditor = this.modal.querySelector('.json-editor');
+        const jsonText = jsonEditor.value.trim();
+
+        if (!jsonText) {
+            this.showValidationMessage('Please enter JSON schema to import', 'error');
+            return;
+        }
+
+        try {
+            const schema = JSON.parse(jsonText);
+            
+            if (!schema.properties || typeof schema.properties !== 'object') {
+                this.showValidationMessage('Invalid schema: "properties" object is required', 'error');
+                return;
+            }
+
+            // Clear existing fields
+            this.currentNode.fields = [];
+
+            // Import fields from schema
+            Object.entries(schema.properties).forEach(([fieldName, property]) => {
+                const fieldType = this.mapJSONTypeToField(property.type, property.format);
+                const isRequired = Array.isArray(schema.required) && schema.required.includes(fieldName);
+                const isReadOnly = property.readOnly === true;
+                
+                let initialValue = '';
+                if (property.default !== undefined) {
+                    initialValue = typeof property.default === 'object' 
+                        ? JSON.stringify(property.default) 
+                        : String(property.default);
+                }
+
+                this.currentNode.addField({
+                    name: fieldName,
+                    type: fieldType,
+                    initialValue: initialValue,
+                    required: isRequired,
+                    readOnly: isReadOnly
+                });
+            });
+
+            // Update model title if provided
+            if (schema.title && schema.title !== 'DataModel') {
+                this.currentNode.setLabel(schema.title);
+                this.modal.querySelector('.model-name-input').value = schema.title;
+            }
+
+            this.showValidationMessage(`Successfully imported ${Object.keys(schema.properties).length} fields`, 'success');
+            
+            // Switch to Fields tab to see the imported fields
+            this.switchTab('properties');
+            this.renderFields();
+
+        } catch (error) {
+            this.showValidationMessage(`Invalid JSON: ${error.message}`, 'error');
+        }
+    }
+
+    /**
+     * Copy JSON to clipboard
+     */
+    async copyJSONToClipboard() {
+        const jsonEditor = this.modal.querySelector('.json-editor');
+        
+        try {
+            await navigator.clipboard.writeText(jsonEditor.value);
+            this.showValidationMessage('JSON copied to clipboard', 'success');
+        } catch (error) {
+            // Fallback for older browsers
+            jsonEditor.select();
+            document.execCommand('copy');
+            this.showValidationMessage('JSON copied to clipboard', 'success');
+        }
+    }
+
+    /**
+     * Validate JSON syntax
+     */
+    validateJSON() {
+        const jsonEditor = this.modal.querySelector('.json-editor');
+        const jsonText = jsonEditor.value.trim();
+
+        if (!jsonText) {
+            this.clearValidationMessage();
+            return;
+        }
+
+        try {
+            JSON.parse(jsonText);
+            this.showValidationMessage('Valid JSON', 'success');
+        } catch (error) {
+            this.showValidationMessage(`Invalid JSON: ${error.message}`, 'error');
+        }
+    }
+
+    /**
+     * Show validation message
+     */
+    showValidationMessage(message, type) {
+        const messageElement = this.modal.querySelector('.json-validation-message');
+        messageElement.textContent = message;
+        messageElement.className = `json-validation-message mt-2 text-sm ${type === 'error' ? 'text-red-600' : 'text-green-600'}`;
+        messageElement.classList.remove('hidden');
+
+        // Auto-hide success messages after 3 seconds
+        if (type === 'success') {
+            setTimeout(() => {
+                this.clearValidationMessage();
+            }, 3000);
+        }
+    }
+
+    /**
+     * Clear validation message
+     */
+    clearValidationMessage() {
+        const messageElement = this.modal.querySelector('.json-validation-message');
+        messageElement.classList.add('hidden');
     }
 }
