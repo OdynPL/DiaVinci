@@ -785,7 +785,7 @@ class CanvasRenderer {
                 this.ctx.fillStyle = '#ffffff';
                 this.ctx.fill();
                 
-                // Draw border
+                // Draw border using node color
                 if (isMultiSelected) {
                     this.ctx.strokeStyle = '#4A90E2';
                     this.ctx.lineWidth = 4;
@@ -793,7 +793,7 @@ class CanvasRenderer {
                     this.ctx.strokeStyle = '#e6b800';
                     this.ctx.lineWidth = 4;
                 } else {
-                    this.ctx.strokeStyle = '#1e3a8a'; // Dark blue border
+                    this.ctx.strokeStyle = node.color; // Use node color for border
                     this.ctx.lineWidth = 2;
                 }
                 this.ctx.stroke();
@@ -924,8 +924,8 @@ class CanvasRenderer {
         const startY = node.y - height/2;
         const headerHeight = 32;
         
-        // Draw header background (dark blue)
-        this.ctx.fillStyle = '#1e3a8a'; // Dark blue header
+        // Draw header background using node color
+        this.ctx.fillStyle = node.color; // Use node color for header
         const radius = 8;
         
         // Draw rounded header rectangle
