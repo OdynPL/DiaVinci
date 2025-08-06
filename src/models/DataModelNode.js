@@ -3,7 +3,7 @@
  * Extends base Node functionality with field management
  */
 class DataModelNode extends Node {
-    constructor({x, y, r = 40, id = null, label = 'Data Model', color = '#8e44ad', type = 'datamodel', fields = []}) {
+    constructor({x, y, r = 40, id = null, label = 'Data Model', color = '#8e44ad', type = 'DataModel', fields = []}) {
         super({x, y, r, id, label, color, type});
         this.fields = fields || []; // Array of {name, type, initialValue, required, readOnly}
         this._fieldCounter = 0; // Counter for generating unique field IDs
@@ -262,7 +262,7 @@ class DataModelNode extends Node {
             initialValue: field.initialValue || '',
             required: field.required || false,
             readOnly: field.readOnly || false,
-            nullable: field.nullable !== undefined ? field.nullable : true // Default to nullable
+            nullable: field.nullable !== undefined ? field.nullable : false // Default to non-nullable
         };
         this.fields.push(newField);
         return newField;

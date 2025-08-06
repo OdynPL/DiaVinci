@@ -612,7 +612,7 @@ class DataModelEditor {
                     <label class="flex items-center text-xs text-gray-700 bg-gray-50 px-2 py-1 rounded-md flex-1">
                         <input type="checkbox" 
                                class="field-nullable mr-2 text-blue-500 focus:ring-blue-500 rounded flex-shrink-0" 
-                               ${field.nullable !== false ? 'checked' : ''}>
+                               ${field.nullable === true ? 'checked' : ''}>
                         <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"/>
                         </svg>
@@ -1194,7 +1194,8 @@ class DataModelEditor {
             type: 'String',
             initialValue: '',
             required: false,
-            readOnly: false
+            readOnly: false,
+            nullable: false // Default to non-nullable
         });
         
         this.renderFields();
@@ -1461,14 +1462,10 @@ class DataModelEditor {
                 description: `${fieldName} field`
             };
 
-            // Handle nullable fields
-            if (field.nullable !== false) {
+            // Handle nullable fields - create array of types including null
+            if (field.nullable === true) {
                 // If field is nullable, allow null values
-                if (Array.isArray(property.type)) {
-                    property.type.push('null');
-                } else {
-                    property.type = [property.type, 'null'];
-                }
+                property.type = [property.type, 'null'];
             }
 
             // Add format for special types
@@ -1504,7 +1501,7 @@ class DataModelEditor {
             }
 
             // Add nullable information to description
-            if (field.nullable !== false) {
+            if (field.nullable === true) {
                 property.description += ' (nullable)';
             }
 
@@ -1546,6 +1543,13 @@ class DataModelEditor {
      * Map JSON schema types back to internal field types
      */
     mapJSONTypeToField(jsonType, format = null) {
+        // Handle array types (for nullable fields)
+        if (Array.isArray(jsonType)) {
+            // Find the non-null type in the array
+            const mainType = jsonType.find(type => type !== 'null');
+            return this.mapJSONTypeToField(mainType, format);
+        }
+        
         if (format) {
             const formatMapping = {
                 'email': 'Email',
@@ -1651,6 +1655,7 @@ class DataModelEditor {
                 const fieldType = this.mapJSONTypeToField(property.type, property.format);
                 const isRequired = Array.isArray(schema.required) && schema.required.includes(fieldName);
                 const isReadOnly = property.readOnly === true;
+                const isNullable = Array.isArray(property.type) && property.type.includes('null');
                 
                 let initialValue = '';
                 if (property.default !== undefined) {
@@ -1668,7 +1673,8 @@ class DataModelEditor {
                     type: fieldType,
                     initialValue: initialValue,
                     required: isRequired,
-                    readOnly: isReadOnly
+                    readOnly: isReadOnly,
+                    nullable: isNullable
                 });
             });
 
@@ -1828,14 +1834,40 @@ class DataModelEditor {
         } catch (error) {
             let errorMessage = `Invalid JSON: ${error.message}`;
             
-            // Try to extract line and column information from error
-            const lineMatch = error.message.match(/at position (\d+)|line (\d+)/);
-            const positionMatch = error.message.match(/at position (\d+)/);
+            // Clear any previous error highlighting
+            this.clearErrorHighlighting();
             
+            // Try to extract position information from different error formats
+            let position = null;
+            
+            // Try to find position in the error message
+            const positionMatch = error.message.match(/at position (\d+)/i);
             if (positionMatch) {
-                const position = parseInt(positionMatch[1]);
+                position = parseInt(positionMatch[1]);
+            }
+            
+            // Alternative patterns for position
+            if (!position) {
+                const lineColMatch = error.message.match(/line (\d+) column (\d+)/i);
+                if (lineColMatch) {
+                    const errorLine = parseInt(lineColMatch[1]);
+                    const errorCol = parseInt(lineColMatch[2]);
+                    // Convert line/column back to position
+                    const lines = jsonText.split('\n');
+                    position = 0;
+                    for (let i = 0; i < errorLine - 1 && i < lines.length; i++) {
+                        position += lines[i].length + 1; // +1 for newline
+                    }
+                    position += errorCol - 1;
+                }
+            }
+            
+            if (position !== null) {
                 const lineInfo = this.getLineFromPosition(jsonText, position);
-                errorMessage = `Invalid JSON: ${error.message.replace(/at position \d+/, '')} at line ${lineInfo.line}, column ${lineInfo.column}`;
+                
+                // Remove redundant position info from error message
+                const cleanErrorMessage = error.message.replace(/at position \d+/i, '').replace(/line \d+ column \d+/i, '').trim();
+                errorMessage = `Invalid JSON: ${cleanErrorMessage} (line ${lineInfo.line}, column ${lineInfo.column})`;
                 
                 // Highlight the error line
                 this.highlightErrorLine(jsonEditor, lineInfo.line);
@@ -1849,10 +1881,62 @@ class DataModelEditor {
      * Get line and column from character position in text
      */
     getLineFromPosition(text, position) {
-        const lines = text.substring(0, position).split('\n');
-        const line = lines.length;
-        const column = lines[lines.length - 1].length + 1;
+        // Ensure position doesn't exceed text length
+        const safePosition = Math.min(position, text.length);
+        
+        // Get text up to the error position
+        const textUpToPosition = text.substring(0, safePosition);
+        
+        // Count actual newline characters to get line number
+        const newlineCount = (textUpToPosition.match(/\n/g) || []).length;
+        const line = newlineCount + 1; // 1-based line numbering
+        
+        // Find the start of the current line
+        const lastNewlineIndex = textUpToPosition.lastIndexOf('\n');
+        const currentLineStart = lastNewlineIndex + 1;
+        const column = safePosition - currentLineStart + 1; // 1-based column numbering
+        
         return { line, column };
+    }
+
+    /**
+     * Test line position calculation
+     */
+    testLineCalculation() {
+        const testText = `{
+  "name": "test",
+  "value": 123
+  "error": "here"
+}`;
+        console.log('=== JSON Line Position Test ===');
+        console.log('Test text with line numbers:');
+        testText.split('\n').forEach((line, index) => {
+            console.log(`${index + 1}: ${line}`);
+        });
+        
+        // Test actual JSON parsing error
+        try {
+            JSON.parse(testText);
+        } catch (error) {
+            console.log('\nActual JSON error:', error.message);
+            const positionMatch = error.message.match(/at position (\d+)/);
+            if (positionMatch) {
+                const errorPosition = parseInt(positionMatch[1]);
+                console.log('Error position from JSON.parse:', errorPosition);
+                
+                // Show character at error position
+                const charAtError = testText[errorPosition] || 'END_OF_TEXT';
+                console.log('Character at error position:', charAtError);
+                
+                const errorResult = this.getLineFromPosition(testText, errorPosition);
+                console.log('Calculated line/column:', errorResult);
+                
+                // Verify by manually checking
+                const lines = testText.split('\n');
+                console.log(`Line ${errorResult.line} content: "${lines[errorResult.line - 1]}"`);
+                console.log(`Character at column ${errorResult.column}: "${lines[errorResult.line - 1][errorResult.column - 1] || 'END_OF_LINE'}"`);
+            }
+        }
     }
 
     /**
@@ -1871,11 +1955,161 @@ class DataModelEditor {
                 lineNumbers[errorLine - 1].style.backgroundColor = '#fef2f2';
                 lineNumbers[errorLine - 1].style.color = '#dc2626';
                 lineNumbers[errorLine - 1].style.fontWeight = 'bold';
+                lineNumbers[errorLine - 1].style.borderLeft = '3px solid #dc2626';
             }
         }
         
+        // Also highlight the actual text line in the textarea
+        this.highlightTextAreaLine(textarea, errorLine);
+        
         // Store error line for clearing later
         this.currentErrorLine = errorLine;
+    }
+
+    /**
+     * Highlight the actual line in textarea with red lines above and below
+     */
+    highlightTextAreaLine(textarea, errorLine) {
+        const lines = textarea.value.split('\n');
+        if (errorLine <= lines.length) {
+            // Create or update overlay for line highlighting
+            let overlay = textarea.parentElement.querySelector('.line-error-overlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.className = 'line-error-overlay';
+                overlay.style.cssText = `
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    pointer-events: none;
+                    font-family: inherit;
+                    font-size: inherit;
+                    line-height: inherit;
+                    white-space: pre-wrap;
+                    z-index: 1;
+                    overflow: hidden;
+                    padding: 12px 4px 12px 56px;
+                    box-sizing: border-box;
+                `;
+                textarea.parentElement.style.position = 'relative';
+                textarea.parentElement.appendChild(overlay);
+            }
+            
+            // Get textarea styles for exact alignment
+            const textareaStyles = window.getComputedStyle(textarea);
+            const lineHeight = parseInt(textareaStyles.lineHeight) || 20;
+            const paddingTop = parseInt(textareaStyles.paddingTop) || 12;
+            
+            // Calculate line position (0-based for calculations)
+            const lineIndex = errorLine - 1;
+            const topOffset = paddingTop + (lineIndex * lineHeight);
+            
+            // Sync overlay scroll with textarea
+            overlay.scrollTop = textarea.scrollTop;
+            
+            // Create red lines above and below the error line
+            overlay.innerHTML = `
+                <!-- Line above error -->
+                <div style="
+                    position: absolute;
+                    top: ${topOffset - textarea.scrollTop}px;
+                    left: 56px;
+                    right: 16px;
+                    height: 2px;
+                    background-color: #dc2626;
+                    border-radius: 1px;
+                    box-shadow: 0 1px 2px rgba(220, 38, 38, 0.3);
+                    z-index: 2;
+                "></div>
+                <!-- Line below error -->
+                <div style="
+                    position: absolute;
+                    top: ${topOffset + lineHeight - 2 - textarea.scrollTop}px;
+                    left: 56px;
+                    right: 16px;
+                    height: 2px;
+                    background-color: #dc2626;
+                    border-radius: 1px;
+                    box-shadow: 0 1px 2px rgba(220, 38, 38, 0.3);
+                    z-index: 2;
+                "></div>
+                <!-- Background highlight for the line -->
+                <div style="
+                    position: absolute;
+                    top: ${topOffset - textarea.scrollTop}px;
+                    left: 56px;
+                    right: 16px;
+                    height: ${lineHeight}px;
+                    background-color: rgba(220, 38, 38, 0.05);
+                    border-left: 3px solid #dc2626;
+                    border-radius: 2px;
+                    z-index: 1;
+                "></div>
+            `;
+            
+            // Store the error line info for scroll synchronization
+            this.errorLineInfo = { errorLine, lineHeight, paddingTop };
+            
+            // Add scroll listener to keep highlighting in sync
+            textarea.removeEventListener('scroll', this._errorScrollHandler);
+            this._errorScrollHandler = () => {
+                this.updateErrorHighlightPosition(textarea, overlay);
+            };
+            textarea.addEventListener('scroll', this._errorScrollHandler);
+        }
+    }
+
+    /**
+     * Update error highlight position when scrolling
+     */
+    updateErrorHighlightPosition(textarea, overlay) {
+        if (!this.errorLineInfo) return;
+        
+        const { errorLine, lineHeight, paddingTop } = this.errorLineInfo;
+        const lineIndex = errorLine - 1;
+        const topOffset = paddingTop + (lineIndex * lineHeight);
+        
+        // Update overlay content with new scroll position
+        overlay.innerHTML = `
+            <!-- Line above error -->
+            <div style="
+                position: absolute;
+                top: ${topOffset - textarea.scrollTop}px;
+                left: 56px;
+                right: 16px;
+                height: 2px;
+                background-color: #dc2626;
+                border-radius: 1px;
+                box-shadow: 0 1px 2px rgba(220, 38, 38, 0.3);
+                z-index: 2;
+            "></div>
+            <!-- Line below error -->
+            <div style="
+                position: absolute;
+                top: ${topOffset + lineHeight - 2 - textarea.scrollTop}px;
+                left: 56px;
+                right: 16px;
+                height: 2px;
+                background-color: #dc2626;
+                border-radius: 1px;
+                box-shadow: 0 1px 2px rgba(220, 38, 38, 0.3);
+                z-index: 2;
+            "></div>
+            <!-- Background highlight for the line -->
+            <div style="
+                position: absolute;
+                top: ${topOffset - textarea.scrollTop}px;
+                left: 56px;
+                right: 16px;
+                height: ${lineHeight}px;
+                background-color: rgba(220, 38, 38, 0.05);
+                border-left: 3px solid #dc2626;
+                border-radius: 2px;
+                z-index: 1;
+            "></div>
+        `;
     }
 
     /**
@@ -1890,8 +2124,25 @@ class DataModelEditor {
                 line.style.backgroundColor = '';
                 line.style.color = '';
                 line.style.fontWeight = '';
+                line.style.borderLeft = '';
             });
         }
+        
+        // Clear textarea line highlighting
+        const overlay = this.modal.querySelector('.line-error-overlay');
+        if (overlay) {
+            overlay.remove();
+        }
+        
+        // Remove scroll listener for error highlighting
+        const jsonEditor = this.modal.querySelector('.json-editor');
+        if (jsonEditor && this._errorScrollHandler) {
+            jsonEditor.removeEventListener('scroll', this._errorScrollHandler);
+            this._errorScrollHandler = null;
+        }
+        
+        // Clear error line info
+        this.errorLineInfo = null;
         this.currentErrorLine = null;
     }
 
