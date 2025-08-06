@@ -130,7 +130,7 @@ class DataModelEditor {
                                 </button>
                             </div>
                             
-                            <div class="fields-container space-y-3 pb-6">
+                            <div class="fields-container pb-6">
                                 <!-- Fields will be rendered here -->
                             </div>
                         </div>
@@ -350,7 +350,7 @@ class DataModelEditor {
 
         // Create fields container with unified border
         const fieldsWrapper = document.createElement('div');
-        fieldsWrapper.className = 'fields-wrapper bg-white border border-gray-200 border-t-0 rounded-b-lg sortable-fields';
+        fieldsWrapper.className = 'fields-wrapper bg-white border-l border-r border-b border-gray-200 rounded-b-lg sortable-fields';
         
         // Add all field rows
         this.currentNode.fields.forEach((field, index) => {
