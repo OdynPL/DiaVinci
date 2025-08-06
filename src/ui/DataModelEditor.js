@@ -53,8 +53,8 @@ class DataModelEditor {
         this.modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
         
         this.modal.innerHTML = `
-            <div class="bg-white rounded-xl shadow-2xl max-w-5xl w-full mx-4 max-h-[90vh] overflow-hidden border border-gray-200">
-                <div class="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-violet-50 to-purple-50">
+            <div class="bg-white rounded-xl shadow-2xl max-w-5xl w-full mx-4 max-h-[95vh] overflow-hidden border border-gray-200 flex flex-col">
+                <div class="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-violet-50 to-purple-50 flex-shrink-0">
                     <div class="flex items-center">
                         <div class="w-10 h-10 bg-violet-100 rounded-lg flex items-center justify-center mr-3">
                             <svg class="w-6 h-6 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -75,7 +75,7 @@ class DataModelEditor {
                 </div>
                 
                 <!-- Model Name Section -->
-                <div class="px-6 pt-6 pb-4 border-b border-gray-100">
+                <div class="px-6 pt-4 pb-3 border-b border-gray-100 flex-shrink-0">
                     <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
@@ -89,7 +89,7 @@ class DataModelEditor {
                 </div>
 
                 <!-- Tabs Navigation -->
-                <div class="border-b border-gray-200">
+                <div class="border-b border-gray-200 flex-shrink-0">
                     <nav class="flex px-6">
                         <button class="tab-btn px-6 py-3 text-sm font-medium border-b-2 transition-colors focus:outline-none" 
                                 data-tab="properties">
@@ -109,12 +109,12 @@ class DataModelEditor {
                     </nav>
                 </div>
                 
-                <!-- Tab Content -->
-                <div class="overflow-y-auto" style="max-height: calc(90vh - 240px);">
+                <!-- Tab Content - Scrollable -->
+                <div class="flex-1 overflow-y-auto min-h-0">
                     <!-- Properties Tab -->
                     <div class="tab-content" data-tab="properties">
                         <div class="p-6">
-                            <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center justify-between mb-4 sticky top-0 bg-white py-2 border-b border-gray-100">
                                 <div class="flex items-center">
                                     <svg class="w-5 h-5 text-gray-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -130,7 +130,7 @@ class DataModelEditor {
                                 </button>
                             </div>
                             
-                            <div class="fields-container space-y-3">
+                            <div class="fields-container space-y-3 pb-6">
                                 <!-- Fields will be rendered here -->
                             </div>
                         </div>
@@ -141,7 +141,7 @@ class DataModelEditor {
                         <div class="p-6">
                             <h3 class="text-lg font-medium text-gray-900 mb-4">Model Settings</h3>
                             
-                            <div class="space-y-6">
+                            <div class="space-y-6 pb-6">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
                                     <textarea class="model-description w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" 
@@ -181,7 +181,8 @@ class DataModelEditor {
                     </div>
                 </div>
                 
-                <div class="flex items-center justify-end gap-3 p-6 border-t bg-gray-50">
+                <!-- Fixed Footer -->
+                <div class="flex items-center justify-end gap-3 p-6 border-t bg-gray-50 flex-shrink-0">
                     <button class="cancel-btn px-6 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                         Cancel
                     </button>

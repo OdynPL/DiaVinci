@@ -895,14 +895,14 @@ class CanvasRenderer {
         this.ctx.fillRect(startX, startY, width, 28);
         
         // Draw title with icon
-        this.ctx.fillStyle = '#fff';
-        this.ctx.font = 'bold 12px Arial';
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.font = 'bold 14px Arial';
         this.ctx.textAlign = 'left';
         this.ctx.textBaseline = 'middle';
         
         // Draw database icon
         this.ctx.fillText('📊', startX + 6, startY + 14);
-        this.ctx.fillText(node.label, startX + 24, startY + 14);
+        this.ctx.fillText(node.label, startX + 26, startY + 14);
         
         // Draw separator line with gradient
         const gradient = this.ctx.createLinearGradient(startX, startY + 28, startX + width, startY + 28);
@@ -919,7 +919,7 @@ class CanvasRenderer {
         
         // Draw fields with better formatting
         if (node.fields.length > 0) {
-            this.ctx.font = '10px Arial';
+            this.ctx.font = '11px Arial';
             this.ctx.textAlign = 'left';
             
             node.fields.forEach((field, index) => {
@@ -934,39 +934,28 @@ class CanvasRenderer {
                 
                 // Field type icon
                 const typeIcon = this.getTypeIcon(field.type);
-                this.ctx.fillStyle = '#e8e8e8';
+                this.ctx.fillStyle = '#f0f0f0';
                 this.ctx.fillText(typeIcon, startX + 6, fieldY + 1);
                 
-                // Field name
-                this.ctx.fillStyle = '#fff';
-                this.ctx.font = 'bold 10px Arial';
-                this.ctx.fillText(field.name, startX + 20, fieldY + 1);
+                // Field name - increase contrast and size
+                this.ctx.fillStyle = '#ffffff';
+                this.ctx.font = 'bold 11px Arial';
+                this.ctx.fillText(field.name, startX + 22, fieldY + 1);
                 
-                // Field type with list indicator
-                this.ctx.fillStyle = '#ddd';
-                this.ctx.font = '9px Arial';
+                // Field type with list indicator - better contrast
+                this.ctx.fillStyle = '#e8e8e8';
+                this.ctx.font = '10px Arial';
                 const typeText = field.isList ? `[${field.type}]` : field.type;
-                this.ctx.fillText(typeText, startX + 6, fieldY + 10);
-                
-                // Initial value if exists (truncated)
-                if (field.initialValue) {
-                    this.ctx.fillStyle = '#bbb';
-                    this.ctx.font = 'italic 8px Arial';
-                    let valueText = field.initialValue;
-                    if (valueText.length > 12) {
-                        valueText = valueText.substring(0, 12) + '...';
-                    }
-                    this.ctx.fillText(`= ${valueText}`, startX + 70, fieldY + 10);
-                }
+                this.ctx.fillText(typeText, startX + 6, fieldY + 11);
             });
         } else {
             // Empty state with better design
-            this.ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-            this.ctx.font = '11px Arial';
-            this.ctx.textAlign = 'center';
-            this.ctx.fillText('📝', node.x, node.y - 4);
-            this.ctx.font = '9px Arial';
             this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            this.ctx.font = '12px Arial';
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText('📝', node.x, node.y - 6);
+            this.ctx.font = '10px Arial';
+            this.ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
             this.ctx.fillText('Double-click to add fields', node.x, node.y + 8);
         }
     }
