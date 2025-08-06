@@ -51,6 +51,10 @@
                     Clear Results
                 </button>
                 
+                <button id="testDefaultTab" class="bg-indigo-500 text-white px-4 py-2 rounded mr-2 mb-2">
+                    Test Default Tab
+                </button>
+                
                 <div class="mt-4">
                     <button id="openDataModelEditor" class="bg-purple-500 text-white px-6 py-3 rounded font-semibold">
                         Open Data Model Editor
@@ -317,6 +321,45 @@
             testCount = 0;
         });
         
+        // Test Default Tab
+        document.getElementById('testDefaultTab').addEventListener('click', () => {
+            logTest('🧪 Testing Default Tab Behavior...', 'info');
+            
+            // Create multiple test nodes to verify consistent behavior
+            for (let i = 1; i <= 3; i++) {
+                const testNode = new DataModelNode({
+                    x: 100 + i * 10, y: 100 + i * 10,
+                    label: `Test Model ${i}`
+                });
+                
+                // Test opening editor
+                dataModelEditor.open(testNode);
+                
+                if (dataModelEditor.activeTab === 'properties') {
+                    logTest(`✅ Test ${i}: Fields tab active after opening`, 'pass');
+                } else {
+                    logTest(`❌ Test ${i}: Wrong tab active: ${dataModelEditor.activeTab}`, 'fail');
+                }
+                
+                // Test switching to another tab and back
+                dataModelEditor.switchTab('json');
+                dataModelEditor.close();
+                
+                // Open again to test reset
+                dataModelEditor.open(testNode);
+                
+                if (dataModelEditor.activeTab === 'properties') {
+                    logTest(`✅ Test ${i}: Fields tab reset correctly after reopen`, 'pass');
+                } else {
+                    logTest(`❌ Test ${i}: Tab not reset: ${dataModelEditor.activeTab}`, 'fail');
+                }
+                
+                dataModelEditor.close();
+            }
+            
+            logTest('🎯 Default tab test completed', 'info');
+        });
+        
         // Open Data Model Editor
         document.getElementById('openDataModelEditor').addEventListener('click', () => {
             const testNode = new DataModelNode({
@@ -325,6 +368,16 @@
             });
             
             dataModelEditor.open(testNode);
+            
+            // Verify that Fields tab is active by default
+            setTimeout(() => {
+                if (dataModelEditor.activeTab === 'properties') {
+                    logTest('✅ Fields tab is active by default after opening editor', 'pass');
+                } else {
+                    logTest(`❌ Wrong default tab: ${dataModelEditor.activeTab}, expected: properties`, 'fail');
+                }
+            }, 100);
+            
             logTest('🎛️ Data Model Editor opened for manual testing', 'info');
         });
         

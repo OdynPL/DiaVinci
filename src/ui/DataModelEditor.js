@@ -180,6 +180,8 @@ class DataModelEditor {
 
         this.currentNode = node;
         this.isOpen = true;
+        // Ensure Fields tab is always the default when opening
+        this.activeTab = 'properties';
         this.createModal();
         this.renderFields();
     }
