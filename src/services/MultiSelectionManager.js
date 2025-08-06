@@ -344,6 +344,13 @@ class MultiSelectionManager {
     }
 
     /**
+     * Check if there are any selected elements
+     */
+    hasSelection() {
+        return this.selectedElements.size > 0;
+    }
+
+    /**
      * Add element to selection
      */
     addToSelection(element) {
