@@ -109,6 +109,10 @@ class Node {
      * Create Node from plain object
      */
     static fromJSON(data) {
+        // Handle different node types
+        if (data.type === 'datamodel' && typeof DataModelNode !== 'undefined') {
+            return DataModelNode.fromJSON(data);
+        }
         return new Node(data);
     }
 }

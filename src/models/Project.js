@@ -19,7 +19,7 @@ class Project {
      */
     addNode(node) {
         this.nodes.push(node);
-        if (node.type === 'node') {
+        if (node.type === 'node' || node.type === 'datamodel') {
             this.nodeCounter++;
         }
     }

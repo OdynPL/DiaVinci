@@ -817,6 +817,34 @@ class CanvasRenderer {
             this.ctx.closePath();
             
             this.ctx.restore();
+        } else if (node.type === 'datamodel') {
+            // Draw rounded rectangle for data model nodes with shadow
+            const width = node.r * 3.5;
+            const height = Math.max(node.r * 2, node.fields.length * 22 + 50);
+            const x = node.x - width/2;
+            const y = node.y - height/2;
+            const radius = 8;
+            
+            // Draw shadow
+            this.ctx.save();
+            this.ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
+            this.ctx.shadowBlur = 8;
+            this.ctx.shadowOffsetX = 2;
+            this.ctx.shadowOffsetY = 2;
+            
+            // Draw rounded rectangle
+            this.ctx.beginPath();
+            this.ctx.moveTo(x + radius, y);
+            this.ctx.lineTo(x + width - radius, y);
+            this.ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            this.ctx.lineTo(x + width, y + height - radius);
+            this.ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            this.ctx.lineTo(x + radius, y + height);
+            this.ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            this.ctx.lineTo(x, y + radius);
+            this.ctx.quadraticCurveTo(x, y, x + radius, y);
+            this.ctx.closePath();
+            this.ctx.restore();
         } else {
             this.ctx.arc(node.x, node.y, node.r, 0, 2 * Math.PI);
         }
@@ -832,6 +860,9 @@ class CanvasRenderer {
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
             this.ctx.fillText(node.label || 'Node', node.x, node.y);
+        } else if (node.type === 'datamodel') {
+            // Draw data model structure
+            this.drawDataModelContent(node);
         } else {
             // For regular nodes, check if they're TRUE/FALSE nodes and render white text inside
             if (node.label === 'Step1' || node.label === 'Step2') {
@@ -848,6 +879,113 @@ class CanvasRenderer {
                 this.ctx.fillText(node.label || 'Node', node.x, node.y - node.r - 8);
             }
         }
+    }
+
+    /**
+     * Draw data model content with fields
+     */
+    drawDataModelContent(node) {
+        const width = node.r * 3.5;
+        const height = Math.max(node.r * 2, node.fields.length * 22 + 50);
+        const startX = node.x - width/2;
+        const startY = node.y - height/2;
+        
+        // Draw header background (darker)
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+        this.ctx.fillRect(startX, startY, width, 30);
+        
+        // Draw title with icon
+        this.ctx.fillStyle = '#fff';
+        this.ctx.font = 'bold 13px Arial';
+        this.ctx.textAlign = 'left';
+        this.ctx.textBaseline = 'middle';
+        
+        // Draw database icon
+        this.ctx.fillText('📊', startX + 8, startY + 15);
+        this.ctx.fillText(node.label, startX + 28, startY + 15);
+        
+        // Draw separator line with gradient
+        const gradient = this.ctx.createLinearGradient(startX, startY + 30, startX + width, startY + 30);
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.1)');
+        gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.3)');
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0.1)');
+        
+        this.ctx.strokeStyle = gradient;
+        this.ctx.lineWidth = 1;
+        this.ctx.beginPath();
+        this.ctx.moveTo(startX + 5, startY + 30);
+        this.ctx.lineTo(startX + width - 5, startY + 30);
+        this.ctx.stroke();
+        
+        // Draw fields with better formatting
+        if (node.fields.length > 0) {
+            this.ctx.font = '11px Arial';
+            this.ctx.textAlign = 'left';
+            
+            node.fields.forEach((field, index) => {
+                const fieldY = startY + 45 + (index * 22);
+                const isEven = index % 2 === 0;
+                
+                // Alternate row background
+                if (isEven) {
+                    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+                    this.ctx.fillRect(startX + 2, fieldY - 8, width - 4, 20);
+                }
+                
+                // Field type icon
+                const typeIcon = this.getTypeIcon(field.type);
+                this.ctx.fillStyle = '#e8e8e8';
+                this.ctx.fillText(typeIcon, startX + 8, fieldY + 2);
+                
+                // Field name
+                this.ctx.fillStyle = '#fff';
+                this.ctx.font = 'bold 11px Arial';
+                this.ctx.fillText(field.name, startX + 25, fieldY + 2);
+                
+                // Field type with list indicator
+                this.ctx.fillStyle = '#ddd';
+                this.ctx.font = '10px Arial';
+                const typeText = field.isList ? `[${field.type}]` : field.type;
+                this.ctx.fillText(typeText, startX + 8, fieldY + 12);
+                
+                // Initial value if exists
+                if (field.initialValue) {
+                    this.ctx.fillStyle = '#bbb';
+                    this.ctx.font = 'italic 9px Arial';
+                    const valueText = `= ${field.initialValue}`;
+                    this.ctx.fillText(valueText, startX + 80, fieldY + 12);
+                }
+            });
+        } else {
+            // Empty state with better design
+            this.ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            this.ctx.font = '12px Arial';
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText('📝', node.x, node.y - 5);
+            this.ctx.font = '10px Arial';
+            this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            this.ctx.fillText('Double-click to add fields', node.x, node.y + 10);
+        }
+    }
+
+    /**
+     * Get icon for data type
+     */
+    getTypeIcon(type) {
+        const icons = {
+            'String': '📝',
+            'Number': '🔢',
+            'Boolean': '☑️',
+            'Date': '📅',
+            'Object': '📦',
+            'Array': '📋',
+            'Text': '📄',
+            'Email': '📧',
+            'URL': '🔗',
+            'Phone': '📞',
+            'Currency': '💰'
+        };
+        return icons[type] || '📝';
     }
 
     /**

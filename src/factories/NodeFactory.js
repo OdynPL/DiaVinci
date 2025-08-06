@@ -169,6 +169,20 @@ class NodeFactory {
     }
 
     /**
+     * Create a Data Model node
+     */
+    static createDataModelNode(x, y) {
+        return new DataModelNode({
+            x, y, r: 40,
+            id: Date.now(),
+            label: 'Data Model',
+            color: '#8e44ad',
+            type: 'datamodel',
+            fields: []
+        });
+    }
+
+    /**
      * Get appropriate corners for each rotation - like rotating letter "C"
      */
     static getRotatedCorners(rotation) {

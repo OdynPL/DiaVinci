@@ -17,6 +17,9 @@ class DiagramController {
         this.gridService = gridService;
         this.errorHandler = errorHandler;
         
+        // Initialize Data Model Editor
+        this.dataModelEditor = new DataModelEditor(eventBus);
+        
         this.currentProject = new Project({name: null});
         this.autoSaveTimeout = null; // For debouncing auto-save
         this.dragState = {
@@ -73,6 +76,7 @@ class DiagramController {
         this.eventBus.on('transition.mode', (data) => this.handleTransitionMode(data));
         this.eventBus.on('breakpoint.moved', (data) => this.handleBreakPointMoved(data));
         this.eventBus.on('breakpoints.moved', (data) => this.handleBreakPointsMoved(data));
+        this.eventBus.on('datamodel.updated', (data) => this.handleDataModelUpdated(data));
     }
 
     /**
@@ -118,6 +122,9 @@ class DiagramController {
                 break;
             case 'if':
                 this.createIFNode(x, y);
+                break;
+            case 'datamodel':
+                this.createDataModelNode(x, y);
                 break;
             case 'text':
                 this.createText(x, y);
@@ -201,6 +208,32 @@ class DiagramController {
         this.currentProject.addTransition(falseTransition);
         
         this.render();
+    }
+
+    /**
+     * Create Data Model node
+     */
+    createDataModelNode(x, y) {
+        const node = NodeFactory.createDataModelNode(x, y);
+        this.currentProject.addNode(node);
+        this.render();
+        
+        // Auto-open the field editor
+        setTimeout(() => {
+            this.openDataModelEditor(node);
+        }, 100);
+    }
+
+    /**
+     * Open Data Model Editor
+     */
+    openDataModelEditor(node) {
+        if (!node || node.type !== 'datamodel') {
+            Logger.error('Invalid node for data model editor', { node });
+            return;
+        }
+        
+        this.dataModelEditor.open(node);
     }
 
     /**
@@ -785,7 +818,15 @@ class DiagramController {
 
         const node = this.currentProject.findNodeAtPosition(x, y);
         if (node) {
-            Logger.debug('Double click on node', { label: node.label });
+            Logger.debug('Double click on node', { label: node.label, type: node.type });
+            
+            // Special handling for DataModelNode
+            if (node.type === 'datamodel') {
+                this.openDataModelEditor(node);
+                this.setSelection(node, 'node');
+                return;
+            }
+            
             this.inputService.showNodeInput(node);
             this.setSelection(node, 'node');
             return;
@@ -1239,6 +1280,17 @@ class DiagramController {
         this.render();
         
         // Trigger auto-save after editing element
+        this.triggerAutoSave();
+    }
+
+    /**
+     * Handle data model updated event
+     */
+    handleDataModelUpdated(data) {
+        Logger.debug('Data model updated event received', { node: data.node });
+        this.render();
+        
+        // Trigger auto-save after editing data model
         this.triggerAutoSave();
     }
 

@@ -107,6 +107,18 @@
                         </div>
                         <span class="text-xs font-medium text-purple-700">IF</span>
                     </div>
+
+                    <!-- Data Model Component -->
+                    <div class="option group flex flex-col items-center justify-center p-3 bg-gradient-to-br from-violet-50 to-violet-100 hover:from-violet-100 hover:to-violet-200 border border-violet-200 rounded-lg cursor-grab active:cursor-grabbing transition-all duration-200 hover:shadow-md" 
+                         draggable="true" id="datamodel">
+                        <div class="component-icon mb-1">
+                            <svg class="w-7 h-7 text-violet-600 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                                <rect x="2" y="4" width="20" height="16" stroke="currentColor" stroke-width="2" fill="none" rx="2"/>
+                            </svg>
+                        </div>
+                        <span class="text-xs font-medium text-violet-700">Data Model</span>
+                    </div>
                     
                     <!-- Arrow Right -->
                     <div class="option group flex flex-col items-center justify-center p-3 bg-gradient-to-br from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200 border border-orange-200 rounded-lg cursor-grab active:cursor-grabbing transition-all duration-200 hover:shadow-md" 
@@ -299,6 +311,7 @@
     
     <!-- Models -->
     <script src="src/models/Node.js"></script>
+    <script src="src/models/DataModelNode.js"></script>
     <script src="src/models/TextElement.js"></script>
     <script src="src/models/Transition.js"></script>
     <script src="src/models/Project.js"></script>
@@ -313,6 +326,9 @@
     <script src="src/services/MultiSelectionManager.js"></script>
     <script src="src/services/BreakPointService.js"></script>
     <script src="src/services/GridService.js"></script>
+    
+    <!-- UI Components -->
+    <script src="src/ui/DataModelEditor.js"></script>
     
     <!-- Factories -->
     <script src="src/factories/NodeFactory.js"></script>
