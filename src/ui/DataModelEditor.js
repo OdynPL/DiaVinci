@@ -670,14 +670,51 @@ class DataModelEditor {
                            placeholder="YYYY-MM-DD">
                 `;
                 
+            case 'DateTime':
+            case 'Timestamp':
+                return `
+                    <input type="datetime-local" 
+                           class="${baseClasses}" 
+                           value="${this.formatDateTimeForInput(field.initialValue)}" 
+                           placeholder="YYYY-MM-DDTHH:MM">
+                `;
+                
+            case 'Time':
+                return `
+                    <input type="time" 
+                           class="${baseClasses}" 
+                           value="${field.initialValue}" 
+                           placeholder="HH:MM">
+                `;
+                
             case 'Number':
             case 'Currency':
+            case 'Float':
+            case 'Decimal':
+                return `
+                    <input type="number" 
+                           class="${baseClasses}" 
+                           value="${field.initialValue}" 
+                           placeholder="0.00" 
+                           step="any">
+                `;
+                
+            case 'Integer':
                 return `
                     <input type="number" 
                            class="${baseClasses}" 
                            value="${field.initialValue}" 
                            placeholder="0" 
-                           step="any">
+                           step="1">
+                `;
+                
+            case 'Percentage':
+                return `
+                    <input type="number" 
+                           class="${baseClasses}" 
+                           value="${field.initialValue}" 
+                           placeholder="0-100" 
+                           min="0" max="100" step="any">
                 `;
                 
             case 'Boolean':
@@ -713,7 +750,110 @@ class DataModelEditor {
                            placeholder="+1234567890">
                 `;
                 
+            case 'UUID':
+                return `
+                    <input type="text" 
+                           class="${baseClasses}" 
+                           value="${field.initialValue}" 
+                           placeholder="550e8400-e29b-41d4-a716-446655440000">
+                `;
+                
+            case 'Password':
+                return `
+                    <input type="password" 
+                           class="${baseClasses}" 
+                           value="${field.initialValue}" 
+                           placeholder="••••••••">
+                `;
+                
+            case 'Color':
+                return `
+                    <input type="color" 
+                           class="${baseClasses}" 
+                           value="${field.initialValue || '#000000'}" 
+                           placeholder="#000000">
+                `;
+                
+            case 'IPv4':
+                return `
+                    <input type="text" 
+                           class="${baseClasses}" 
+                           value="${field.initialValue}" 
+                           placeholder="192.168.1.1">
+                `;
+                
+            case 'IPv6':
+                return `
+                    <input type="text" 
+                           class="${baseClasses}" 
+                           value="${field.initialValue}" 
+                           placeholder="2001:0db8:85a3:0000:0000:8a2e:0370:7334">
+                `;
+                
+            case 'MAC':
+                return `
+                    <input type="text" 
+                           class="${baseClasses}" 
+                           value="${field.initialValue}" 
+                           placeholder="00:1B:44:11:3A:B7">
+                `;
+                
+            case 'Credit Card':
+                return `
+                    <input type="text" 
+                           class="${baseClasses}" 
+                           value="${field.initialValue}" 
+                           placeholder="4111-1111-1111-1111">
+                `;
+                
+            case 'IBAN':
+                return `
+                    <input type="text" 
+                           class="${baseClasses}" 
+                           value="${field.initialValue}" 
+                           placeholder="GB29 NWBK 6016 1331 9268 19">
+                `;
+                
+            case 'Country Code':
+                return `
+                    <input type="text" 
+                           class="${baseClasses}" 
+                           value="${field.initialValue}" 
+                           placeholder="US" maxlength="2">
+                `;
+                
+            case 'Language Code':
+                return `
+                    <input type="text" 
+                           class="${baseClasses}" 
+                           value="${field.initialValue}" 
+                           placeholder="en-US" maxlength="5">
+                `;
+                
+            case 'Timezone':
+                return `
+                    <input type="text" 
+                           class="${baseClasses}" 
+                           value="${field.initialValue}" 
+                           placeholder="America/New_York">
+                `;
+                
+            case 'Duration':
+                return `
+                    <input type="text" 
+                           class="${baseClasses}" 
+                           value="${field.initialValue}" 
+                           placeholder="PT15M (15 minutes)">
+                `;
+                
+            case 'Base64':
+                return `
+                    <textarea class="${baseClasses} h-16 resize-none font-mono text-xs" 
+                              placeholder="SGVsbG8gV29ybGQ=">${field.initialValue}</textarea>
+                `;
+                
             case 'Object':
+            case 'JSON':
                 return `
                     <div class="relative">
                         <div class="absolute left-0 top-0 bottom-0 w-12 bg-gray-100 border-r border-gray-300 rounded-l-md flex flex-col text-xs text-gray-500 font-mono overflow-hidden">
@@ -726,7 +866,7 @@ class DataModelEditor {
                         </div>
                         <textarea class="${baseClasses} h-16 resize-none font-mono text-xs pl-14" 
                                   placeholder='{"key": "value"}'
-                                  data-field-type="Object">${field.initialValue}</textarea>
+                                  data-field-type="${field.type}">${field.initialValue}</textarea>
                     </div>
                 `;
                 
@@ -748,9 +888,40 @@ class DataModelEditor {
                 `;
                 
             case 'Text':
+            case 'HTML':
+            case 'XML':
+            case 'Markdown':
                 return `
                     <textarea class="${baseClasses} h-16 resize-none" 
-                              placeholder="Long text content...">${field.initialValue}</textarea>
+                              placeholder="${field.type === 'HTML' ? '<p>HTML content...</p>' : 
+                                          field.type === 'XML' ? '<?xml version="1.0"?><root></root>' :
+                                          field.type === 'Markdown' ? '# Markdown content...' :
+                                          'Long text content...'}">${field.initialValue}</textarea>
+                `;
+                
+            case 'Binary':
+            case 'File':
+                return `
+                    <input type="text" 
+                           class="${baseClasses}" 
+                           value="${field.initialValue}" 
+                           placeholder="Binary data or file path">
+                `;
+                
+            case 'Image':
+                return `
+                    <input type="text" 
+                           class="${baseClasses}" 
+                           value="${field.initialValue}" 
+                           placeholder="data:image/png;base64,iVBOR...">
+                `;
+                
+            case 'Enum':
+                return `
+                    <input type="text" 
+                           class="${baseClasses}" 
+                           value="${field.initialValue}" 
+                           placeholder="option1,option2,option3">
                 `;
                 
             default: // String and others
@@ -781,6 +952,23 @@ class DataModelEditor {
     }
 
     /**
+     * Format datetime value for HTML datetime-local input
+     */
+    formatDateTimeForInput(dateTimeValue) {
+        if (!dateTimeValue) return '';
+        
+        try {
+            const date = new Date(dateTimeValue);
+            if (isNaN(date.getTime())) return '';
+            
+            // Format as YYYY-MM-DDTHH:mm for HTML datetime-local input
+            return date.toISOString().slice(0, 16);
+        } catch {
+            return '';
+        }
+    }
+
+    /**
      * Get icon for data type (same as in CanvasRenderer)
      */
     getTypeIcon(type) {
@@ -795,7 +983,36 @@ class DataModelEditor {
             'Email': '📧',
             'URL': '🔗',
             'Phone': '📞',
-            'Currency': '💰'
+            'Currency': '💰',
+            // New type icons
+            'UUID': '🔑',
+            'Password': '🔒',
+            'Color': '🎨',
+            'File': '📁',
+            'Image': '🖼️',
+            'JSON': '📋',
+            'Base64': '📊',
+            'Enum': '📝',
+            'Integer': '🔢',
+            'Float': '💯',
+            'Decimal': '💯',
+            'Percentage': '📊',
+            'Duration': '⏱️',
+            'DateTime': '📅',
+            'Time': '🕐',
+            'Timestamp': '⏰',
+            'Binary': '💾',
+            'HTML': '🌐',
+            'XML': '📄',
+            'Markdown': '📝',
+            'IPv4': '🌐',
+            'IPv6': '🌐',
+            'MAC': '🖥️',
+            'Credit Card': '💳',
+            'IBAN': '🏦',
+            'Country Code': '🌍',
+            'Language Code': '🗣️',
+            'Timezone': '🌍'
         };
         return icons[type] || '📝';
     }
@@ -1541,15 +1758,43 @@ class DataModelEditor {
         const typeMapping = {
             'String': 'string',
             'Number': 'number',
+            'Integer': 'integer',
+            'Float': 'number',
+            'Decimal': 'number',
             'Boolean': 'boolean',
             'Date': 'string',
+            'DateTime': 'string',
+            'Time': 'string',
+            'Timestamp': 'string',
             'Object': 'object',
             'Array': 'array',
             'Text': 'string',
             'Email': 'string',
             'URL': 'string',
             'Phone': 'string',
-            'Currency': 'number'
+            'Currency': 'number',
+            'UUID': 'string',
+            'Password': 'string',
+            'Color': 'string',
+            'File': 'string',
+            'Image': 'string',
+            'JSON': 'object',
+            'Base64': 'string',
+            'Enum': 'string',
+            'Percentage': 'number',
+            'Duration': 'string',
+            'Binary': 'string',
+            'HTML': 'string',
+            'XML': 'string',
+            'Markdown': 'string',
+            'IPv4': 'string',
+            'IPv6': 'string',
+            'MAC': 'string',
+            'Credit Card': 'string',
+            'IBAN': 'string',
+            'Country Code': 'string',
+            'Language Code': 'string',
+            'Timezone': 'string'
         };
         return typeMapping[fieldType] || 'string';
     }
@@ -1575,8 +1820,28 @@ class DataModelEditor {
                 'uri': 'URL',
                 'url': 'URL',
                 'date': 'Date',
-                'date-time': 'Date',
-                'time': 'Date'
+                'date-time': 'DateTime',
+                'time': 'Time',
+                'phone': 'Phone',
+                'currency': 'Currency',
+                'uuid': 'UUID',
+                'password': 'Password',
+                'color': 'Color',
+                'binary': 'Binary',
+                'base64': 'Base64',
+                'decimal': 'Decimal',
+                'duration': 'Duration',
+                'html': 'HTML',
+                'xml': 'XML',
+                'markdown': 'Markdown',
+                'ipv4': 'IPv4',
+                'ipv6': 'IPv6',
+                'mac': 'MAC',
+                'credit-card': 'Credit Card',
+                'iban': 'IBAN',
+                'country-code': 'Country Code',
+                'language-code': 'Language Code',
+                'timezone': 'Timezone'
             };
             if (formatMapping[format]) {
                 return formatMapping[format];
@@ -1587,7 +1852,7 @@ class DataModelEditor {
         const typeMapping = {
             'string': 'String',
             'number': 'Number',
-            'integer': 'Number',
+            'integer': 'Integer',
             'boolean': 'Boolean',
             'object': 'Object',
             'array': 'Array'
@@ -1604,12 +1869,24 @@ class DataModelEditor {
             switch (type) {
                 case 'Number':
                 case 'Currency':
+                case 'Float':
+                case 'Decimal':
+                case 'Percentage':
                     return parseFloat(value) || value;
+                case 'Integer':
+                    return parseInt(value) || value;
                 case 'Boolean':
                     return value.toLowerCase() === 'true';
                 case 'Object':
                 case 'Array':
+                case 'JSON':
                     return JSON.parse(value);
+                case 'Date':
+                case 'DateTime':
+                case 'Time':
+                case 'Timestamp':
+                    // Return as string for proper date formatting
+                    return value;
                 default:
                     return value;
             }

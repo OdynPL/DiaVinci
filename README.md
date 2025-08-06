@@ -21,7 +21,7 @@ Modern web-based flowchart editor built with vanilla JavaScript. Create, edit, a
 
 ### 🆕 Data Model Features
 - **Field Management** - Create, edit, and validate data fields
-- **Type Support** - String, Number, Boolean, Date, Email, URL, Phone, Currency, Object, Array
+- **Type Support** - 30+ data types including String, Number, Integer, Float, Boolean, Date, DateTime, Email, URL, UUID, Password, Color, IPv4/IPv6, JSON, Binary, and more
 - **Field Properties** - Required, Nullable, ReadOnly attributes
 - **JSON Schema** - Bi-directional sync between visual fields and JSON Schema
 - **Real-time Validation** - Live error detection and highlighting

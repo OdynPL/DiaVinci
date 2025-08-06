@@ -1027,7 +1027,36 @@ class CanvasRenderer {
             'Email': '📧',
             'URL': '🔗',
             'Phone': '📞',
-            'Currency': '💰'
+            'Currency': '💰',
+            // New type icons
+            'UUID': '🔑',
+            'Password': '🔒',
+            'Color': '🎨',
+            'File': '📁',
+            'Image': '🖼️',
+            'JSON': '📋',
+            'Base64': '📊',
+            'Enum': '📝',
+            'Integer': '🔢',
+            'Float': '💯',
+            'Decimal': '💯',
+            'Percentage': '📊',
+            'Duration': '⏱️',
+            'DateTime': '📅',
+            'Time': '🕐',
+            'Timestamp': '⏰',
+            'Binary': '💾',
+            'HTML': '🌐',
+            'XML': '📄',
+            'Markdown': '📝',
+            'IPv4': '🌐',
+            'IPv6': '🌐',
+            'MAC': '🖥️',
+            'Credit Card': '💳',
+            'IBAN': '🏦',
+            'Country Code': '🌍',
+            'Language Code': '🗣️',
+            'Timezone': '🌍'
         };
         return icons[type] || '📝';
     }

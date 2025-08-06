@@ -131,6 +131,159 @@ class DataModelNode extends Node {
                     errors.push(`Invalid JSON array format: "${value}"`);
                 }
                 break;
+            
+            // New validations
+            case 'UUID':
+                const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+                if (!uuidRegex.test(value)) {
+                    errors.push(`Invalid UUID format: "${value}". Use format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`);
+                }
+                break;
+                
+            case 'Password':
+                if (value.length < 6) {
+                    errors.push(`Password must be at least 6 characters long`);
+                }
+                break;
+                
+            case 'Color':
+                const colorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+                const colorNames = ['red', 'green', 'blue', 'white', 'black', 'yellow', 'orange', 'purple', 'pink', 'brown', 'gray', 'grey'];
+                if (!colorRegex.test(value) && !colorNames.includes(value.toLowerCase()) && !value.startsWith('rgb') && !value.startsWith('rgba')) {
+                    errors.push(`Invalid color format: "${value}". Use hex (#ff0000), color name, or rgb/rgba`);
+                }
+                break;
+                
+            case 'File':
+            case 'Image':
+                // Basic filename validation
+                if (!/^[\w\-. ]+\.[a-zA-Z0-9]+$/.test(value) && !value.startsWith('data:') && !value.startsWith('http')) {
+                    errors.push(`Invalid file format: "${value}". Use filename with extension, data URL, or HTTP URL`);
+                }
+                break;
+                
+            case 'JSON':
+                try {
+                    JSON.parse(value);
+                } catch {
+                    errors.push(`Invalid JSON format: "${value}"`);
+                }
+                break;
+                
+            case 'Base64':
+                const base64Regex = /^[A-Za-z0-9+/]*={0,2}$/;
+                if (!base64Regex.test(value) || value.length % 4 !== 0) {
+                    errors.push(`Invalid Base64 format: "${value}"`);
+                }
+                break;
+                
+            case 'Integer':
+                if (!Number.isInteger(parseFloat(value)) || isNaN(value)) {
+                    errors.push(`Invalid integer format: "${value}"`);
+                }
+                break;
+                
+            case 'Float':
+            case 'Decimal':
+                if (isNaN(value) || isNaN(parseFloat(value))) {
+                    errors.push(`Invalid decimal format: "${value}"`);
+                }
+                break;
+                
+            case 'Percentage':
+                const numValue = parseFloat(value.replace('%', ''));
+                if (isNaN(numValue) || numValue < 0 || numValue > 100) {
+                    errors.push(`Invalid percentage: "${value}". Must be 0-100 or 0%-100%`);
+                }
+                break;
+                
+            case 'Duration':
+                // Support formats like: 1h 30m, 90min, 2:30, PT1H30M
+                const durationRegex = /^(PT)?(\d+[DHMS])*$|^\d+:\d+$|^\d+\s*(h|m|s|min|hour|hours|minute|minutes|second|seconds)(\s*\d+\s*(m|s|min|minute|minutes|second|seconds))*$/i;
+                if (!durationRegex.test(value.replace(/\s+/g, ''))) {
+                    errors.push(`Invalid duration format: "${value}". Use formats like "1h 30m", "90min", "2:30", or ISO 8601`);
+                }
+                break;
+                
+            case 'DateTime':
+                const dateTimeValue = new Date(value);
+                if (isNaN(dateTimeValue.getTime()) && !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)) {
+                    errors.push(`Invalid datetime format: "${value}". Use ISO format: YYYY-MM-DDTHH:mm:ss`);
+                }
+                break;
+                
+            case 'Time':
+                const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$/;
+                if (!timeRegex.test(value)) {
+                    errors.push(`Invalid time format: "${value}". Use HH:mm or HH:mm:ss format`);
+                }
+                break;
+                
+            case 'Timestamp':
+                const timestamp = parseInt(value);
+                if (isNaN(timestamp) || timestamp < 0) {
+                    errors.push(`Invalid timestamp: "${value}". Must be a positive integer`);
+                }
+                break;
+                
+            case 'IPv4':
+                const ipv4Regex = /^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$/;
+                if (!ipv4Regex.test(value)) {
+                    errors.push(`Invalid IPv4 address: "${value}". Use format: 192.168.1.1`);
+                }
+                break;
+                
+            case 'IPv6':
+                const ipv6Regex = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/;
+                if (!ipv6Regex.test(value)) {
+                    errors.push(`Invalid IPv6 address: "${value}"`);
+                }
+                break;
+                
+            case 'MAC':
+                const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
+                if (!macRegex.test(value)) {
+                    errors.push(`Invalid MAC address: "${value}". Use format: XX:XX:XX:XX:XX:XX or XX-XX-XX-XX-XX-XX`);
+                }
+                break;
+                
+            case 'Credit Card':
+                const ccRegex = /^[0-9]{13,19}$/;
+                const cleanValue = value.replace(/[\s-]/g, '');
+                if (!ccRegex.test(cleanValue)) {
+                    errors.push(`Invalid credit card number: "${value}". Must be 13-19 digits`);
+                }
+                break;
+                
+            case 'IBAN':
+                const ibanRegex = /^[A-Z]{2}[0-9]{2}[A-Z0-9]{4}[0-9]{7}([A-Z0-9]?){0,16}$/;
+                if (!ibanRegex.test(value.replace(/\s/g, ''))) {
+                    errors.push(`Invalid IBAN: "${value}". Use format: CC22BBBBSSSSCCCCCCCCCCCC`);
+                }
+                break;
+                
+            case 'Country Code':
+                const countryRegex = /^[A-Z]{2}$/;
+                if (!countryRegex.test(value)) {
+                    errors.push(`Invalid country code: "${value}". Use ISO 3166-1 alpha-2 format (e.g., US, GB, DE)`);
+                }
+                break;
+                
+            case 'Language Code':
+                const langRegex = /^[a-z]{2}(-[A-Z]{2})?$/;
+                if (!langRegex.test(value)) {
+                    errors.push(`Invalid language code: "${value}". Use ISO 639-1 format (e.g., en, en-US, de-DE)`);
+                }
+                break;
+                
+            case 'Timezone':
+                // Basic timezone validation
+                try {
+                    Intl.DateTimeFormat(undefined, {timeZone: value});
+                } catch {
+                    errors.push(`Invalid timezone: "${value}". Use IANA timezone format (e.g., America/New_York, Europe/London)`);
+                }
+                break;
         }
         
         return errors;
@@ -385,7 +538,15 @@ class DataModelNode extends Node {
         return [
             'String', 'Number', 'Boolean', 'Date', 
             'Object', 'Array', 'Text', 'Email', 
-            'URL', 'Phone', 'Currency'
+            'URL', 'Phone', 'Currency',
+            // New types
+            'UUID', 'Password', 'Color', 'File',
+            'Image', 'JSON', 'Base64', 'Enum',
+            'Integer', 'Float', 'Decimal', 'Percentage',
+            'Duration', 'DateTime', 'Time', 'Timestamp',
+            'Binary', 'HTML', 'XML', 'Markdown',
+            'IPv4', 'IPv6', 'MAC', 'Credit Card',
+            'IBAN', 'Country Code', 'Language Code', 'Timezone'
         ];
     }
 }
