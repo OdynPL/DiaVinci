@@ -29,6 +29,203 @@ class DataModelNode extends Node {
     }
 
     /**
+     * Validate field name format
+     */
+    validateFieldName(fieldName) {
+        const errors = [];
+        
+        if (!fieldName || fieldName.trim() === '') {
+            errors.push('Field name is required');
+        } else {
+            // Check field name format (alphanumeric, underscore, no spaces at start/end)
+            if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(fieldName.trim())) {
+                errors.push('Field name must start with letter or underscore, and contain only letters, numbers, and underscores');
+            }
+            
+            // Check length
+            if (fieldName.trim().length > 25) {
+                errors.push('Field name cannot exceed 25 characters');
+            }
+            
+            // Check reserved words
+            const reservedWords = ['id', 'class', 'type', 'new', 'delete', 'return', 'function', 'var', 'let', 'const'];
+            if (reservedWords.includes(fieldName.toLowerCase())) {
+                errors.push('Field name cannot be a reserved word');
+            }
+        }
+        
+        return errors;
+    }
+
+    /**
+     * Validate initial value based on field type
+     */
+    validateInitialValue(value, type) {
+        const errors = [];
+        
+        if (!value || value.trim() === '') {
+            return errors; // Empty values are allowed
+        }
+        
+        switch (type) {
+            case 'Number':
+            case 'Currency':
+                if (isNaN(value) || isNaN(parseFloat(value))) {
+                    errors.push(`Invalid number format: "${value}"`);
+                }
+                break;
+                
+            case 'Boolean':
+                const boolValues = ['true', 'false', '1', '0', 'yes', 'no'];
+                if (!boolValues.includes(value.toLowerCase())) {
+                    errors.push(`Boolean value must be one of: ${boolValues.join(', ')}`);
+                }
+                break;
+                
+            case 'Date':
+                const dateValue = new Date(value);
+                if (isNaN(dateValue.getTime())) {
+                    errors.push(`Invalid date format: "${value}". Use YYYY-MM-DD or ISO format`);
+                }
+                break;
+                
+            case 'Email':
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(value)) {
+                    errors.push(`Invalid email format: "${value}"`);
+                }
+                break;
+                
+            case 'URL':
+                try {
+                    new URL(value);
+                } catch {
+                    errors.push(`Invalid URL format: "${value}"`);
+                }
+                break;
+                
+            case 'Phone':
+                const phoneRegex = /^[+]?[1-9]?[0-9]{7,15}$/;
+                if (!phoneRegex.test(value.replace(/[\s\-\(\)]/g, ''))) {
+                    errors.push(`Invalid phone format: "${value}". Use international format (+1234567890)`);
+                }
+                break;
+                
+            case 'Object':
+                try {
+                    JSON.parse(value);
+                } catch {
+                    errors.push(`Invalid JSON object format: "${value}"`);
+                }
+                break;
+                
+            case 'Array':
+                try {
+                    const parsed = JSON.parse(value);
+                    if (!Array.isArray(parsed)) {
+                        errors.push(`Value must be a valid JSON array: "${value}"`);
+                    }
+                } catch {
+                    errors.push(`Invalid JSON array format: "${value}"`);
+                }
+                break;
+        }
+        
+        return errors;
+    }
+
+    /**
+     * Validate entire field
+     */
+    validateField(field) {
+        const errors = [];
+        
+        // Validate field name
+        const nameErrors = this.validateFieldName(field.name);
+        errors.push(...nameErrors);
+        
+        // Check name uniqueness
+        if (field.name && !this.isFieldNameUnique(field.name, field.id)) {
+            errors.push('Field name must be unique');
+        }
+        
+        // Validate initial value
+        if (field.initialValue) {
+            const valueErrors = this.validateInitialValue(field.initialValue, field.type);
+            errors.push(...valueErrors);
+        }
+        
+        // Required field cannot have empty initial value if we're enforcing defaults
+        if (field.required && (!field.initialValue || field.initialValue.trim() === '')) {
+            // This is a warning, not an error - required fields can have empty defaults
+            // errors.push('Required fields should have a default value');
+        }
+        
+        return errors;
+    }
+
+    /**
+     * Validate all fields in the model
+     */
+    validateAllFields() {
+        const allErrors = {};
+        let hasErrors = false;
+        
+        this.fields.forEach(field => {
+            const fieldErrors = this.validateField(field);
+            if (fieldErrors.length > 0) {
+                allErrors[field.id] = fieldErrors;
+                hasErrors = true;
+            }
+        });
+        
+        return {
+            hasErrors,
+            errors: allErrors
+        };
+    }
+
+    /**
+     * Check if model is valid for saving
+     */
+    isValidForSave() {
+        // Model name validation
+        if (!this.label || this.label.trim() === '') {
+            return {
+                valid: false,
+                error: 'Model name is required'
+            };
+        }
+        
+        if (this.label.length > 50) {
+            return {
+                valid: false,
+                error: 'Model name cannot exceed 50 characters'
+            };
+        }
+        
+        // Must have at least one field
+        if (this.fields.length === 0) {
+            return {
+                valid: false,
+                error: 'Model must have at least one field'
+            };
+        }
+        
+        // All fields must be valid
+        const validation = this.validateAllFields();
+        if (validation.hasErrors) {
+            return {
+                valid: false,
+                error: 'Please fix field validation errors before saving',
+                fieldErrors: validation.errors
+            };
+        }
+        
+        return { valid: true };
+    }
+
+    /**
      * Generate unique field name
      */
     generateUniqueFieldName(baseName = 'field_Name') {

@@ -164,6 +164,19 @@ class DataModelEditor {
                             <div class="fields-container pb-6">
                                 <!-- Fields will be rendered here -->
                             </div>
+                            
+                            <!-- Validation Summary -->
+                            <div class="validation-summary hidden bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
+                                <div class="flex items-center mb-2">
+                                    <svg class="w-5 h-5 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z"/>
+                                    </svg>
+                                    <h4 class="text-sm font-medium text-red-800">Validation Errors</h4>
+                                </div>
+                                <div class="validation-errors text-sm text-red-700">
+                                    <!-- Validation errors will be listed here -->
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -271,6 +284,9 @@ class DataModelEditor {
         
         document.body.appendChild(this.modal);
         this.setupEventListeners();
+        
+        // Initialize validation state
+        this.updateSaveButtonState();
     }
 
     /**
@@ -295,9 +311,25 @@ class DataModelEditor {
         // Save button
         this.modal.querySelector('.save-btn').addEventListener('click', () => this.saveChanges());
         
-        // Model name input
+        // Model name input with validation
         this.modal.querySelector('.model-name-input').addEventListener('input', (e) => {
-            this.currentNode.setLabel(e.target.value);
+            const newName = e.target.value;
+            this.currentNode.setLabel(newName);
+            
+            // Validate model name
+            if (!newName || newName.trim() === '') {
+                e.target.classList.add('border-red-500', 'bg-red-50');
+                e.target.title = 'Model name is required';
+            } else if (newName.length > 50) {
+                e.target.classList.add('border-red-500', 'bg-red-50');
+                e.target.title = 'Model name cannot exceed 50 characters';
+            } else {
+                e.target.classList.remove('border-red-500', 'bg-red-50');
+                e.target.classList.add('border-gray-300');
+                e.target.title = newName;
+            }
+            
+            this.updateSaveButtonState();
         });
         
         // Copy ID button
@@ -514,10 +546,7 @@ class DataModelEditor {
                 </div>
                 
                 <div class="col-span-2">
-                    <input type="text" 
-                           class="field-value w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" 
-                           value="${field.initialValue}" 
-                           placeholder="default value">
+                    ${this.createInitialValueInput(field)}
                 </div>
                 
                 <div class="col-span-3 flex items-center justify-between gap-2">
@@ -555,6 +584,109 @@ class DataModelEditor {
     }
 
     /**
+     * Create appropriate input field based on data type
+     */
+    createInitialValueInput(field) {
+        const baseClasses = "field-value w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all";
+        
+        switch (field.type) {
+            case 'Date':
+                return `
+                    <input type="date" 
+                           class="${baseClasses}" 
+                           value="${this.formatDateForInput(field.initialValue)}" 
+                           placeholder="YYYY-MM-DD">
+                `;
+                
+            case 'Number':
+            case 'Currency':
+                return `
+                    <input type="number" 
+                           class="${baseClasses}" 
+                           value="${field.initialValue}" 
+                           placeholder="0" 
+                           step="any">
+                `;
+                
+            case 'Boolean':
+                return `
+                    <select class="${baseClasses}">
+                        <option value="">Select...</option>
+                        <option value="true" ${field.initialValue === 'true' ? 'selected' : ''}>True</option>
+                        <option value="false" ${field.initialValue === 'false' ? 'selected' : ''}>False</option>
+                    </select>
+                `;
+                
+            case 'Email':
+                return `
+                    <input type="email" 
+                           class="${baseClasses}" 
+                           value="${field.initialValue}" 
+                           placeholder="user@example.com">
+                `;
+                
+            case 'URL':
+                return `
+                    <input type="url" 
+                           class="${baseClasses}" 
+                           value="${field.initialValue}" 
+                           placeholder="https://example.com">
+                `;
+                
+            case 'Phone':
+                return `
+                    <input type="tel" 
+                           class="${baseClasses}" 
+                           value="${field.initialValue}" 
+                           placeholder="+1234567890">
+                `;
+                
+            case 'Object':
+                return `
+                    <textarea class="${baseClasses} h-16 resize-none font-mono text-xs" 
+                              placeholder='{"key": "value"}'>${field.initialValue}</textarea>
+                `;
+                
+            case 'Array':
+                return `
+                    <textarea class="${baseClasses} h-16 resize-none font-mono text-xs" 
+                              placeholder='["item1", "item2"]'>${field.initialValue}</textarea>
+                `;
+                
+            case 'Text':
+                return `
+                    <textarea class="${baseClasses} h-16 resize-none" 
+                              placeholder="Long text content...">${field.initialValue}</textarea>
+                `;
+                
+            default: // String and others
+                return `
+                    <input type="text" 
+                           class="${baseClasses}" 
+                           value="${field.initialValue}" 
+                           placeholder="default value">
+                `;
+        }
+    }
+
+    /**
+     * Format date value for HTML date input
+     */
+    formatDateForInput(dateValue) {
+        if (!dateValue) return '';
+        
+        try {
+            const date = new Date(dateValue);
+            if (isNaN(date.getTime())) return '';
+            
+            // Format as YYYY-MM-DD for HTML date input
+            return date.toISOString().split('T')[0];
+        } catch {
+            return '';
+        }
+    }
+
+    /**
      * Get icon for data type (same as in CanvasRenderer)
      */
     getTypeIcon(type) {
@@ -580,68 +712,200 @@ class DataModelEditor {
     setupFieldEventListeners(fieldElement, field) {
         const fieldId = field.id;
         
-        // Field name change with uniqueness validation
+        // Field name change with comprehensive validation
         fieldElement.querySelector('.field-name').addEventListener('input', (e) => {
             const newName = e.target.value.trim();
-            
-            // Check character limit
-            if (newName.length > 25) {
-                e.target.classList.add('border-red-500', 'bg-red-50');
-                e.target.classList.remove('border-gray-300');
-                this.showFieldValidationError(e.target, 'Field name cannot exceed 25 characters');
-                return;
-            }
-            
-            const isUnique = this.currentNode.isFieldNameUnique(newName, fieldId);
-            
-            if (!isUnique && newName !== '') {
-                // Show error styling
-                e.target.classList.add('border-red-500', 'bg-red-50');
-                e.target.classList.remove('border-gray-300');
-                
-                // Show tooltip or validation message
-                this.showFieldValidationError(e.target, 'Field name must be unique');
-            } else {
-                // Remove error styling
-                e.target.classList.remove('border-red-500', 'bg-red-50');
-                e.target.classList.add('border-gray-300');
-                this.hideFieldValidationError(e.target);
-                
-                // Update the field
-                try {
-                    this.currentNode.updateField(fieldId, { name: newName });
-                } catch (error) {
-                    // Handle the error from the model
-                    e.target.classList.add('border-red-500', 'bg-red-50');
-                    this.showFieldValidationError(e.target, error.message);
-                }
-            }
+            this.validateAndUpdateFieldName(e.target, fieldId, newName);
         });
         
-        // Field type change
+        // Field name blur validation (more thorough)
+        fieldElement.querySelector('.field-name').addEventListener('blur', (e) => {
+            const newName = e.target.value.trim();
+            this.validateAndUpdateFieldName(e.target, fieldId, newName, true);
+        });
+        
+        // Field type change with value validation
         fieldElement.querySelector('.field-type').addEventListener('change', (e) => {
-            this.currentNode.updateField(fieldId, { type: e.target.value });
+            const newType = e.target.value;
+            this.updateFieldType(fieldId, newType);
+            // Re-render to update input type
+            this.renderFields();
         });
         
-        // Field value change
-        fieldElement.querySelector('.field-value').addEventListener('input', (e) => {
-            this.currentNode.updateField(fieldId, { initialValue: e.target.value });
+        // Field value change with type-specific validation
+        const valueInput = fieldElement.querySelector('.field-value');
+        valueInput.addEventListener('input', (e) => {
+            this.validateAndUpdateFieldValue(e.target, fieldId, e.target.value);
+        });
+        
+        valueInput.addEventListener('blur', (e) => {
+            this.validateAndUpdateFieldValue(e.target, fieldId, e.target.value, true);
         });
         
         // Required checkbox
         fieldElement.querySelector('.field-required').addEventListener('change', (e) => {
             this.currentNode.updateField(fieldId, { required: e.target.checked });
+            this.updateSaveButtonState();
         });
         
         // Read Only checkbox
         fieldElement.querySelector('.field-readonly').addEventListener('change', (e) => {
             this.currentNode.updateField(fieldId, { readOnly: e.target.checked });
+            this.updateSaveButtonState();
         });
         
         // Remove field button
         fieldElement.querySelector('.remove-field-btn').addEventListener('click', () => {
             this.removeField(fieldId);
         });
+    }
+
+    /**
+     * Validate and update field name
+     */
+    validateAndUpdateFieldName(inputElement, fieldId, newName, showAllErrors = false) {
+        const field = this.currentNode.getField(fieldId);
+        if (!field) return;
+        
+        // Create temporary field for validation
+        const tempField = { ...field, name: newName };
+        const errors = this.currentNode.validateField(tempField);
+        
+        // Filter errors for name-specific issues
+        const nameErrors = errors.filter(error => 
+            error.includes('Field name') || error.includes('unique') || error.includes('reserved')
+        );
+        
+        if (nameErrors.length > 0) {
+            inputElement.classList.add('border-red-500', 'bg-red-50');
+            inputElement.classList.remove('border-gray-300');
+            this.showFieldValidationError(inputElement, nameErrors[0]);
+        } else {
+            inputElement.classList.remove('border-red-500', 'bg-red-50');
+            inputElement.classList.add('border-gray-300');
+            this.hideFieldValidationError(inputElement);
+            
+            // Update the field if valid
+            try {
+                this.currentNode.updateField(fieldId, { name: newName });
+            } catch (error) {
+                inputElement.classList.add('border-red-500', 'bg-red-50');
+                this.showFieldValidationError(inputElement, error.message);
+            }
+        }
+        
+        this.updateSaveButtonState();
+    }
+
+    /**
+     * Validate and update field value
+     */
+    validateAndUpdateFieldValue(inputElement, fieldId, newValue, showAllErrors = false) {
+        const field = this.currentNode.getField(fieldId);
+        if (!field) return;
+        
+        // Validate the value based on field type
+        const errors = this.currentNode.validateInitialValue(newValue, field.type);
+        
+        if (errors.length > 0) {
+            inputElement.classList.add('border-red-500', 'bg-red-50');
+            inputElement.classList.remove('border-gray-300');
+            this.showFieldValidationError(inputElement, errors[0]);
+        } else {
+            inputElement.classList.remove('border-red-500', 'bg-red-50');
+            inputElement.classList.add('border-gray-300');
+            this.hideFieldValidationError(inputElement);
+            
+            // Update the field if valid
+            this.currentNode.updateField(fieldId, { initialValue: newValue });
+        }
+        
+        this.updateSaveButtonState();
+    }
+
+    /**
+     * Update field type and re-validate value
+     */
+    updateFieldType(fieldId, newType) {
+        const field = this.currentNode.getField(fieldId);
+        if (!field) return;
+        
+        // Update the type
+        this.currentNode.updateField(fieldId, { type: newType });
+        
+        // Re-validate the current value with new type
+        if (field.initialValue) {
+            const errors = this.currentNode.validateInitialValue(field.initialValue, newType);
+            if (errors.length > 0) {
+                // Clear invalid value for new type
+                this.currentNode.updateField(fieldId, { initialValue: '' });
+            }
+        }
+        
+        this.updateSaveButtonState();
+    }
+
+    /**
+     * Update save button state based on validation
+     */
+    updateSaveButtonState() {
+        const saveBtn = this.modal.querySelector('.save-btn');
+        const validation = this.currentNode.isValidForSave();
+        
+        if (validation.valid) {
+            saveBtn.disabled = false;
+            saveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            saveBtn.classList.add('hover:from-violet-600', 'hover:to-purple-700');
+            saveBtn.title = '';
+            this.hideValidationSummary();
+        } else {
+            saveBtn.disabled = true;
+            saveBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            saveBtn.classList.remove('hover:from-violet-600', 'hover:to-purple-700');
+            saveBtn.title = validation.error || 'Please fix validation errors';
+            this.showValidationSummary(validation);
+        }
+    }
+
+    /**
+     * Show validation summary
+     */
+    showValidationSummary(validation) {
+        const summaryDiv = this.modal.querySelector('.validation-summary');
+        const errorsDiv = this.modal.querySelector('.validation-errors');
+        
+        if (!summaryDiv || !errorsDiv) return;
+        
+        let errorHTML = `<div class="mb-2"><strong>General:</strong> ${validation.error}</div>`;
+        
+        if (validation.fieldErrors) {
+            errorHTML += '<div><strong>Field Errors:</strong></div><ul class="list-disc list-inside ml-4 space-y-1">';
+            
+            Object.keys(validation.fieldErrors).forEach(fieldId => {
+                const field = this.currentNode.getField(fieldId);
+                const fieldName = field ? field.name || 'Unnamed Field' : 'Unknown Field';
+                const errors = validation.fieldErrors[fieldId];
+                
+                errors.forEach(error => {
+                    errorHTML += `<li><strong>${fieldName}:</strong> ${error}</li>`;
+                });
+            });
+            
+            errorHTML += '</ul>';
+        }
+        
+        errorsDiv.innerHTML = errorHTML;
+        summaryDiv.classList.remove('hidden');
+    }
+
+    /**
+     * Hide validation summary
+     */
+    hideValidationSummary() {
+        const summaryDiv = this.modal.querySelector('.validation-summary');
+        if (summaryDiv) {
+            summaryDiv.classList.add('hidden');
+        }
     }
 
     /**
@@ -704,6 +968,7 @@ class DataModelEditor {
         });
         
         this.renderFields();
+        this.updateSaveButtonState();
     }
 
     /**
@@ -712,12 +977,37 @@ class DataModelEditor {
     removeField(fieldId) {
         this.currentNode.removeField(fieldId);
         this.renderFields();
+        this.updateSaveButtonState();
     }
 
     /**
      * Save changes and close editor
      */
     saveChanges() {
+        // Final validation before saving
+        const validation = this.currentNode.isValidForSave();
+        
+        if (!validation.valid) {
+            // Show validation error
+            alert(`Cannot save: ${validation.error}`);
+            
+            // If there are field errors, highlight them
+            if (validation.fieldErrors) {
+                Object.keys(validation.fieldErrors).forEach(fieldId => {
+                    const fieldElement = this.modal.querySelector(`[data-field-id="${fieldId}"]`);
+                    if (fieldElement) {
+                        const nameInput = fieldElement.querySelector('.field-name');
+                        const valueInput = fieldElement.querySelector('.field-value');
+                        
+                        if (nameInput) nameInput.classList.add('border-red-500', 'bg-red-50');
+                        if (valueInput) valueInput.classList.add('border-red-500', 'bg-red-50');
+                    }
+                });
+            }
+            
+            return; // Don't save if validation fails
+        }
+        
         // Emit event to trigger re-render
         this.eventBus.emit('datamodel.updated', {
             node: this.currentNode
