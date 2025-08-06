@@ -301,10 +301,18 @@ class DataModelEditor {
 
         // Add header row once at the top
         const headerDiv = document.createElement('div');
-        headerDiv.className = 'field-header bg-gray-50 p-3 rounded-t-lg border border-gray-200 border-b-0';
+        headerDiv.className = 'field-header bg-gray-50 px-3 py-2 rounded-t-lg border border-gray-200';
         headerDiv.innerHTML = `
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-                <div class="sm:col-span-1">
+            <div class="grid grid-cols-6 gap-3">
+                <div class="col-span-1">
+                    <label class="block text-xs font-medium text-gray-700 flex items-center">
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11"/>
+                        </svg>
+                        #
+                    </label>
+                </div>
+                <div class="col-span-2">
                     <label class="block text-xs font-medium text-gray-700 flex items-center">
                         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
@@ -312,7 +320,7 @@ class DataModelEditor {
                         Field Name
                     </label>
                 </div>
-                <div class="sm:col-span-1">
+                <div class="col-span-1">
                     <label class="block text-xs font-medium text-gray-700 flex items-center">
                         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
@@ -320,7 +328,7 @@ class DataModelEditor {
                         Type
                     </label>
                 </div>
-                <div class="sm:col-span-1 lg:col-span-1">
+                <div class="col-span-1">
                     <label class="block text-xs font-medium text-gray-700 flex items-center">
                         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
@@ -328,7 +336,7 @@ class DataModelEditor {
                         Initial Value
                     </label>
                 </div>
-                <div class="sm:col-span-1 lg:col-span-1 xl:col-span-1">
+                <div class="col-span-1">
                     <label class="block text-xs font-medium text-gray-700 flex items-center">
                         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"/>
@@ -342,7 +350,7 @@ class DataModelEditor {
 
         // Create fields container with unified border
         const fieldsWrapper = document.createElement('div');
-        fieldsWrapper.className = 'fields-wrapper bg-white border border-gray-200 border-t-0 rounded-b-lg';
+        fieldsWrapper.className = 'fields-wrapper bg-white border border-gray-200 border-t-0 rounded-b-lg sortable-fields';
         
         // Add all field rows
         this.currentNode.fields.forEach((field, index) => {
@@ -351,6 +359,9 @@ class DataModelEditor {
         });
         
         container.appendChild(fieldsWrapper);
+        
+        // Initialize drag and drop
+        this.initializeDragAndDrop(fieldsWrapper);
     }
 
     /**
@@ -358,21 +369,33 @@ class DataModelEditor {
      */
     createFieldElement(field, index) {
         const fieldDiv = document.createElement('div');
-        fieldDiv.className = `field-item p-3 hover:bg-gray-50 transition-all ${index > 0 ? 'border-t border-gray-200' : ''}`;
+        const borderClass = index === 0 ? '' : 'border-t border-gray-200';
+        fieldDiv.className = `field-item px-3 py-2 hover:bg-gray-50 transition-all cursor-move ${borderClass} draggable-field`;
         fieldDiv.dataset.fieldId = field.id;
+        fieldDiv.dataset.fieldIndex = index;
+        fieldDiv.draggable = true;
         
         const typeIcon = this.getTypeIcon(field.type);
         
         fieldDiv.innerHTML = `
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 items-center">
-                <div class="sm:col-span-1">
+            <div class="grid grid-cols-6 gap-3 items-center">
+                <div class="col-span-1 flex items-center">
+                    <div class="drag-handle flex items-center justify-center w-6 h-6 text-gray-400 hover:text-gray-600 cursor-move mr-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"/>
+                        </svg>
+                    </div>
+                    <span class="field-number text-sm font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-full min-w-[24px] text-center">${index + 1}</span>
+                </div>
+                
+                <div class="col-span-2">
                     <input type="text" 
                            class="field-name w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" 
                            value="${field.name}" 
                            placeholder="field_name">
                 </div>
                 
-                <div class="sm:col-span-1">
+                <div class="col-span-1">
                     <select class="field-type w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all">
                         ${this.supportedTypes.map(type => 
                             `<option value="${type}" ${field.type === type ? 'selected' : ''}>${this.getTypeIcon(type)} ${type}</option>`
@@ -380,14 +403,14 @@ class DataModelEditor {
                     </select>
                 </div>
                 
-                <div class="sm:col-span-1 lg:col-span-1">
+                <div class="col-span-1">
                     <input type="text" 
                            class="field-value w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" 
                            value="${field.initialValue}" 
                            placeholder="default value">
                 </div>
                 
-                <div class="sm:col-span-1 lg:col-span-1 xl:col-span-1 flex items-center justify-between">
+                <div class="col-span-1 flex items-center justify-between">
                     <label class="flex items-center text-xs text-gray-700 bg-gray-50 px-2 py-2 rounded-md">
                         <input type="checkbox" 
                                class="field-list mr-2 text-violet-500 focus:ring-violet-500 rounded" 
@@ -497,5 +520,140 @@ class DataModelEditor {
         
         // Close editor
         this.close();
+    }
+
+    /**
+     * Initialize drag and drop functionality for field reordering
+     */
+    initializeDragAndDrop(container) {
+        let draggedElement = null;
+        let draggedIndex = null;
+        
+        container.addEventListener('dragstart', (e) => {
+            if (e.target.classList.contains('draggable-field')) {
+                draggedElement = e.target;
+                draggedIndex = parseInt(e.target.dataset.fieldIndex);
+                e.target.style.opacity = '0.5';
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/html', e.target.outerHTML);
+            }
+        });
+        
+        container.addEventListener('dragend', (e) => {
+            if (e.target.classList.contains('draggable-field')) {
+                e.target.style.opacity = '';
+                draggedElement = null;
+                draggedIndex = null;
+                
+                // Remove drag indicators
+                container.querySelectorAll('.drag-over').forEach(el => {
+                    el.classList.remove('drag-over');
+                });
+            }
+        });
+        
+        container.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            
+            const afterElement = this.getDragAfterElement(container, e.clientY);
+            const dragging = container.querySelector('.draggable-field[style*="opacity"]');
+            
+            if (afterElement == null) {
+                container.appendChild(dragging);
+            } else {
+                container.insertBefore(dragging, afterElement);
+            }
+        });
+        
+        container.addEventListener('dragenter', (e) => {
+            e.preventDefault();
+            if (e.target.classList.contains('draggable-field') && e.target !== draggedElement) {
+                e.target.classList.add('drag-over');
+            }
+        });
+        
+        container.addEventListener('dragleave', (e) => {
+            if (e.target.classList.contains('draggable-field')) {
+                e.target.classList.remove('drag-over');
+            }
+        });
+        
+        container.addEventListener('drop', (e) => {
+            e.preventDefault();
+            
+            if (!draggedElement) return;
+            
+            // Calculate new index
+            const allFields = Array.from(container.querySelectorAll('.draggable-field'));
+            const newIndex = allFields.indexOf(draggedElement);
+            
+            if (newIndex !== -1 && newIndex !== draggedIndex) {
+                // Reorder fields in the data model
+                this.reorderFields(draggedIndex, newIndex);
+            }
+            
+            // Remove drag indicators
+            container.querySelectorAll('.drag-over').forEach(el => {
+                el.classList.remove('drag-over');
+            });
+        });
+        
+        // Add CSS for drag over effect
+        const style = document.createElement('style');
+        style.textContent = `
+            .draggable-field.drag-over {
+                border-top: 3px solid #8b5cf6 !important;
+                background-color: #f3f4f6 !important;
+            }
+            .draggable-field[style*="opacity"] {
+                background-color: #f9fafb !important;
+                border: 2px dashed #d1d5db !important;
+            }
+        `;
+        if (!document.head.querySelector('style[data-drag-styles]')) {
+            style.setAttribute('data-drag-styles', 'true');
+            document.head.appendChild(style);
+        }
+    }
+    
+    /**
+     * Get the element after which the dragged element should be inserted
+     */
+    getDragAfterElement(container, y) {
+        const draggableElements = [...container.querySelectorAll('.draggable-field:not([style*="opacity"])')];
+        
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offset = y - box.top - box.height / 2;
+            
+            if (offset < 0 && offset > closest.offset) {
+                return { offset: offset, element: child };
+            } else {
+                return closest;
+            }
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+    
+    /**
+     * Reorder fields in the data model
+     */
+    reorderFields(fromIndex, toIndex) {
+        if (fromIndex === toIndex) return;
+        
+        // Create a copy of the fields array
+        const fields = [...this.currentNode.fields];
+        
+        // Remove the field from its current position
+        const [movedField] = fields.splice(fromIndex, 1);
+        
+        // Insert it at the new position
+        fields.splice(toIndex, 0, movedField);
+        
+        // Update the node's fields
+        this.currentNode.fields = fields;
+        
+        // Re-render to update field numbers and maintain state
+        this.renderFields();
     }
 }
