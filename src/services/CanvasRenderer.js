@@ -820,7 +820,7 @@ class CanvasRenderer {
         } else if (node.type === 'datamodel') {
             // Draw rounded rectangle for data model nodes with shadow
             const width = node.r * 3.5;
-            const height = Math.max(node.r * 2, node.fields.length * 22 + 50);
+            const height = Math.max(node.r * 2, node.fields.length * 16 + 45);
             const x = node.x - width/2;
             const y = node.y - height/2;
             const radius = 8;
@@ -886,7 +886,7 @@ class CanvasRenderer {
      */
     drawDataModelContent(node) {
         const width = node.r * 3.5;
-        const height = Math.max(node.r * 2, node.fields.length * 18 + 45);
+        const height = Math.max(node.r * 2, node.fields.length * 16 + 45);
         const startX = node.x - width/2;
         const startY = node.y - height/2;
         
@@ -919,34 +919,38 @@ class CanvasRenderer {
         
         // Draw fields with better formatting
         if (node.fields.length > 0) {
-            this.ctx.font = '11px Arial';
             this.ctx.textAlign = 'left';
             
             node.fields.forEach((field, index) => {
-                const fieldY = startY + 40 + (index * 18);
+                const fieldY = startY + 35 + (index * 16);
                 const isEven = index % 2 === 0;
                 
                 // Alternate row background
                 if (isEven) {
                     this.ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-                    this.ctx.fillRect(startX + 1, fieldY - 6, width - 2, 16);
+                    this.ctx.fillRect(startX + 1, fieldY - 2, width - 2, 14);
                 }
                 
-                // Field type icon
+                // Field type icon (smaller)
                 const typeIcon = this.getTypeIcon(field.type);
                 this.ctx.fillStyle = '#f0f0f0';
-                this.ctx.fillText(typeIcon, startX + 6, fieldY + 1);
-                
-                // Field name - increase contrast and size
-                this.ctx.fillStyle = '#ffffff';
-                this.ctx.font = 'bold 11px Arial';
-                this.ctx.fillText(field.name, startX + 22, fieldY + 1);
-                
-                // Field type with list indicator - better contrast
-                this.ctx.fillStyle = '#e8e8e8';
                 this.ctx.font = '10px Arial';
+                this.ctx.fillText(typeIcon, startX + 6, fieldY + 7);
+                
+                // Field name and type on same line
+                this.ctx.fillStyle = '#ffffff';
+                this.ctx.font = 'bold 10px Arial';
+                this.ctx.fillText(field.name, startX + 20, fieldY + 7);
+                
+                // Field type with list indicator (on same line, right side)
+                this.ctx.fillStyle = '#e8e8e8';
+                this.ctx.font = '9px Arial';
+                this.ctx.textAlign = 'right';
                 const typeText = field.isList ? `[${field.type}]` : field.type;
-                this.ctx.fillText(typeText, startX + 6, fieldY + 11);
+                this.ctx.fillText(typeText, startX + width - 8, fieldY + 7);
+                
+                // Reset text align for next iteration
+                this.ctx.textAlign = 'left';
             });
         } else {
             // Empty state with better design

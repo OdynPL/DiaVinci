@@ -298,11 +298,59 @@ class DataModelEditor {
             `;
             return;
         }
+
+        // Add header row once at the top
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'field-header bg-gray-50 p-3 rounded-t-lg border border-gray-200 border-b-0';
+        headerDiv.innerHTML = `
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+                <div class="sm:col-span-1">
+                    <label class="block text-xs font-medium text-gray-700 flex items-center">
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                        </svg>
+                        Field Name
+                    </label>
+                </div>
+                <div class="sm:col-span-1">
+                    <label class="block text-xs font-medium text-gray-700 flex items-center">
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                        </svg>
+                        Type
+                    </label>
+                </div>
+                <div class="sm:col-span-1 lg:col-span-1">
+                    <label class="block text-xs font-medium text-gray-700 flex items-center">
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                        Initial Value
+                    </label>
+                </div>
+                <div class="sm:col-span-1 lg:col-span-1 xl:col-span-1">
+                    <label class="block text-xs font-medium text-gray-700 flex items-center">
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"/>
+                        </svg>
+                        Options
+                    </label>
+                </div>
+            </div>
+        `;
+        container.appendChild(headerDiv);
+
+        // Create fields container with unified border
+        const fieldsWrapper = document.createElement('div');
+        fieldsWrapper.className = 'fields-wrapper bg-white border border-gray-200 border-t-0 rounded-b-lg';
         
+        // Add all field rows
         this.currentNode.fields.forEach((field, index) => {
             const fieldElement = this.createFieldElement(field, index);
-            container.appendChild(fieldElement);
+            fieldsWrapper.appendChild(fieldElement);
         });
+        
+        container.appendChild(fieldsWrapper);
     }
 
     /**
@@ -310,20 +358,14 @@ class DataModelEditor {
      */
     createFieldElement(field, index) {
         const fieldDiv = document.createElement('div');
-        fieldDiv.className = 'field-item bg-white p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all';
+        fieldDiv.className = `field-item p-3 hover:bg-gray-50 transition-all ${index > 0 ? 'border-t border-gray-200' : ''}`;
         fieldDiv.dataset.fieldId = field.id;
         
         const typeIcon = this.getTypeIcon(field.type);
         
         fieldDiv.innerHTML = `
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 items-end">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 items-center">
                 <div class="sm:col-span-1">
-                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
-                        </svg>
-                        Field Name
-                    </label>
                     <input type="text" 
                            class="field-name w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" 
                            value="${field.name}" 
@@ -331,10 +373,6 @@ class DataModelEditor {
                 </div>
                 
                 <div class="sm:col-span-1">
-                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                        <span class="mr-1">${typeIcon}</span>
-                        Type
-                    </label>
                     <select class="field-type w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all">
                         ${this.supportedTypes.map(type => 
                             `<option value="${type}" ${field.type === type ? 'selected' : ''}>${this.getTypeIcon(type)} ${type}</option>`
@@ -343,12 +381,6 @@ class DataModelEditor {
                 </div>
                 
                 <div class="sm:col-span-1 lg:col-span-1">
-                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
-                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                        </svg>
-                        Initial Value
-                    </label>
                     <input type="text" 
                            class="field-value w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" 
                            value="${field.initialValue}" 
