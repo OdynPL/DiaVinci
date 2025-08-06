@@ -399,6 +399,11 @@ class DataModelEditor {
             this.updateSaveButtonState(); // Update save button when JSON changes
         });
         
+        // Add real-time JSON sync on blur (when user finishes editing)
+        this.modal.querySelector('.json-editor').addEventListener('blur', (e) => {
+            this.attemptJSONSync(e.target.value);
+        });
+        
         // Initialize JSON line numbers
         const jsonEditor = this.modal.querySelector('.json-editor');
         this.updateJSONLineNumbers(jsonEditor);
@@ -454,6 +459,16 @@ class DataModelEditor {
         // Update JSON content when switching to JSON tab
         if (tabName === 'json') {
             this.updateJSONContent();
+            // Also validate the current JSON immediately
+            setTimeout(() => {
+                this.validateJSON();
+            }, 50);
+        }
+        
+        // When switching from JSON tab, attempt to sync changes
+        if (this.activeTab === 'json' && tabName !== 'json') {
+            const jsonEditor = this.modal.querySelector('.json-editor');
+            this.attemptJSONSync(jsonEditor.value);
         }
         
         // Update validation state when switching tabs
@@ -1547,21 +1562,28 @@ class DataModelEditor {
         if (Array.isArray(jsonType)) {
             // Find the non-null type in the array
             const mainType = jsonType.find(type => type !== 'null');
+            if (!mainType) {
+                return 'String'; // Default if only null type
+            }
             return this.mapJSONTypeToField(mainType, format);
         }
         
+        // Handle format-specific mappings first
         if (format) {
             const formatMapping = {
                 'email': 'Email',
                 'uri': 'URL',
+                'url': 'URL',
                 'date': 'Date',
-                'date-time': 'Date'
+                'date-time': 'Date',
+                'time': 'Date'
             };
             if (formatMapping[format]) {
                 return formatMapping[format];
             }
         }
 
+        // Handle standard type mappings
         const typeMapping = {
             'string': 'String',
             'number': 'Number',
@@ -1570,6 +1592,7 @@ class DataModelEditor {
             'object': 'Object',
             'array': 'Array'
         };
+        
         return typeMapping[jsonType] || 'String';
     }
 
@@ -1601,12 +1624,23 @@ class DataModelEditor {
     updateJSONContent() {
         const jsonEditor = this.modal.querySelector('.json-editor');
         if (jsonEditor) {
-            const schema = this.generateJSONSchema();
-            jsonEditor.value = JSON.stringify(schema, null, 2);
-            this.clearValidationMessage();
-            
-            // Update line numbers for the JSON content
-            this.updateJSONLineNumbers(jsonEditor);
+            try {
+                const schema = this.generateJSONSchema();
+                const jsonString = JSON.stringify(schema, null, 2);
+                
+                // Only update if content has actually changed to avoid cursor jumping
+                if (jsonEditor.value !== jsonString) {
+                    jsonEditor.value = jsonString;
+                }
+                
+                this.clearValidationMessage();
+                
+                // Update line numbers for the JSON content
+                this.updateJSONLineNumbers(jsonEditor);
+            } catch (error) {
+                console.error('Error updating JSON content:', error);
+                this.showValidationMessage(`Error generating JSON: ${error.message}`, 'error');
+            }
         }
     }
 
@@ -1630,7 +1664,7 @@ class DataModelEditor {
                 return; // Error messages are shown in validateJSONSchema
             }
 
-            // Clear existing fields
+            // Clear existing fields ONLY after successful validation
             this.currentNode.fields = [];
 
             // Track field names to ensure uniqueness
@@ -1668,6 +1702,7 @@ class DataModelEditor {
                     }
                 }
 
+                // Use addField method which ensures proper validation
                 this.currentNode.addField({
                     name: finalFieldName,
                     type: fieldType,
@@ -1696,8 +1731,13 @@ class DataModelEditor {
             this.switchTab('properties');
             this.renderFields();
             
-            // Validate after import
+            // Validate after import and update JSON to reflect any changes
             this.updateSaveButtonState();
+            
+            // Update JSON content to show the cleaned/processed schema
+            setTimeout(() => {
+                this.updateJSONContent();
+            }, 100);
 
         } catch (error) {
             this.showValidationMessage(`Invalid JSON: ${error.message}`, 'error');
@@ -1736,10 +1776,15 @@ class DataModelEditor {
                 return false;
             }
 
-            const validTypes = ['string', 'number', 'integer', 'boolean', 'object', 'array'];
-            if (!validTypes.includes(property.type)) {
-                this.showValidationMessage(`Field "${fieldName}" has invalid type: ${property.type}`, 'error');
-                return false;
+            // Handle both single types and array types (for nullable fields)
+            const validTypes = ['string', 'number', 'integer', 'boolean', 'object', 'array', 'null'];
+            let propertyTypes = Array.isArray(property.type) ? property.type : [property.type];
+            
+            for (const propType of propertyTypes) {
+                if (!validTypes.includes(propType)) {
+                    this.showValidationMessage(`Field "${fieldName}" has invalid type: ${propType}`, 'error');
+                    return false;
+                }
             }
         }
 
@@ -1759,6 +1804,138 @@ class DataModelEditor {
         }
 
         return true;
+    }
+
+    /**
+     * Attempt to automatically sync JSON changes with fields (non-destructive)
+     */
+    attemptJSONSync(jsonText) {
+        if (!jsonText || jsonText.trim() === '') {
+            return; // Don't sync empty JSON
+        }
+
+        try {
+            const schema = JSON.parse(jsonText);
+            
+            // Only sync if the schema is valid
+            if (this.validateJSONSchema(schema)) {
+                // Check if this is a simple change (same number of properties, similar structure)
+                const currentFieldCount = this.currentNode.fields.length;
+                const schemaFieldCount = Object.keys(schema.properties || {}).length;
+                
+                // Only auto-sync if the change seems safe (similar field count, or adding fields)
+                if (schemaFieldCount >= currentFieldCount && schemaFieldCount <= currentFieldCount + 3) {
+                    // Silently sync without clearing existing fields first
+                    this.performSafeJSONSync(schema);
+                }
+            }
+        } catch (error) {
+            // Invalid JSON - don't attempt sync
+            return;
+        }
+    }
+
+    /**
+     * Perform safe JSON sync that preserves existing data when possible
+     */
+    performSafeJSONSync(schema) {
+        try {
+            // Create a map of existing fields by name for preservation
+            const existingFieldsMap = new Map();
+            this.currentNode.fields.forEach(field => {
+                existingFieldsMap.set(field.name.toLowerCase(), field);
+            });
+
+            // Track new fields to add
+            const newFields = [];
+            const fieldNames = new Set();
+
+            // Process schema properties
+            Object.entries(schema.properties).forEach(([fieldName, property]) => {
+                const lowerName = fieldName.toLowerCase();
+                fieldNames.add(lowerName);
+
+                const existingField = existingFieldsMap.get(lowerName);
+                
+                if (existingField) {
+                    // Update existing field with new properties from JSON
+                    const fieldType = this.mapJSONTypeToField(property.type, property.format);
+                    const isRequired = Array.isArray(schema.required) && schema.required.includes(fieldName);
+                    const isReadOnly = property.readOnly === true;
+                    const isNullable = Array.isArray(property.type) && property.type.includes('null');
+                    
+                    // Only update if there are actual changes
+                    if (existingField.type !== fieldType || 
+                        existingField.required !== isRequired || 
+                        existingField.readOnly !== isReadOnly || 
+                        existingField.nullable !== isNullable) {
+                        
+                        this.currentNode.updateField(existingField.id, {
+                            type: fieldType,
+                            required: isRequired,
+                            readOnly: isReadOnly,
+                            nullable: isNullable
+                        });
+                    }
+                } else {
+                    // This is a new field - add it
+                    const fieldType = this.mapJSONTypeToField(property.type, property.format);
+                    const isRequired = Array.isArray(schema.required) && schema.required.includes(fieldName);
+                    const isReadOnly = property.readOnly === true;
+                    const isNullable = Array.isArray(property.type) && property.type.includes('null');
+                    
+                    let initialValue = '';
+                    if (property.default !== undefined) {
+                        try {
+                            initialValue = typeof property.default === 'object' 
+                                ? JSON.stringify(property.default) 
+                                : String(property.default);
+                        } catch (error) {
+                            initialValue = '';
+                        }
+                    }
+
+                    newFields.push({
+                        name: fieldName,
+                        type: fieldType,
+                        initialValue: initialValue,
+                        required: isRequired,
+                        readOnly: isReadOnly,
+                        nullable: isNullable
+                    });
+                }
+            });
+
+            // Add new fields
+            newFields.forEach(fieldData => {
+                this.currentNode.addField(fieldData);
+            });
+
+            // Remove fields that are no longer in the schema
+            const fieldsToRemove = this.currentNode.fields.filter(field => 
+                !fieldNames.has(field.name.toLowerCase())
+            );
+
+            fieldsToRemove.forEach(field => {
+                this.currentNode.removeField(field.id);
+            });
+
+            // Update model title if provided
+            if (schema.title && schema.title !== 'DataModel') {
+                this.currentNode.setLabel(schema.title);
+                this.modal.querySelector('.model-name-input').value = schema.title;
+            }
+
+            // Refresh the fields view
+            this.renderFields();
+            this.updateSaveButtonState();
+
+            // Show subtle notification about auto-sync
+            this.showValidationMessage('JSON automatically synchronized with fields', 'success');
+
+        } catch (error) {
+            console.warn('Safe JSON sync failed:', error);
+        }
     }
 
     /**
@@ -2189,5 +2366,35 @@ class DataModelEditor {
         
         // Also clear error line highlighting
         this.clearErrorHighlighting();
+    }
+
+    /**
+     * Debug function to check component state
+     */
+    debugState() {
+        console.log('=== DataModelEditor Debug State ===');
+        console.log('Current Node:', this.currentNode);
+        console.log('Fields Count:', this.currentNode ? this.currentNode.fields.length : 0);
+        console.log('Fields:', this.currentNode ? this.currentNode.fields : []);
+        console.log('Active Tab:', this.activeTab);
+        console.log('Is Open:', this.isOpen);
+        
+        const jsonEditor = this.modal?.querySelector('.json-editor');
+        if (jsonEditor) {
+            console.log('JSON Content Length:', jsonEditor.value.length);
+            console.log('JSON Valid:', this.validateCurrentJSON().valid);
+        }
+        
+        const validation = this.currentNode ? this.currentNode.isValidForSave() : null;
+        console.log('Save Validation:', validation);
+        console.log('========================');
+        
+        return {
+            node: this.currentNode,
+            fieldsCount: this.currentNode ? this.currentNode.fields.length : 0,
+            activeTab: this.activeTab,
+            isOpen: this.isOpen,
+            validation: validation
+        };
     }
 }

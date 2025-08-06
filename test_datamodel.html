@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Model Component Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+    </style>
+</head>
+<body>
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">🔬 Data Model Component Test</h1>
+        
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Test Scenarios</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <button id="test-basic" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                    Test 1: Basic Model Creation
+                </button>
+                <button id="test-json-import" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                    Test 2: JSON Import
+                </button>
+                <button id="test-json-sync" class="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">
+                    Test 3: JSON Auto-Sync
+                </button>
+                <button id="test-validation" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                    Test 4: Validation
+                </button>
+            </div>
+            
+            <div class="bg-gray-50 p-4 rounded">
+                <h3 class="font-semibold mb-2">Test JSON Schema:</h3>
+                <pre id="test-json" class="text-sm bg-gray-100 p-3 rounded font-mono overflow-x-auto">
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "User Profile",
+  "properties": {
+    "firstName": {
+      "type": "string",
+      "description": "User's first name"
+    },
+    "lastName": {
+      "type": "string",
+      "description": "User's last name"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "User's email address"
+    },
+    "age": {
+      "type": "number",
+      "description": "User's age"
+    },
+    "isActive": {
+      "type": "boolean",
+      "description": "Whether user is active"
+    },
+    "profile": {
+      "type": ["object", "null"],
+      "description": "User's profile data (nullable)"
+    }
+  },
+  "required": ["firstName", "lastName", "email"]
+}
+                </pre>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold mb-4">Test Results</h2>
+            <div id="test-results" class="space-y-2">
+                <p class="text-gray-600">Click test buttons above to run tests...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include required dependencies -->
+    <script src="src/utils/Logger.js"></script>
+    <script src="src/utils/EventBus.js"></script>
+    <script src="src/models/Node.js"></script>
+    <script src="src/models/DataModelNode.js"></script>
+    <script src="src/ui/DataModelEditor.js"></script>
+
+    <script>
+        // Initialize test environment
+        const eventBus = new EventBus();
+        const dataModelEditor = new DataModelEditor(eventBus);
+        
+        // Test utility functions
+        function logTest(message, type = 'info') {
+            const results = document.getElementById('test-results');
+            const timestamp = new Date().toLocaleTimeString();
+            const colorClass = type === 'success' ? 'text-green-600' : 
+                              type === 'error' ? 'text-red-600' : 
+                              type === 'warning' ? 'text-yellow-600' : 'text-blue-600';
+            
+            results.innerHTML += `<div class="${colorClass}">[${timestamp}] ${message}</div>`;
+            results.scrollTop = results.scrollHeight;
+        }
+        
+        function clearResults() {
+            document.getElementById('test-results').innerHTML = '';
+        }
+
+        // Test 1: Basic Model Creation
+        document.getElementById('test-basic').addEventListener('click', () => {
+            clearResults();
+            logTest('🧪 Starting Test 1: Basic Model Creation...');
+            
+            try {
+                // Create a new data model node
+                const node = new DataModelNode({
+                    x: 100, y: 100, 
+                    label: 'Test Model'
+                });
+                
+                logTest('✅ DataModelNode created successfully');
+                logTest(`📊 Node ID: ${node.id}`);
+                logTest(`📋 Fields count: ${node.fields.length}`);
+                
+                // Add some fields
+                node.addField({
+                    name: 'testField1',
+                    type: 'String',
+                    required: true
+                });
+                
+                node.addField({
+                    name: 'testField2',
+                    type: 'Number',
+                    nullable: true
+                });
+                
+                logTest(`✅ Added 2 fields, total: ${node.fields.length}`);
+                
+                // Open editor
+                dataModelEditor.open(node);
+                logTest('✅ DataModelEditor opened successfully');
+                
+                // Check debug state
+                const state = dataModelEditor.debugState();
+                logTest(`📊 Debug state: ${JSON.stringify(state, null, 2)}`);
+                
+            } catch (error) {
+                logTest(`❌ Test 1 failed: ${error.message}`, 'error');
+            }
+        });
+
+        // Test 2: JSON Import
+        document.getElementById('test-json-import').addEventListener('click', () => {
+            clearResults();
+            logTest('🧪 Starting Test 2: JSON Import...');
+            
+            try {
+                const node = new DataModelNode({
+                    x: 100, y: 100, 
+                    label: 'Import Test'
+                });
+                
+                dataModelEditor.open(node);
+                logTest('✅ Editor opened for import test');
+                
+                // Switch to JSON tab
+                dataModelEditor.switchTab('json');
+                logTest('✅ Switched to JSON tab');
+                
+                // Get test JSON
+                const testJSON = document.getElementById('test-json').textContent.trim();
+                
+                // Set JSON content
+                const jsonEditor = dataModelEditor.modal.querySelector('.json-editor');
+                jsonEditor.value = testJSON;
+                
+                logTest('✅ Test JSON loaded into editor');
+                
+                // Trigger import
+                dataModelEditor.importFromJSON();
+                
+                logTest(`✅ Import completed, fields count: ${node.fields.length}`);
+                
+                // Check fields
+                node.fields.forEach((field, index) => {
+                    logTest(`📋 Field ${index + 1}: ${field.name} (${field.type}) ${field.required ? '[Required]' : ''} ${field.nullable ? '[Nullable]' : ''}`);
+                });
+                
+            } catch (error) {
+                logTest(`❌ Test 2 failed: ${error.message}`, 'error');
+            }
+        });
+
+        // Test 3: JSON Auto-Sync
+        document.getElementById('test-json-sync').addEventListener('click', () => {
+            clearResults();
+            logTest('🧪 Starting Test 3: JSON Auto-Sync...');
+            
+            try {
+                const node = new DataModelNode({
+                    x: 100, y: 100, 
+                    label: 'Sync Test'
+                });
+                
+                // Add initial field
+                node.addField({
+                    name: 'initialField',
+                    type: 'String'
+                });
+                
+                dataModelEditor.open(node);
+                logTest('✅ Editor opened with 1 initial field');
+                
+                // Switch to JSON tab
+                dataModelEditor.switchTab('json');
+                
+                // Modify JSON to add a new field
+                const jsonEditor = dataModelEditor.modal.querySelector('.json-editor');
+                const currentJSON = JSON.parse(jsonEditor.value);
+                
+                // Add new field
+                currentJSON.properties.newSyncField = {
+                    type: 'number',
+                    description: 'Auto-synced field'
+                };
+                
+                jsonEditor.value = JSON.stringify(currentJSON, null, 2);
+                
+                logTest('✅ JSON modified to include new field');
+                
+                // Trigger sync by switching tabs
+                dataModelEditor.switchTab('properties');
+                
+                logTest(`✅ Auto-sync completed, fields count: ${node.fields.length}`);
+                
+                // Check for new field
+                const syncedField = node.fields.find(f => f.name === 'newSyncField');
+                if (syncedField) {
+                    logTest('✅ New field successfully synced from JSON', 'success');
+                } else {
+                    logTest('❌ Auto-sync failed to add new field', 'error');
+                }
+                
+            } catch (error) {
+                logTest(`❌ Test 3 failed: ${error.message}`, 'error');
+            }
+        });
+
+        // Test 4: Validation
+        document.getElementById('test-validation').addEventListener('click', () => {
+            clearResults();
+            logTest('🧪 Starting Test 4: Validation...');
+            
+            try {
+                const node = new DataModelNode({
+                    x: 100, y: 100, 
+                    label: 'Validation Test'
+                });
+                
+                dataModelEditor.open(node);
+                logTest('✅ Editor opened for validation test');
+                
+                // Test empty model validation
+                let validation = node.isValidForSave();
+                logTest(`📊 Empty model valid: ${validation.valid} - ${validation.error || 'No errors'}`);
+                
+                // Add valid field
+                node.addField({
+                    name: 'validField',
+                    type: 'String',
+                    required: true
+                });
+                
+                validation = node.isValidForSave();
+                logTest(`📊 Model with valid field: ${validation.valid} - ${validation.error || 'No errors'}`);
+                
+                // Test invalid JSON
+                dataModelEditor.switchTab('json');
+                const jsonEditor = dataModelEditor.modal.querySelector('.json-editor');
+                jsonEditor.value = '{ invalid json }';
+                
+                const jsonValidation = dataModelEditor.validateCurrentJSON();
+                logTest(`📊 Invalid JSON validation: ${jsonValidation.valid} - ${jsonValidation.error || 'No errors'}`);
+                
+                // Test valid JSON
+                jsonEditor.value = '{"type": "object", "properties": {"test": {"type": "string"}}}';
+                const validJsonValidation = dataModelEditor.validateCurrentJSON();
+                logTest(`📊 Valid JSON validation: ${validJsonValidation.valid} - ${validJsonValidation.error || 'No errors'}`);
+                
+                logTest('✅ Validation tests completed', 'success');
+                
+            } catch (error) {
+                logTest(`❌ Test 4 failed: ${error.message}`, 'error');
+            }
+        });
+
+        // Add global debug access
+        window.dataModelEditor = dataModelEditor;
+        window.debugDataModel = () => dataModelEditor.debugState();
+        
+        logTest('🚀 Data Model Component Test Environment Ready!');
+        logTest('💡 Use window.debugDataModel() in console for debug info');
+    </script>
+</body>
+</html>
