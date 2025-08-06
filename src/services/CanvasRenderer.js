@@ -775,7 +775,9 @@ class CanvasRenderer {
             if (node.type === 'datamodel') {
                 // Special handling for data model nodes
                 const width = node.r * 4.5; // Increased from 3.5 to 4.5
-                const height = Math.max(node.r * 2, node.fields.length * 18 + 50);
+                const visibleFieldsCount = Math.min(node.fields.length, 10);
+                const additionalHeight = node.fields.length > 10 ? 18 : 0; // Extra height for "and X more" text
+                const height = Math.max(node.r * 2, visibleFieldsCount * 18 + 50 + additionalHeight);
                 const x = node.x - width/2;
                 const y = node.y - height/2;
                 
@@ -847,7 +849,9 @@ class CanvasRenderer {
         } else if (node.type === 'datamodel') {
             // Draw rounded rectangle for data model nodes with shadow
             const width = node.r * 4.5; // Increased from 3.5 to 4.5
-            const height = Math.max(node.r * 2, node.fields.length * 18 + 50);
+            const visibleFieldsCount = Math.min(node.fields.length, 10);
+            const additionalHeight = node.fields.length > 10 ? 18 : 0; // Extra height for "and X more" text
+            const height = Math.max(node.r * 2, visibleFieldsCount * 18 + 50 + additionalHeight);
             const x = node.x - width/2;
             const y = node.y - height/2;
             const radius = 8;
@@ -913,7 +917,9 @@ class CanvasRenderer {
      */
     drawDataModelContent(node) {
         const width = node.r * 4.5; // Increased from 3.5 to 4.5
-        const height = Math.max(node.r * 2, node.fields.length * 18 + 50);
+        const visibleFieldsCount = Math.min(node.fields.length, 10);
+        const additionalHeight = node.fields.length > 10 ? 18 : 0; // Extra height for "and X more" text
+        const height = Math.max(node.r * 2, visibleFieldsCount * 18 + 50 + additionalHeight);
         const startX = node.x - width/2;
         const startY = node.y - height/2;
         const headerHeight = 32;
@@ -952,7 +958,11 @@ class CanvasRenderer {
         if (node.fields.length > 0) {
             this.ctx.textAlign = 'left';
             
-            node.fields.forEach((field, index) => {
+            // Limit display to max 10 fields
+            const fieldsToShow = node.fields.slice(0, 10);
+            const hasMoreFields = node.fields.length > 10;
+            
+            fieldsToShow.forEach((field, index) => {
                 const fieldY = startY + headerHeight + 10 + (index * 18);
                 const isEven = index % 2 === 0;
                 
@@ -999,6 +1009,17 @@ class CanvasRenderer {
                 // Reset text align for next iteration
                 this.ctx.textAlign = 'left';
             });
+            
+            // Show "and X more..." if there are more than 10 fields
+            if (hasMoreFields) {
+                const moreFieldsY = startY + headerHeight + 10 + (fieldsToShow.length * 18);
+                this.ctx.fillStyle = '#9ca3af'; // Gray color
+                this.ctx.font = 'italic 11px Arial';
+                this.ctx.textAlign = 'center';
+                const moreCount = node.fields.length - 10;
+                this.ctx.fillText(`... and ${moreCount} more field${moreCount > 1 ? 's' : ''}`, node.x, moreFieldsY + 7);
+                this.ctx.textAlign = 'left';
+            }
         } else {
             // Empty state with better design
             const emptyY = startY + headerHeight + 25;

@@ -71,9 +71,16 @@ class DataModelNode extends Node {
         
         switch (type) {
             case 'Number':
-            case 'Currency':
                 if (isNaN(value) || isNaN(parseFloat(value))) {
                     errors.push(`Invalid number format: "${value}"`);
+                }
+                break;
+                
+            case 'Currency':
+                // Handle currency format like "PLN 23" or just "23"
+                const currencyMatch = value.match(/^([A-Z]{3}\s+)?([0-9.]+)$/) || value.match(/^([0-9.]+)(\s+[A-Z]{3})?$/);
+                if (!currencyMatch && isNaN(parseFloat(value))) {
+                    errors.push(`Invalid currency format: "${value}". Use format like "PLN 23" or "23"`);
                 }
                 break;
                 
@@ -479,7 +486,9 @@ class DataModelNode extends Node {
     containsPoint(x, y) {
         // DataModel nodes are rectangular for better field display
         const width = this.r * 4.5; // Increased from 3.5 to 4.5
-        const height = Math.max(this.r * 2, this.fields.length * 18 + 50);
+        const visibleFieldsCount = Math.min(this.fields.length, 10);
+        const additionalHeight = this.fields.length > 10 ? 18 : 0; // Extra height for "and X more" text
+        const height = Math.max(this.r * 2, visibleFieldsCount * 18 + 50 + additionalHeight);
         
         return (
             x >= this.x - width/2 &&

@@ -22,6 +22,7 @@ Modern web-based flowchart editor built with vanilla JavaScript. Create, edit, a
 ### 🆕 Data Model Features
 - **Field Management** - Create, edit, and validate data fields
 - **Type Support** - 30+ data types including String, Number, Integer, Float, Boolean, Date, DateTime, Email, URL, UUID, Password, Color, IPv4/IPv6, JSON, Binary, and more
+- **Smart Input Controls** - Currency with dropdown selection, Country/Language/Timezone code pickers, Percentage slider
 - **Field Properties** - Required, Nullable, ReadOnly attributes
 - **JSON Schema** - Bi-directional sync between visual fields and JSON Schema
 - **Real-time Validation** - Live error detection and highlighting
@@ -54,12 +55,14 @@ Modern web-based flowchart editor built with vanilla JavaScript. Create, edit, a
 - **Save Project**: Bottom navigation → Save → Enter name
 
 ### 🆕 Data Model Editor
-- **Fields Tab**: Visual field editor with drag-and-drop reordering
-- **JSON Tab**: Direct JSON Schema editing with syntax highlighting
+- **Fields Tab**: Visual field editor with drag-and-drop reordering and smart input controls
+- **JSON Tab**: Direct JSON Schema editing with syntax highlighting and Accept JSON functionality
 - **Settings Tab**: Model-wide configuration options
-- **Field Types**: Comprehensive type system with validation
+- **Field Types**: Comprehensive type system with validation and smart inputs
+- **Smart Controls**: Currency selector with 16 currencies, Country/Language/Timezone dropdowns, Interactive percentage slider
+- **Expanded UI**: Wider modal (90% viewport width) for better usability
 - **Real-time Sync**: Changes automatically sync between visual and JSON views
-- **Import/Export**: Import existing JSON Schema or export current model
+- **Accept JSON**: Apply JSON Schema changes to visual field editor
 
 ### Export Options
 - **Export Image**: White or transparent background PNG

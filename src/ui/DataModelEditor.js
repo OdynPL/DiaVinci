@@ -12,6 +12,125 @@ class DataModelEditor {
     }
 
     /**
+     * Get currency options for dropdown
+     */
+    getCurrencyOptions() {
+        return [
+            { code: 'USD', symbol: '$', name: 'US Dollar' },
+            { code: 'EUR', symbol: '€', name: 'Euro' },
+            { code: 'GBP', symbol: '£', name: 'British Pound' },
+            { code: 'JPY', symbol: '¥', name: 'Japanese Yen' },
+            { code: 'CHF', symbol: 'CHF', name: 'Swiss Franc' },
+            { code: 'CAD', symbol: 'C$', name: 'Canadian Dollar' },
+            { code: 'AUD', symbol: 'A$', name: 'Australian Dollar' },
+            { code: 'PLN', symbol: 'zł', name: 'Polish Zloty' },
+            { code: 'SEK', symbol: 'kr', name: 'Swedish Krona' },
+            { code: 'NOK', symbol: 'kr', name: 'Norwegian Krone' },
+            { code: 'DKK', symbol: 'kr', name: 'Danish Krone' },
+            { code: 'CNY', symbol: '¥', name: 'Chinese Yuan' },
+            { code: 'INR', symbol: '₹', name: 'Indian Rupee' },
+            { code: 'BRL', symbol: 'R$', name: 'Brazilian Real' },
+            { code: 'RUB', symbol: '₽', name: 'Russian Ruble' },
+            { code: 'KRW', symbol: '₩', name: 'South Korean Won' }
+        ];
+    }
+
+    /**
+     * Get country code options for dropdown
+     */
+    getCountryCodeOptions() {
+        return [
+            { code: 'US', name: 'United States' },
+            { code: 'GB', name: 'United Kingdom' },
+            { code: 'DE', name: 'Germany' },
+            { code: 'FR', name: 'France' },
+            { code: 'IT', name: 'Italy' },
+            { code: 'ES', name: 'Spain' },
+            { code: 'PL', name: 'Poland' },
+            { code: 'NL', name: 'Netherlands' },
+            { code: 'BE', name: 'Belgium' },
+            { code: 'CH', name: 'Switzerland' },
+            { code: 'AT', name: 'Austria' },
+            { code: 'SE', name: 'Sweden' },
+            { code: 'NO', name: 'Norway' },
+            { code: 'DK', name: 'Denmark' },
+            { code: 'FI', name: 'Finland' },
+            { code: 'JP', name: 'Japan' },
+            { code: 'CN', name: 'China' },
+            { code: 'IN', name: 'India' },
+            { code: 'AU', name: 'Australia' },
+            { code: 'CA', name: 'Canada' },
+            { code: 'BR', name: 'Brazil' },
+            { code: 'RU', name: 'Russia' },
+            { code: 'KR', name: 'South Korea' }
+        ];
+    }
+
+    /**
+     * Get language code options for dropdown
+     */
+    getLanguageCodeOptions() {
+        return [
+            { code: 'en-US', name: 'English (US)' },
+            { code: 'en-GB', name: 'English (UK)' },
+            { code: 'de-DE', name: 'German' },
+            { code: 'fr-FR', name: 'French' },
+            { code: 'it-IT', name: 'Italian' },
+            { code: 'es-ES', name: 'Spanish' },
+            { code: 'pl-PL', name: 'Polish' },
+            { code: 'nl-NL', name: 'Dutch' },
+            { code: 'sv-SE', name: 'Swedish' },
+            { code: 'no-NO', name: 'Norwegian' },
+            { code: 'da-DK', name: 'Danish' },
+            { code: 'fi-FI', name: 'Finnish' },
+            { code: 'ja-JP', name: 'Japanese' },
+            { code: 'zh-CN', name: 'Chinese (Simplified)' },
+            { code: 'zh-TW', name: 'Chinese (Traditional)' },
+            { code: 'ko-KR', name: 'Korean' },
+            { code: 'pt-BR', name: 'Portuguese (Brazil)' },
+            { code: 'pt-PT', name: 'Portuguese (Portugal)' },
+            { code: 'ru-RU', name: 'Russian' },
+            { code: 'ar-SA', name: 'Arabic' },
+            { code: 'hi-IN', name: 'Hindi' }
+        ];
+    }
+
+    /**
+     * Get timezone options for dropdown
+     */
+    getTimezoneOptions() {
+        return [
+            { zone: 'UTC', name: 'UTC (Coordinated Universal Time)' },
+            { zone: 'America/New_York', name: 'Eastern Time (US & Canada)' },
+            { zone: 'America/Chicago', name: 'Central Time (US & Canada)' },
+            { zone: 'America/Denver', name: 'Mountain Time (US & Canada)' },
+            { zone: 'America/Los_Angeles', name: 'Pacific Time (US & Canada)' },
+            { zone: 'Europe/London', name: 'London (GMT/BST)' },
+            { zone: 'Europe/Paris', name: 'Paris (CET/CEST)' },
+            { zone: 'Europe/Berlin', name: 'Berlin (CET/CEST)' },
+            { zone: 'Europe/Rome', name: 'Rome (CET/CEST)' },
+            { zone: 'Europe/Madrid', name: 'Madrid (CET/CEST)' },
+            { zone: 'Europe/Warsaw', name: 'Warsaw (CET/CEST)' },
+            { zone: 'Europe/Amsterdam', name: 'Amsterdam (CET/CEST)' },
+            { zone: 'Europe/Stockholm', name: 'Stockholm (CET/CEST)' },
+            { zone: 'Europe/Oslo', name: 'Oslo (CET/CEST)' },
+            { zone: 'Europe/Copenhagen', name: 'Copenhagen (CET/CEST)' },
+            { zone: 'Europe/Helsinki', name: 'Helsinki (EET/EEST)' },
+            { zone: 'Europe/Moscow', name: 'Moscow (MSK)' },
+            { zone: 'Asia/Tokyo', name: 'Tokyo (JST)' },
+            { zone: 'Asia/Shanghai', name: 'Shanghai (CST)' },
+            { zone: 'Asia/Kolkata', name: 'India Standard Time' },
+            { zone: 'Asia/Dubai', name: 'Dubai (GST)' },
+            { zone: 'Australia/Sydney', name: 'Sydney (AEST/AEDT)' },
+            { zone: 'Australia/Melbourne', name: 'Melbourne (AEST/AEDT)' },
+            { zone: 'Pacific/Auckland', name: 'Auckland (NZST/NZDT)' },
+            { zone: 'America/Sao_Paulo', name: 'São Paulo (BRT)' },
+            { zone: 'America/Toronto', name: 'Toronto (EST/EDT)' },
+            { zone: 'America/Vancouver', name: 'Vancouver (PST/PDT)' }
+        ];
+    }
+
+    /**
      * Open editor for a data model node
      */
     open(node) {
@@ -62,7 +181,7 @@ class DataModelEditor {
         this.modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
         
         this.modal.innerHTML = `
-            <div class="bg-white rounded-xl shadow-2xl max-w-7xl w-full mx-4 max-h-[95vh] overflow-hidden border border-gray-200 flex flex-col">
+            <div class="bg-white rounded-xl shadow-2xl max-w-[90vw] w-full mx-4 max-h-[95vh] overflow-hidden border border-gray-200 flex flex-col">
                 <div class="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-violet-50 to-purple-50 flex-shrink-0">
                     <div class="flex items-center">
                         <div class="w-10 h-10 bg-violet-100 rounded-lg flex items-center justify-center mr-3">
@@ -202,9 +321,9 @@ class DataModelEditor {
                                 <div class="flex gap-2">
                                     <button class="import-json-btn bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all flex items-center shadow-md hover:shadow-lg text-sm">
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                         </svg>
-                                        Import JSON
+                                        Accept JSON
                                     </button>
                                     <button class="copy-json-btn bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-lg hover:from-green-600 hover:to-green-700 transition-all flex items-center shadow-md hover:shadow-lg text-sm">
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -220,7 +339,7 @@ class DataModelEditor {
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
-                                    You can edit the JSON below or paste your own schema to import fields
+                                    You can edit the JSON below or paste your own schema and click "Accept JSON" to apply changes
                                 </div>
                             </div>
                             
@@ -688,7 +807,6 @@ class DataModelEditor {
                 `;
                 
             case 'Number':
-            case 'Currency':
             case 'Float':
             case 'Decimal':
                 return `
@@ -697,6 +815,25 @@ class DataModelEditor {
                            value="${field.initialValue}" 
                            placeholder="0.00" 
                            step="any">
+                `;
+                
+            case 'Currency':
+                const currencies = this.getCurrencyOptions();
+                const parsedValue = this.parseCurrencyValue(field.initialValue);
+                return `
+                    <div class="field-value flex gap-2">
+                        <select class="currency-selector w-24 px-2 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent">
+                            <option value="">¤</option>
+                            ${currencies.map(curr => 
+                                `<option value="${curr.code}" ${parsedValue.currency === curr.code ? 'selected' : ''}>${curr.symbol} ${curr.code}</option>`
+                            ).join('')}
+                        </select>
+                        <input type="number" 
+                               class="currency-amount flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent" 
+                               value="${parsedValue.amount}" 
+                               placeholder="0.00" 
+                               step="0.01">
+                    </div>
                 `;
                 
             case 'Integer':
@@ -709,12 +846,23 @@ class DataModelEditor {
                 `;
                 
             case 'Percentage':
+                const percentValue = parseFloat(field.initialValue) || 0;
                 return `
-                    <input type="number" 
-                           class="${baseClasses}" 
-                           value="${field.initialValue}" 
-                           placeholder="0-100" 
-                           min="0" max="100" step="any">
+                    <div class="field-value">
+                        <div class="flex items-center gap-3">
+                            <input type="range" 
+                                   class="percentage-slider flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" 
+                                   min="0" max="100" step="0.1"
+                                   value="${percentValue}" 
+                                   style="background: linear-gradient(to right, #8b5cf6 0%, #8b5cf6 ${percentValue}%, #e5e7eb ${percentValue}%, #e5e7eb 100%);">
+                            <input type="number" 
+                                   class="percentage-input w-20 px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent" 
+                                   value="${percentValue}" 
+                                   min="0" max="100" step="0.1"
+                                   placeholder="0-100">
+                            <span class="text-sm text-gray-500 font-medium">%</span>
+                        </div>
+                    </div>
                 `;
                 
             case 'Boolean':
@@ -815,27 +963,36 @@ class DataModelEditor {
                 `;
                 
             case 'Country Code':
+                const countries = this.getCountryCodeOptions();
                 return `
-                    <input type="text" 
-                           class="${baseClasses}" 
-                           value="${field.initialValue}" 
-                           placeholder="US" maxlength="2">
+                    <select class="country-selector w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent">
+                        <option value="">Select country...</option>
+                        ${countries.map(country => 
+                            `<option value="${country.code}" ${field.initialValue === country.code ? 'selected' : ''}>${country.code} - ${country.name}</option>`
+                        ).join('')}
+                    </select>
                 `;
                 
             case 'Language Code':
+                const languages = this.getLanguageCodeOptions();
                 return `
-                    <input type="text" 
-                           class="${baseClasses}" 
-                           value="${field.initialValue}" 
-                           placeholder="en-US" maxlength="5">
+                    <select class="language-selector w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent">
+                        <option value="">Select language...</option>
+                        ${languages.map(lang => 
+                            `<option value="${lang.code}" ${field.initialValue === lang.code ? 'selected' : ''}>${lang.code} - ${lang.name}</option>`
+                        ).join('')}
+                    </select>
                 `;
                 
             case 'Timezone':
+                const timezones = this.getTimezoneOptions();
                 return `
-                    <input type="text" 
-                           class="${baseClasses}" 
-                           value="${field.initialValue}" 
-                           placeholder="America/New_York">
+                    <select class="timezone-selector w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent">
+                        <option value="">Select timezone...</option>
+                        ${timezones.map(tz => 
+                            `<option value="${tz.zone}" ${field.initialValue === tz.zone ? 'selected' : ''}>${tz.zone} - ${tz.name}</option>`
+                        ).join('')}
+                    </select>
                 `;
                 
             case 'Duration':
@@ -969,6 +1126,35 @@ class DataModelEditor {
     }
 
     /**
+     * Parse currency value from string format like "USD 100.50" or "100.50"
+     */
+    parseCurrencyValue(value) {
+        if (!value) return { currency: '', amount: '' };
+        
+        const str = value.toString().trim();
+        
+        // Try to match "CURRENCY AMOUNT" format
+        const match = str.match(/^([A-Z]{3})\s+([0-9.]+)$/);
+        if (match) {
+            return { currency: match[1], amount: match[2] };
+        }
+        
+        // Try to match "AMOUNT CURRENCY" format
+        const reverseMatch = str.match(/^([0-9.]+)\s+([A-Z]{3})$/);
+        if (reverseMatch) {
+            return { currency: reverseMatch[2], amount: reverseMatch[1] };
+        }
+        
+        // Check if it's just a number
+        if (/^[0-9.]+$/.test(str)) {
+            return { currency: '', amount: str };
+        }
+        
+        // Default fallback
+        return { currency: '', amount: str };
+    }
+
+    /**
      * Get icon for data type (same as in CanvasRenderer)
      */
     getTypeIcon(type) {
@@ -1024,82 +1210,191 @@ class DataModelEditor {
         const fieldId = field.id;
         
         // Field name change with comprehensive validation
-        fieldElement.querySelector('.field-name').addEventListener('input', (e) => {
-            const newName = e.target.value.trim();
-            this.validateAndUpdateFieldName(e.target, fieldId, newName);
-        });
-        
-        // Field name blur validation (more thorough)
-        fieldElement.querySelector('.field-name').addEventListener('blur', (e) => {
-            const newName = e.target.value.trim();
+        const fieldNameInput = fieldElement.querySelector('.field-name');
+        if (fieldNameInput) {
+            fieldNameInput.addEventListener('input', (e) => {
+                const newName = e.target.value.trim();
+                this.validateAndUpdateFieldName(e.target, fieldId, newName);
+            });
             
-            // If field name is empty on blur, restore the original name
-            if (!newName || newName === '') {
-                const originalField = this.currentNode.getField(fieldId);
-                if (originalField) {
-                    e.target.value = originalField.name; // Restore original name
-                    e.target.classList.remove('border-red-500', 'bg-red-50');
-                    e.target.classList.add('border-gray-300');
-                    this.hideFieldValidationError(e.target);
-                    this.updateSaveButtonState();
+            // Field name blur validation (more thorough)
+            fieldNameInput.addEventListener('blur', (e) => {
+                const newName = e.target.value.trim();
+                
+                // If field name is empty on blur, restore the original name
+                if (!newName || newName === '') {
+                    const originalField = this.currentNode.getField(fieldId);
+                    if (originalField) {
+                        e.target.value = originalField.name; // Restore original name
+                        e.target.classList.remove('border-red-500', 'bg-red-50');
+                        e.target.classList.add('border-gray-300');
+                        this.hideFieldValidationError(e.target);
+                        this.updateSaveButtonState();
+                    }
+                } else {
+                    this.validateAndUpdateFieldName(e.target, fieldId, newName, true);
                 }
-            } else {
-                this.validateAndUpdateFieldName(e.target, fieldId, newName, true);
-            }
-        });
+            });
+        }
         
         // Field type change with value validation
-        fieldElement.querySelector('.field-type').addEventListener('change', (e) => {
-            const newType = e.target.value;
-            this.updateFieldType(fieldId, newType);
-            // Re-render to update input type
-            this.renderFields();
-        });
+        const fieldTypeSelect = fieldElement.querySelector('.field-type');
+        if (fieldTypeSelect) {
+            fieldTypeSelect.addEventListener('change', (e) => {
+                const newType = e.target.value;
+                this.updateFieldType(fieldId, newType);
+                // Re-render to update input type
+                this.renderFields();
+            });
+        }
         
         // Field value change with type-specific validation
         const valueInput = fieldElement.querySelector('.field-value');
-        valueInput.addEventListener('input', (e) => {
-            this.validateAndUpdateFieldValue(e.target, fieldId, e.target.value);
-            
-            // Update line numbers for JSON fields
-            if (e.target.hasAttribute('data-field-type') && 
-                (e.target.getAttribute('data-field-type') === 'Object' || e.target.getAttribute('data-field-type') === 'Array')) {
-                this.updateLineNumbers(e.target);
+        if (valueInput) {
+            // For special input types (Currency, Country Code, Language Code, Timezone, Percentage), don't add generic listeners
+            const fieldType = field.type;
+            if (!['Currency', 'Country Code', 'Language Code', 'Timezone', 'Percentage'].includes(fieldType)) {
+                const actualInput = valueInput.querySelector('input, textarea, select') || valueInput;
+                if (actualInput && actualInput.addEventListener) {
+                    actualInput.addEventListener('input', (e) => {
+                        this.validateAndUpdateFieldValue(e.target, fieldId, e.target.value);
+                        
+                        // Update line numbers for JSON fields
+                        if (e.target.hasAttribute('data-field-type') && 
+                            (e.target.getAttribute('data-field-type') === 'Object' || e.target.getAttribute('data-field-type') === 'Array')) {
+                            this.updateLineNumbers(e.target);
+                        }
+                    });
+                    
+                    actualInput.addEventListener('blur', (e) => {
+                        this.validateAndUpdateFieldValue(e.target, fieldId, e.target.value, true);
+                    });
+                }
             }
-        });
-        
-        valueInput.addEventListener('blur', (e) => {
-            this.validateAndUpdateFieldValue(e.target, fieldId, e.target.value, true);
-        });
-        
-        // Initialize line numbers for JSON fields
-        if (valueInput.hasAttribute('data-field-type') && 
-            (valueInput.getAttribute('data-field-type') === 'Object' || valueInput.getAttribute('data-field-type') === 'Array')) {
-            this.updateLineNumbers(valueInput);
+            
+            // Initialize line numbers for JSON fields
+            const jsonInput = valueInput.querySelector('textarea[data-field-type]');
+            if (jsonInput && jsonInput.hasAttribute('data-field-type') && 
+                (jsonInput.getAttribute('data-field-type') === 'Object' || jsonInput.getAttribute('data-field-type') === 'Array')) {
+                this.updateLineNumbers(jsonInput);
+            }
         }
         
         // Required checkbox
-        fieldElement.querySelector('.field-required').addEventListener('change', (e) => {
-            this.currentNode.updateField(fieldId, { required: e.target.checked });
-            this.updateSaveButtonState();
-        });
+        const requiredCheckbox = fieldElement.querySelector('.field-required');
+        if (requiredCheckbox) {
+            requiredCheckbox.addEventListener('change', (e) => {
+                this.currentNode.updateField(fieldId, { required: e.target.checked });
+                this.updateSaveButtonState();
+            });
+        }
         
         // Nullable checkbox
-        fieldElement.querySelector('.field-nullable').addEventListener('change', (e) => {
-            this.currentNode.updateField(fieldId, { nullable: e.target.checked });
-            this.updateSaveButtonState();
-        });
+        const nullableCheckbox = fieldElement.querySelector('.field-nullable');
+        if (nullableCheckbox) {
+            nullableCheckbox.addEventListener('change', (e) => {
+                this.currentNode.updateField(fieldId, { nullable: e.target.checked });
+                this.updateSaveButtonState();
+            });
+        }
         
         // Read Only checkbox
-        fieldElement.querySelector('.field-readonly').addEventListener('change', (e) => {
-            this.currentNode.updateField(fieldId, { readOnly: e.target.checked });
-            this.updateSaveButtonState();
-        });
+        const readOnlyCheckbox = fieldElement.querySelector('.field-readonly');
+        if (readOnlyCheckbox) {
+            readOnlyCheckbox.addEventListener('change', (e) => {
+                this.currentNode.updateField(fieldId, { readOnly: e.target.checked });
+                this.updateSaveButtonState();
+            });
+        }
         
         // Remove field button
-        fieldElement.querySelector('.remove-field-btn').addEventListener('click', () => {
-            this.removeField(fieldId);
-        });
+        const removeButton = fieldElement.querySelector('.remove-field-btn');
+        if (removeButton) {
+            removeButton.addEventListener('click', () => {
+                this.removeField(fieldId);
+            });
+        }
+
+        // Special handling for Currency fields
+        const currencySelector = fieldElement.querySelector('.currency-selector');
+        const currencyAmount = fieldElement.querySelector('.currency-amount');
+        if (currencySelector && currencyAmount) {
+            const updateCurrencyValue = () => {
+                const currency = currencySelector.value;
+                const amount = currencyAmount.value;
+                const combinedValue = currency && amount ? `${currency} ${amount}` : amount;
+                this.currentNode.updateField(fieldId, { initialValue: combinedValue });
+                this.updateSaveButtonState();
+            };
+            
+            currencySelector.addEventListener('change', updateCurrencyValue);
+            currencyAmount.addEventListener('input', updateCurrencyValue);
+        }
+
+        // Special handling for Country Code fields
+        const countrySelector = fieldElement.querySelector('.country-selector');
+        if (countrySelector) {
+            countrySelector.addEventListener('change', (e) => {
+                this.currentNode.updateField(fieldId, { initialValue: e.target.value });
+                this.updateSaveButtonState();
+            });
+        }
+
+        // Special handling for Language Code fields
+        const languageSelector = fieldElement.querySelector('.language-selector');
+        if (languageSelector) {
+            languageSelector.addEventListener('change', (e) => {
+                this.currentNode.updateField(fieldId, { initialValue: e.target.value });
+                this.updateSaveButtonState();
+            });
+        }
+
+        // Special handling for Timezone fields
+        const timezoneSelector = fieldElement.querySelector('.timezone-selector');
+        if (timezoneSelector) {
+            timezoneSelector.addEventListener('change', (e) => {
+                this.currentNode.updateField(fieldId, { initialValue: e.target.value });
+                this.updateSaveButtonState();
+            });
+        }
+
+        // Special handling for Percentage fields
+        const percentageSlider = fieldElement.querySelector('.percentage-slider');
+        const percentageInput = fieldElement.querySelector('.percentage-input');
+        if (percentageSlider && percentageInput) {
+            const updatePercentageValue = (e) => {
+                e.stopPropagation(); // Prevent event bubbling
+                const value = parseFloat(percentageSlider.value);
+                percentageInput.value = value;
+                this.currentNode.updateField(fieldId, { initialValue: value.toString() });
+                this.updateSaveButtonState();
+                
+                // Update slider visual background
+                percentageSlider.style.background = `linear-gradient(to right, #8b5cf6 0%, #8b5cf6 ${value}%, #e5e7eb ${value}%, #e5e7eb 100%)`;
+            };
+            
+            const updateSliderFromInput = (e) => {
+                e.stopPropagation(); // Prevent event bubbling
+                let value = parseFloat(percentageInput.value) || 0;
+                value = Math.max(0, Math.min(100, value)); // Clamp between 0-100
+                percentageSlider.value = value;
+                percentageInput.value = value;
+                this.currentNode.updateField(fieldId, { initialValue: value.toString() });
+                this.updateSaveButtonState();
+                
+                // Update slider visual background
+                percentageSlider.style.background = `linear-gradient(to right, #8b5cf6 0%, #8b5cf6 ${value}%, #e5e7eb ${value}%, #e5e7eb 100%)`;
+            };
+            
+            // Add event listeners with stopPropagation
+            percentageSlider.addEventListener('input', updatePercentageValue);
+            percentageSlider.addEventListener('mousedown', (e) => e.stopPropagation());
+            percentageSlider.addEventListener('click', (e) => e.stopPropagation());
+            percentageInput.addEventListener('input', updateSliderFromInput);
+            percentageInput.addEventListener('blur', updateSliderFromInput);
+            percentageInput.addEventListener('mousedown', (e) => e.stopPropagation());
+            percentageInput.addEventListener('click', (e) => e.stopPropagation());
+        }
     }
 
     /**
@@ -1868,11 +2163,17 @@ class DataModelEditor {
         try {
             switch (type) {
                 case 'Number':
-                case 'Currency':
                 case 'Float':
                 case 'Decimal':
                 case 'Percentage':
                     return parseFloat(value) || value;
+                case 'Currency':
+                    // Handle currency format like "USD 100.50"
+                    const parsed = this.parseCurrencyValue(value);
+                    if (parsed.currency && parsed.amount) {
+                        return `${parsed.currency} ${parsed.amount}`;
+                    }
+                    return parseFloat(parsed.amount) || value;
                 case 'Integer':
                     return parseInt(value) || value;
                 case 'Boolean':
@@ -1929,7 +2230,7 @@ class DataModelEditor {
         const jsonText = jsonEditor.value.trim();
 
         if (!jsonText) {
-            this.showValidationMessage('Please enter JSON schema to import', 'error');
+            this.showValidationMessage('Please enter JSON schema to accept', 'error');
             return;
         }
 
@@ -1997,7 +2298,7 @@ class DataModelEditor {
             }
 
             const importedCount = Object.keys(schema.properties).length;
-            let message = `Successfully imported ${importedCount} fields`;
+            let message = `Successfully accepted ${importedCount} fields from JSON`;
             if (duplicateCount > 0) {
                 message += ` (${duplicateCount} duplicate names were auto-renamed)`;
             }
@@ -2570,6 +2871,11 @@ class DataModelEditor {
      * Clear error line highlighting
      */
     clearErrorHighlighting() {
+        // Check if modal exists
+        if (!this.modal) {
+            return;
+        }
+        
         const lineNumbersContainer = this.modal.querySelector('.json-line-numbers');
         if (lineNumbersContainer) {
             const errorLines = lineNumbersContainer.querySelectorAll('.error-line');
@@ -2638,8 +2944,15 @@ class DataModelEditor {
      * Clear validation message
      */
     clearValidationMessage() {
+        // Check if modal exists
+        if (!this.modal) {
+            return;
+        }
+        
         const messageElement = this.modal.querySelector('.json-validation-message');
-        messageElement.classList.add('hidden');
+        if (messageElement) {
+            messageElement.classList.add('hidden');
+        }
         
         // Also clear error line highlighting
         this.clearErrorHighlighting();
