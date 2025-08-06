@@ -30,6 +30,15 @@ class DataModelEditor {
      * Close the editor
      */
     close() {
+        // Check if there are unsaved changes with validation errors
+        const validation = this.currentNode.isValidForSave();
+        if (!validation.valid) {
+            const shouldClose = confirm(`There are validation errors in this model:\n\n${validation.error}\n\nAre you sure you want to close without saving? All changes will be lost.`);
+            if (!shouldClose) {
+                return; // Don't close if user wants to fix errors
+            }
+        }
+        
         if (this.modal) {
             document.body.removeChild(this.modal);
             this.modal = null;
@@ -53,7 +62,7 @@ class DataModelEditor {
         this.modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
         
         this.modal.innerHTML = `
-            <div class="bg-white rounded-xl shadow-2xl max-w-5xl w-full mx-4 max-h-[95vh] overflow-hidden border border-gray-200 flex flex-col">
+            <div class="bg-white rounded-xl shadow-2xl max-w-7xl w-full mx-4 max-h-[95vh] overflow-hidden border border-gray-200 flex flex-col">
                 <div class="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-violet-50 to-purple-50 flex-shrink-0">
                     <div class="flex items-center">
                         <div class="w-10 h-10 bg-violet-100 rounded-lg flex items-center justify-center mr-3">
@@ -215,10 +224,30 @@ class DataModelEditor {
                                 </div>
                             </div>
                             
-                            <div class="json-container">
-                                <textarea class="json-editor w-full h-96 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all font-mono text-sm bg-gray-50" 
+                            <div class="json-container relative">
+                                <div class="absolute left-0 top-0 bottom-0 w-14 bg-gray-100 border-r border-gray-300 rounded-l-lg flex flex-col text-xs text-gray-500 font-mono overflow-hidden">
+                                    <div class="json-line-numbers flex-1 p-2 pt-3 text-right pr-2 leading-5">
+                                        <div class="line-number" style="height: 20px; line-height: 20px;">1</div>
+                                        <div class="line-number" style="height: 20px; line-height: 20px;">2</div>
+                                        <div class="line-number" style="height: 20px; line-height: 20px;">3</div>
+                                        <div class="line-number" style="height: 20px; line-height: 20px;">4</div>
+                                        <div class="line-number" style="height: 20px; line-height: 20px;">5</div>
+                                        <div class="line-number" style="height: 20px; line-height: 20px;">6</div>
+                                        <div class="line-number" style="height: 20px; line-height: 20px;">7</div>
+                                        <div class="line-number" style="height: 20px; line-height: 20px;">8</div>
+                                        <div class="line-number" style="height: 20px; line-height: 20px;">9</div>
+                                        <div class="line-number" style="height: 20px; line-height: 20px;">10</div>
+                                        <div class="line-number" style="height: 20px; line-height: 20px;">11</div>
+                                        <div class="line-number" style="height: 20px; line-height: 20px;">12</div>
+                                        <div class="line-number" style="height: 20px; line-height: 20px;">13</div>
+                                        <div class="line-number" style="height: 20px; line-height: 20px;">14</div>
+                                        <div class="line-number" style="height: 20px; line-height: 20px;">15</div>
+                                    </div>
+                                </div>
+                                <textarea class="json-editor w-full h-96 pl-16 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all font-mono text-sm bg-gray-50" 
                                           placeholder="JSON schema will appear here..."
-                                          spellcheck="false"></textarea>
+                                          spellcheck="false"
+                                          style="line-height: 20px; font-size: 13px;"></textarea>
                             </div>
                             
                             <div class="json-validation-message mt-2 text-sm hidden"></div>
@@ -293,11 +322,11 @@ class DataModelEditor {
      * Setup event listeners for the modal
      */
     setupEventListeners() {
-        // Close button
+        // Close button - with validation check
         this.modal.querySelector('.close-btn').addEventListener('click', () => this.close());
         this.modal.querySelector('.cancel-btn').addEventListener('click', () => this.close());
         
-        // Click outside to close - only on the backdrop, not the modal content
+        // Click outside to close - only on the backdrop, not the modal content - with validation check
         this.modal.addEventListener('click', (e) => {
             // Only close if clicking directly on the modal backdrop, not on child elements
             if (e.target === this.modal) {
@@ -308,7 +337,7 @@ class DataModelEditor {
         // Add field button
         this.modal.querySelector('.add-field-btn').addEventListener('click', () => this.addField());
         
-        // Save button
+        // Save button - enhanced validation
         this.modal.querySelector('.save-btn').addEventListener('click', () => this.saveChanges());
         
         // Model name input with validation
@@ -329,6 +358,11 @@ class DataModelEditor {
                 e.target.title = newName;
             }
             
+            this.updateSaveButtonState();
+        });
+        
+        // Model name blur validation
+        this.modal.querySelector('.model-name-input').addEventListener('blur', (e) => {
             this.updateSaveButtonState();
         });
         
@@ -357,7 +391,17 @@ class DataModelEditor {
         // JSON tab event listeners
         this.modal.querySelector('.import-json-btn').addEventListener('click', () => this.importFromJSON());
         this.modal.querySelector('.copy-json-btn').addEventListener('click', () => this.copyJSONToClipboard());
-        this.modal.querySelector('.json-editor').addEventListener('input', () => this.validateJSON());
+        this.modal.querySelector('.json-editor').addEventListener('input', (e) => {
+            // Clear previous error highlighting when user starts typing
+            this.clearErrorHighlighting();
+            this.validateJSON();
+            this.updateJSONLineNumbers(e.target);
+            this.updateSaveButtonState(); // Update save button when JSON changes
+        });
+        
+        // Initialize JSON line numbers
+        const jsonEditor = this.modal.querySelector('.json-editor');
+        this.updateJSONLineNumbers(jsonEditor);
         
         // Tab switching
         this.modal.querySelectorAll('.tab-btn').forEach(btn => {
@@ -370,7 +414,7 @@ class DataModelEditor {
         // Initialize tabs
         this.switchTab(this.activeTab);
         
-        // Escape key to close
+        // Escape key to close - with validation check
         this.escapeHandler = (e) => {
             if (e.key === 'Escape' && this.isOpen) {
                 this.close();
@@ -411,6 +455,9 @@ class DataModelEditor {
         if (tabName === 'json') {
             this.updateJSONContent();
         }
+        
+        // Update validation state when switching tabs
+        this.updateSaveButtonState();
     }
 
     /**
@@ -502,6 +549,9 @@ class DataModelEditor {
         
         // Initialize drag and drop
         this.initializeDragAndDrop(fieldsWrapper);
+        
+        // Update validation state after rendering
+        this.updateSaveButtonState();
     }
 
     /**
@@ -518,9 +568,9 @@ class DataModelEditor {
         const typeIcon = this.getTypeIcon(field.type);
         
         fieldDiv.innerHTML = `
-            <div class="grid grid-cols-12 gap-3 items-center">
+            <div class="grid grid-cols-12 gap-4 items-center">
                 <div class="col-span-1 flex items-center">
-                    <div class="drag-handle flex items-center justify-center w-6 h-6 text-gray-400 hover:text-gray-600 cursor-move mr-1">
+                    <div class="drag-handle flex items-center justify-center w-6 h-6 text-gray-400 hover:text-gray-600 cursor-move mr-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"/>
                         </svg>
@@ -528,7 +578,7 @@ class DataModelEditor {
                     <span class="field-number text-xs font-medium text-gray-500 bg-gray-100 px-1 py-1 rounded-full min-w-[20px] text-center">${index + 1}</span>
                 </div>
                 
-                <div class="col-span-4">
+                <div class="col-span-3">
                     <input type="text" 
                            class="field-name w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" 
                            value="${field.name}" 
@@ -549,35 +599,42 @@ class DataModelEditor {
                     ${this.createInitialValueInput(field)}
                 </div>
                 
-                <div class="col-span-3 flex items-center justify-between gap-2">
+                <div class="col-span-4 flex items-center justify-between gap-2">
                     <label class="flex items-center text-xs text-gray-700 bg-gray-50 px-2 py-1 rounded-md flex-1">
                         <input type="checkbox" 
-                               class="field-required mr-1 text-violet-500 focus:ring-violet-500 rounded" 
+                               class="field-required mr-2 text-violet-500 focus:ring-violet-500 rounded flex-shrink-0" 
                                ${field.required ? 'checked' : ''}>
-                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        <span class="whitespace-nowrap">Required</span>
+                        <span class="whitespace-nowrap text-xs">Required</span>
                     </label>
                     <label class="flex items-center text-xs text-gray-700 bg-gray-50 px-2 py-1 rounded-md flex-1">
                         <input type="checkbox" 
-                               class="field-readonly mr-1 text-violet-500 focus:ring-violet-500 rounded" 
+                               class="field-nullable mr-2 text-blue-500 focus:ring-blue-500 rounded flex-shrink-0" 
+                               ${field.nullable !== false ? 'checked' : ''}>
+                        <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"/>
+                        </svg>
+                        <span class="whitespace-nowrap text-xs">Nullable</span>
+                    </label>
+                    <label class="flex items-center text-xs text-gray-700 bg-gray-50 px-2 py-1 rounded-md flex-1">
+                        <input type="checkbox" 
+                               class="field-readonly mr-2 text-amber-500 focus:ring-amber-500 rounded flex-shrink-0" 
                                ${field.readOnly ? 'checked' : ''}>
-                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                         </svg>
-                        <span class="whitespace-nowrap">Read Only</span>
+                        <span class="whitespace-nowrap text-xs">Read Only</span>
                     </label>
-                    <button class="remove-field-btn text-red-500 hover:text-red-700 p-1 rounded-md hover:bg-red-50 transition-all flex-shrink-0">
+                    <button class="remove-field-btn text-red-500 hover:text-red-700 p-2 rounded-md hover:bg-red-50 transition-all flex-shrink-0">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                         </svg>
                     </button>
                 </div>
             </div>
-        `;
-        
-        // Setup field event listeners
+        `;        // Setup field event listeners
         this.setupFieldEventListeners(fieldDiv, field);
         
         return fieldDiv;
@@ -643,14 +700,36 @@ class DataModelEditor {
                 
             case 'Object':
                 return `
-                    <textarea class="${baseClasses} h-16 resize-none font-mono text-xs" 
-                              placeholder='{"key": "value"}'>${field.initialValue}</textarea>
+                    <div class="relative">
+                        <div class="absolute left-0 top-0 bottom-0 w-12 bg-gray-100 border-r border-gray-300 rounded-l-md flex flex-col text-xs text-gray-500 font-mono overflow-hidden">
+                            <div class="line-numbers flex-1 p-1">
+                                <div class="line-number">1</div>
+                                <div class="line-number">2</div>
+                                <div class="line-number">3</div>
+                                <div class="line-number">4</div>
+                            </div>
+                        </div>
+                        <textarea class="${baseClasses} h-16 resize-none font-mono text-xs pl-14" 
+                                  placeholder='{"key": "value"}'
+                                  data-field-type="Object">${field.initialValue}</textarea>
+                    </div>
                 `;
                 
             case 'Array':
                 return `
-                    <textarea class="${baseClasses} h-16 resize-none font-mono text-xs" 
-                              placeholder='["item1", "item2"]'>${field.initialValue}</textarea>
+                    <div class="relative">
+                        <div class="absolute left-0 top-0 bottom-0 w-12 bg-gray-100 border-r border-gray-300 rounded-l-md flex flex-col text-xs text-gray-500 font-mono overflow-hidden">
+                            <div class="line-numbers flex-1 p-1">
+                                <div class="line-number">1</div>
+                                <div class="line-number">2</div>
+                                <div class="line-number">3</div>
+                                <div class="line-number">4</div>
+                            </div>
+                        </div>
+                        <textarea class="${baseClasses} h-16 resize-none font-mono text-xs pl-14" 
+                                  placeholder='["item1", "item2"]'
+                                  data-field-type="Array">${field.initialValue}</textarea>
+                    </div>
                 `;
                 
             case 'Text':
@@ -721,7 +800,20 @@ class DataModelEditor {
         // Field name blur validation (more thorough)
         fieldElement.querySelector('.field-name').addEventListener('blur', (e) => {
             const newName = e.target.value.trim();
-            this.validateAndUpdateFieldName(e.target, fieldId, newName, true);
+            
+            // If field name is empty on blur, restore the original name
+            if (!newName || newName === '') {
+                const originalField = this.currentNode.getField(fieldId);
+                if (originalField) {
+                    e.target.value = originalField.name; // Restore original name
+                    e.target.classList.remove('border-red-500', 'bg-red-50');
+                    e.target.classList.add('border-gray-300');
+                    this.hideFieldValidationError(e.target);
+                    this.updateSaveButtonState();
+                }
+            } else {
+                this.validateAndUpdateFieldName(e.target, fieldId, newName, true);
+            }
         });
         
         // Field type change with value validation
@@ -736,15 +828,33 @@ class DataModelEditor {
         const valueInput = fieldElement.querySelector('.field-value');
         valueInput.addEventListener('input', (e) => {
             this.validateAndUpdateFieldValue(e.target, fieldId, e.target.value);
+            
+            // Update line numbers for JSON fields
+            if (e.target.hasAttribute('data-field-type') && 
+                (e.target.getAttribute('data-field-type') === 'Object' || e.target.getAttribute('data-field-type') === 'Array')) {
+                this.updateLineNumbers(e.target);
+            }
         });
         
         valueInput.addEventListener('blur', (e) => {
             this.validateAndUpdateFieldValue(e.target, fieldId, e.target.value, true);
         });
         
+        // Initialize line numbers for JSON fields
+        if (valueInput.hasAttribute('data-field-type') && 
+            (valueInput.getAttribute('data-field-type') === 'Object' || valueInput.getAttribute('data-field-type') === 'Array')) {
+            this.updateLineNumbers(valueInput);
+        }
+        
         // Required checkbox
         fieldElement.querySelector('.field-required').addEventListener('change', (e) => {
             this.currentNode.updateField(fieldId, { required: e.target.checked });
+            this.updateSaveButtonState();
+        });
+        
+        // Nullable checkbox
+        fieldElement.querySelector('.field-nullable').addEventListener('change', (e) => {
+            this.currentNode.updateField(fieldId, { nullable: e.target.checked });
             this.updateSaveButtonState();
         });
         
@@ -767,13 +877,26 @@ class DataModelEditor {
         const field = this.currentNode.getField(fieldId);
         if (!field) return;
         
+        // Check if name is empty first
+        if (!newName || newName.trim() === '') {
+            inputElement.classList.add('border-red-500', 'bg-red-50');
+            inputElement.classList.remove('border-gray-300');
+            this.showFieldValidationError(inputElement, 'Field name is required');
+            
+            // DON'T update the field with empty name - keep original name
+            // This prevents saving with empty field names
+            this.updateSaveButtonState();
+            return;
+        }
+        
         // Create temporary field for validation
         const tempField = { ...field, name: newName };
         const errors = this.currentNode.validateField(tempField);
         
         // Filter errors for name-specific issues
         const nameErrors = errors.filter(error => 
-            error.includes('Field name') || error.includes('unique') || error.includes('reserved')
+            error.includes('Field name') || error.includes('unique') || error.includes('reserved') || 
+            error.includes('format') || error.includes('letter') || error.includes('underscore')
         );
         
         if (nameErrors.length > 0) {
@@ -852,7 +975,10 @@ class DataModelEditor {
         const saveBtn = this.modal.querySelector('.save-btn');
         const validation = this.currentNode.isValidForSave();
         
-        if (validation.valid) {
+        // Also check JSON validation if JSON tab has content
+        const jsonValidation = this.validateCurrentJSON();
+        
+        if (validation.valid && jsonValidation.valid) {
             saveBtn.disabled = false;
             saveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
             saveBtn.classList.add('hover:from-violet-600', 'hover:to-purple-700');
@@ -862,21 +988,70 @@ class DataModelEditor {
             saveBtn.disabled = true;
             saveBtn.classList.add('opacity-50', 'cursor-not-allowed');
             saveBtn.classList.remove('hover:from-violet-600', 'hover:to-purple-700');
-            saveBtn.title = validation.error || 'Please fix validation errors';
-            this.showValidationSummary(validation);
+            
+            // Show appropriate error message
+            let errorMessage = validation.error || 'Please fix validation errors';
+            if (!jsonValidation.valid) {
+                errorMessage = jsonValidation.error;
+            }
+            
+            saveBtn.title = errorMessage;
+            this.showValidationSummary(validation, jsonValidation);
+        }
+    }
+
+    /**
+     * Validate current JSON content for save validation
+     */
+    validateCurrentJSON() {
+        const jsonEditor = this.modal.querySelector('.json-editor');
+        const jsonText = jsonEditor.value.trim();
+        
+        // If JSON is empty, it's valid (no JSON to validate)
+        if (!jsonText) {
+            return { valid: true };
+        }
+        
+        try {
+            const schema = JSON.parse(jsonText);
+            
+            // Basic JSON syntax is valid, now validate schema structure
+            if (this.validateJSONSchema(schema)) {
+                return { valid: true };
+            } else {
+                return { 
+                    valid: false, 
+                    error: 'Invalid JSON schema structure' 
+                };
+            }
+        } catch (error) {
+            return { 
+                valid: false, 
+                error: `Invalid JSON syntax: ${error.message}` 
+            };
         }
     }
 
     /**
      * Show validation summary
      */
-    showValidationSummary(validation) {
+    showValidationSummary(validation, jsonValidation = null) {
         const summaryDiv = this.modal.querySelector('.validation-summary');
         const errorsDiv = this.modal.querySelector('.validation-errors');
         
         if (!summaryDiv || !errorsDiv) return;
         
-        let errorHTML = `<div class="mb-2"><strong>General:</strong> ${validation.error}</div>`;
+        let errorHTML = '';
+        
+        // Add JSON validation errors first (highest priority)
+        if (jsonValidation && !jsonValidation.valid) {
+            errorHTML += `<div class="mb-2"><strong>JSON Error:</strong> ${jsonValidation.error}</div>`;
+        }
+        
+        // Add general model validation errors
+        if (!validation.valid) {
+            errorHTML += `<div class="mb-2"><strong>General:</strong> ${validation.error}</div>`;
+        }
         
         if (validation.fieldErrors) {
             errorHTML += '<div><strong>Field Errors:</strong></div><ul class="list-disc list-inside ml-4 space-y-1">';
@@ -906,6 +1081,61 @@ class DataModelEditor {
         if (summaryDiv) {
             summaryDiv.classList.add('hidden');
         }
+    }
+
+    /**
+     * Update line numbers for JSON textareas
+     */
+    updateLineNumbers(textarea) {
+        const lineNumbersContainer = textarea.parentElement.querySelector('.line-numbers');
+        if (!lineNumbersContainer) return;
+        
+        const lines = textarea.value.split('\n');
+        const lineCount = Math.max(lines.length, 4); // Minimum 4 lines
+        
+        // Generate line numbers
+        let lineNumbersHTML = '';
+        for (let i = 1; i <= lineCount; i++) {
+            lineNumbersHTML += `<div class="line-number">${i}</div>`;
+        }
+        
+        lineNumbersContainer.innerHTML = lineNumbersHTML;
+        
+        // Adjust line numbers container height to match textarea
+        const textareaHeight = textarea.scrollHeight;
+        lineNumbersContainer.style.height = `${textareaHeight}px`;
+    }
+
+    /**
+     * Update line numbers for JSON tab textarea
+     */
+    updateJSONLineNumbers(textarea) {
+        const lineNumbersContainer = textarea.parentElement.querySelector('.json-line-numbers');
+        if (!lineNumbersContainer) return;
+        
+        const lines = textarea.value.split('\n');
+        const lineCount = Math.max(lines.length, 15); // Minimum 15 lines for JSON
+        
+        // Generate line numbers with proper alignment and spacing
+        let lineNumbersHTML = '';
+        for (let i = 1; i <= lineCount; i++) {
+            lineNumbersHTML += `<div class="line-number" style="height: 20px; line-height: 20px; text-align: right; padding-right: 4px;">${i}</div>`;
+        }
+        
+        lineNumbersContainer.innerHTML = lineNumbersHTML;
+        
+        // Sync scrolling between line numbers and textarea
+        textarea.removeEventListener('scroll', this._scrollHandler);
+        this._scrollHandler = () => {
+            lineNumbersContainer.scrollTop = textarea.scrollTop;
+        };
+        textarea.addEventListener('scroll', this._scrollHandler);
+        
+        // Also sync line height and font size exactly
+        const textareaStyles = window.getComputedStyle(textarea);
+        lineNumbersContainer.style.fontSize = textareaStyles.fontSize;
+        lineNumbersContainer.style.lineHeight = textareaStyles.lineHeight;
+        lineNumbersContainer.style.fontFamily = textareaStyles.fontFamily;
     }
 
     /**
@@ -988,10 +1218,30 @@ class DataModelEditor {
         const validation = this.currentNode.isValidForSave();
         
         if (!validation.valid) {
-            // Show validation error
-            alert(`Cannot save: ${validation.error}`);
+            // Show detailed validation error in a better format
+            let errorMessage = `Cannot save model due to validation errors:\n\n`;
+            errorMessage += `❌ ${validation.error}\n\n`;
             
-            // If there are field errors, highlight them
+            // If there are field errors, show them
+            if (validation.fieldErrors) {
+                errorMessage += `Field-specific errors:\n`;
+                Object.keys(validation.fieldErrors).forEach(fieldId => {
+                    const field = this.currentNode.getField(fieldId);
+                    const fieldName = field ? field.name || 'Unnamed Field' : 'Unknown Field';
+                    const errors = validation.fieldErrors[fieldId];
+                    
+                    errorMessage += `\n🔸 ${fieldName}:\n`;
+                    errors.forEach(error => {
+                        errorMessage += `   • ${error}\n`;
+                    });
+                });
+                
+                errorMessage += `\nPlease fix these errors before saving.`;
+            }
+            
+            alert(errorMessage);
+            
+            // Highlight all fields with errors
             if (validation.fieldErrors) {
                 Object.keys(validation.fieldErrors).forEach(fieldId => {
                     const fieldElement = this.modal.querySelector(`[data-field-id="${fieldId}"]`);
@@ -999,22 +1249,47 @@ class DataModelEditor {
                         const nameInput = fieldElement.querySelector('.field-name');
                         const valueInput = fieldElement.querySelector('.field-value');
                         
-                        if (nameInput) nameInput.classList.add('border-red-500', 'bg-red-50');
+                        if (nameInput) {
+                            nameInput.classList.add('border-red-500', 'bg-red-50');
+                            nameInput.focus(); // Focus on first error field
+                        }
                         if (valueInput) valueInput.classList.add('border-red-500', 'bg-red-50');
                     }
                 });
             }
             
+            // Show validation summary
+            this.showValidationSummary(validation);
+            
             return; // Don't save if validation fails
         }
         
-        // Emit event to trigger re-render
+        // All validation passed - save and close
         this.eventBus.emit('datamodel.updated', {
             node: this.currentNode
         });
         
-        // Close editor
-        this.close();
+        // Force close without validation check since we've already validated
+        this.forceClose();
+    }
+
+    /**
+     * Force close without validation (used after successful save)
+     */
+    forceClose() {
+        if (this.modal) {
+            document.body.removeChild(this.modal);
+            this.modal = null;
+        }
+        
+        // Remove escape key listener
+        if (this.escapeHandler) {
+            document.removeEventListener('keydown', this.escapeHandler);
+            this.escapeHandler = null;
+        }
+        
+        this.currentNode = null;
+        this.isOpen = false;
     }
 
     /**
@@ -1186,6 +1461,16 @@ class DataModelEditor {
                 description: `${fieldName} field`
             };
 
+            // Handle nullable fields
+            if (field.nullable !== false) {
+                // If field is nullable, allow null values
+                if (Array.isArray(property.type)) {
+                    property.type.push('null');
+                } else {
+                    property.type = [property.type, 'null'];
+                }
+            }
+
             // Add format for special types
             if (field.type === 'Email') {
                 property.format = 'email';
@@ -1216,6 +1501,11 @@ class DataModelEditor {
             // Add readOnly property
             if (field.readOnly) {
                 property.readOnly = true;
+            }
+
+            // Add nullable information to description
+            if (field.nullable !== false) {
+                property.description += ' (nullable)';
             }
 
             schema.properties[fieldName] = property;
@@ -1310,6 +1600,9 @@ class DataModelEditor {
             const schema = this.generateJSONSchema();
             jsonEditor.value = JSON.stringify(schema, null, 2);
             this.clearValidationMessage();
+            
+            // Update line numbers for the JSON content
+            this.updateJSONLineNumbers(jsonEditor);
         }
     }
 
@@ -1396,6 +1689,9 @@ class DataModelEditor {
             // Switch to Fields tab to see the imported fields
             this.switchTab('properties');
             this.renderFields();
+            
+            // Validate after import
+            this.updateSaveButtonState();
 
         } catch (error) {
             this.showValidationMessage(`Invalid JSON: ${error.message}`, 'error');
@@ -1530,8 +1826,73 @@ class DataModelEditor {
             // Error messages are already shown by validateJSONSchema
             
         } catch (error) {
-            this.showValidationMessage(`Invalid JSON: ${error.message}`, 'error');
+            let errorMessage = `Invalid JSON: ${error.message}`;
+            
+            // Try to extract line and column information from error
+            const lineMatch = error.message.match(/at position (\d+)|line (\d+)/);
+            const positionMatch = error.message.match(/at position (\d+)/);
+            
+            if (positionMatch) {
+                const position = parseInt(positionMatch[1]);
+                const lineInfo = this.getLineFromPosition(jsonText, position);
+                errorMessage = `Invalid JSON: ${error.message.replace(/at position \d+/, '')} at line ${lineInfo.line}, column ${lineInfo.column}`;
+                
+                // Highlight the error line
+                this.highlightErrorLine(jsonEditor, lineInfo.line);
+            }
+            
+            this.showValidationMessage(errorMessage, 'error');
         }
+    }
+
+    /**
+     * Get line and column from character position in text
+     */
+    getLineFromPosition(text, position) {
+        const lines = text.substring(0, position).split('\n');
+        const line = lines.length;
+        const column = lines[lines.length - 1].length + 1;
+        return { line, column };
+    }
+
+    /**
+     * Highlight error line in JSON editor
+     */
+    highlightErrorLine(textarea, errorLine) {
+        // Remove any previous error highlighting
+        this.clearErrorHighlighting();
+        
+        // Add error highlighting to the specific line number
+        const lineNumbersContainer = textarea.parentElement.querySelector('.json-line-numbers');
+        if (lineNumbersContainer) {
+            const lineNumbers = lineNumbersContainer.querySelectorAll('.line-number');
+            if (lineNumbers[errorLine - 1]) {
+                lineNumbers[errorLine - 1].classList.add('error-line');
+                lineNumbers[errorLine - 1].style.backgroundColor = '#fef2f2';
+                lineNumbers[errorLine - 1].style.color = '#dc2626';
+                lineNumbers[errorLine - 1].style.fontWeight = 'bold';
+            }
+        }
+        
+        // Store error line for clearing later
+        this.currentErrorLine = errorLine;
+    }
+
+    /**
+     * Clear error line highlighting
+     */
+    clearErrorHighlighting() {
+        const lineNumbersContainer = this.modal.querySelector('.json-line-numbers');
+        if (lineNumbersContainer) {
+            const errorLines = lineNumbersContainer.querySelectorAll('.error-line');
+            errorLines.forEach(line => {
+                line.classList.remove('error-line');
+                line.style.backgroundColor = '';
+                line.style.color = '';
+                line.style.fontWeight = '';
+            });
+        }
+        this.currentErrorLine = null;
     }
 
     /**
@@ -1574,5 +1935,8 @@ class DataModelEditor {
     clearValidationMessage() {
         const messageElement = this.modal.querySelector('.json-validation-message');
         messageElement.classList.add('hidden');
+        
+        // Also clear error line highlighting
+        this.clearErrorHighlighting();
     }
 }

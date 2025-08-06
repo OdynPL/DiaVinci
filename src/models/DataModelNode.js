@@ -18,8 +18,10 @@ class DataModelNode extends Node {
 
     /**
      * Validate field name uniqueness (case-insensitive)
+     * Returns false for empty names or duplicates
      */
     isFieldNameUnique(fieldName, excludeFieldId = null) {
+        // Empty names are not unique (and not valid)
         if (!fieldName || fieldName.trim() === '') return false;
         
         return !this.fields.some(field => 
@@ -140,17 +142,19 @@ class DataModelNode extends Node {
     validateField(field) {
         const errors = [];
         
-        // Validate field name
+        // Validate field name format first
         const nameErrors = this.validateFieldName(field.name);
         errors.push(...nameErrors);
         
-        // Check name uniqueness
-        if (field.name && !this.isFieldNameUnique(field.name, field.id)) {
-            errors.push('Field name must be unique');
+        // Check name uniqueness only if name is not empty
+        if (field.name && field.name.trim() !== '') {
+            if (!this.isFieldNameUnique(field.name, field.id)) {
+                errors.push('Field name must be unique');
+            }
         }
         
         // Validate initial value
-        if (field.initialValue) {
+        if (field.initialValue && field.initialValue.trim() !== '') {
             const valueErrors = this.validateInitialValue(field.initialValue, field.type);
             errors.push(...valueErrors);
         }
@@ -257,7 +261,8 @@ class DataModelNode extends Node {
             type: field.type || 'String',
             initialValue: field.initialValue || '',
             required: field.required || false,
-            readOnly: field.readOnly || false
+            readOnly: field.readOnly || false,
+            nullable: field.nullable !== undefined ? field.nullable : true // Default to nullable
         };
         this.fields.push(newField);
         return newField;
@@ -269,8 +274,20 @@ class DataModelNode extends Node {
     updateField(fieldId, updates) {
         const fieldIndex = this.fields.findIndex(f => f.id === fieldId);
         if (fieldIndex !== -1) {
-            // If updating name, ensure uniqueness
+            // If updating name, validate it
             if (updates.name !== undefined) {
+                // Check if name is empty
+                if (!updates.name || updates.name.trim() === '') {
+                    throw new Error('Field name cannot be empty');
+                }
+                
+                // Check name format
+                const nameErrors = this.validateFieldName(updates.name);
+                if (nameErrors.length > 0) {
+                    throw new Error(nameErrors[0]);
+                }
+                
+                // Check uniqueness
                 if (!this.isFieldNameUnique(updates.name, fieldId)) {
                     throw new Error(`Field name '${updates.name}' is already in use`);
                 }
