@@ -772,20 +772,47 @@ class CanvasRenderer {
             const isSelected = this.selectedElement === node && this.selectedType === 'node';
             const isMultiSelected = multiSelectionManager && multiSelectionManager.isElementSelected(node, 'node');
             
-            if (isMultiSelected) {
-                this.ctx.fillStyle = '#4A90E2';
-                this.ctx.globalAlpha = 0.7;
+            if (node.type === 'datamodel') {
+                // Special handling for data model nodes
+                const width = node.r * 3.5;
+                const height = Math.max(node.r * 2, node.fields.length * 18 + 50);
+                const x = node.x - width/2;
+                const y = node.y - height/2;
+                
+                // Fill with white background
+                this.ctx.fillStyle = '#ffffff';
                 this.ctx.fill();
-                this.ctx.strokeStyle = '#2563EB';
-                this.ctx.lineWidth = 3;
-                this.ctx.globalAlpha = 1;
+                
+                // Draw border
+                if (isMultiSelected) {
+                    this.ctx.strokeStyle = '#4A90E2';
+                    this.ctx.lineWidth = 4;
+                } else if (isSelected) {
+                    this.ctx.strokeStyle = '#e6b800';
+                    this.ctx.lineWidth = 4;
+                } else {
+                    this.ctx.strokeStyle = '#1e3a8a'; // Dark blue border
+                    this.ctx.lineWidth = 2;
+                }
                 this.ctx.stroke();
+                
             } else {
-                this.ctx.fillStyle = isSelected ? '#ffe066' : node.color;
-                this.ctx.fill();
-                this.ctx.strokeStyle = isSelected ? '#e6b800' : '#333';
-                this.ctx.lineWidth = isSelected ? 4 : 2;
-                this.ctx.stroke();
+                // Original handling for other node types
+                if (isMultiSelected) {
+                    this.ctx.fillStyle = '#4A90E2';
+                    this.ctx.globalAlpha = 0.7;
+                    this.ctx.fill();
+                    this.ctx.strokeStyle = '#2563EB';
+                    this.ctx.lineWidth = 3;
+                    this.ctx.globalAlpha = 1;
+                    this.ctx.stroke();
+                } else {
+                    this.ctx.fillStyle = isSelected ? '#ffe066' : node.color;
+                    this.ctx.fill();
+                    this.ctx.strokeStyle = isSelected ? '#e6b800' : '#333';
+                    this.ctx.lineWidth = isSelected ? 4 : 2;
+                    this.ctx.stroke();
+                }
             }
             
             // Draw label
@@ -820,7 +847,7 @@ class CanvasRenderer {
         } else if (node.type === 'datamodel') {
             // Draw rounded rectangle for data model nodes with shadow
             const width = node.r * 3.5;
-            const height = Math.max(node.r * 2, node.fields.length * 16 + 45);
+            const height = Math.max(node.r * 2, node.fields.length * 18 + 50);
             const x = node.x - width/2;
             const y = node.y - height/2;
             const radius = 8;
@@ -886,98 +913,102 @@ class CanvasRenderer {
      */
     drawDataModelContent(node) {
         const width = node.r * 3.5;
-        const height = Math.max(node.r * 2, node.fields.length * 16 + 45);
+        const height = Math.max(node.r * 2, node.fields.length * 18 + 50);
         const startX = node.x - width/2;
         const startY = node.y - height/2;
+        const headerHeight = 32;
         
-        // Draw header background (darker)
-        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-        this.ctx.fillRect(startX, startY, width, 28);
+        // Draw header background (dark blue)
+        this.ctx.fillStyle = '#1e3a8a'; // Dark blue header
+        const radius = 8;
         
-        // Draw title with icon
+        // Draw rounded header rectangle
+        this.ctx.beginPath();
+        this.ctx.moveTo(startX + radius, startY);
+        this.ctx.lineTo(startX + width - radius, startY);
+        this.ctx.quadraticCurveTo(startX + width, startY, startX + width, startY + radius);
+        this.ctx.lineTo(startX + width, startY + headerHeight);
+        this.ctx.lineTo(startX, startY + headerHeight);
+        this.ctx.lineTo(startX, startY + radius);
+        this.ctx.quadraticCurveTo(startX, startY, startX + radius, startY);
+        this.ctx.closePath();
+        this.ctx.fill();
+        
+        // Draw title with icon in header
         this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 14px Arial';
+        this.ctx.font = 'bold 16px Arial'; // Bigger font
         this.ctx.textAlign = 'left';
         this.ctx.textBaseline = 'middle';
         
         // Draw database icon
-        this.ctx.fillText('📊', startX + 6, startY + 14);
+        this.ctx.fillText('📊', startX + 8, startY + headerHeight/2);
         
         // Truncate model name if too long to fit
-        const availableWidth = width - 36; // Account for icon and padding
-        const modelName = this.truncateText(node.label, availableWidth, 'bold 14px Arial');
-        this.ctx.fillText(modelName, startX + 26, startY + 14);
-        
-        // Draw separator line with gradient
-        const gradient = this.ctx.createLinearGradient(startX, startY + 28, startX + width, startY + 28);
-        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.1)');
-        gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.3)');
-        gradient.addColorStop(1, 'rgba(255, 255, 255, 0.1)');
-        
-        this.ctx.strokeStyle = gradient;
-        this.ctx.lineWidth = 1;
-        this.ctx.beginPath();
-        this.ctx.moveTo(startX + 4, startY + 28);
-        this.ctx.lineTo(startX + width - 4, startY + 28);
-        this.ctx.stroke();
+        const availableWidth = width - 40; // Account for icon and padding
+        const modelName = this.truncateText(node.label, availableWidth, 'bold 16px Arial');
+        this.ctx.fillText(modelName, startX + 32, startY + headerHeight/2);
         
         // Draw fields with better formatting
         if (node.fields.length > 0) {
             this.ctx.textAlign = 'left';
             
             node.fields.forEach((field, index) => {
-                const fieldY = startY + 35 + (index * 16);
+                const fieldY = startY + headerHeight + 10 + (index * 18);
                 const isEven = index % 2 === 0;
                 
-                // Alternate row background
+                // Alternate row background for better readability
                 if (isEven) {
-                    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-                    this.ctx.fillRect(startX + 1, fieldY - 2, width - 2, 14);
+                    this.ctx.fillStyle = '#f8fafc'; // Very light gray
+                    this.ctx.fillRect(startX + 1, fieldY - 3, width - 2, 16);
                 }
                 
-                // Field type icon (smaller)
+                // Field type icon
                 const typeIcon = this.getTypeIcon(field.type);
-                this.ctx.fillStyle = '#f0f0f0';
-                this.ctx.font = '10px Arial';
-                this.ctx.fillText(typeIcon, startX + 6, fieldY + 7);
+                this.ctx.fillStyle = '#6b7280'; // Gray for icons
+                this.ctx.font = '12px Arial';
+                this.ctx.fillText(typeIcon, startX + 8, fieldY + 7);
                 
-                // Field name and type on same line
-                this.ctx.fillStyle = '#ffffff';
-                this.ctx.font = 'bold 10px Arial';
+                // Field name (black, larger font)
+                this.ctx.fillStyle = '#000000'; // Black text
+                this.ctx.font = 'bold 13px Arial'; // Bigger, bold font
+                this.ctx.textAlign = 'left';
                 
-                // Calculate available width for field name (account for icon, padding, and type text)
+                // Calculate available width for field name
                 this.ctx.textAlign = 'right';
                 let typeText = field.type;
                 if (field.required) typeText += '*';
+                if (field.nullable) typeText += '?';
                 if (field.readOnly) typeText += ' (RO)';
-                this.ctx.font = '9px Arial';
+                
+                this.ctx.font = '11px Arial';
                 const typeTextWidth = this.ctx.measureText(typeText).width;
                 
-                // Truncate field name if needed
-                this.ctx.font = 'bold 10px Arial';
+                // Field name
+                this.ctx.font = 'bold 13px Arial';
                 this.ctx.textAlign = 'left';
-                const availableFieldNameWidth = width - 28 - typeTextWidth - 16; // icon + padding + type + margins
-                const truncatedFieldName = this.truncateText(field.name, availableFieldNameWidth, 'bold 10px Arial');
-                this.ctx.fillText(truncatedFieldName, startX + 20, fieldY + 7);
+                const availableFieldNameWidth = width - 32 - typeTextWidth - 20;
+                const truncatedFieldName = this.truncateText(field.name, availableFieldNameWidth, 'bold 13px Arial');
+                this.ctx.fillText(truncatedFieldName, startX + 26, fieldY + 7);
                 
-                // Field type with indicators (on same line, right side)
-                this.ctx.fillStyle = '#e8e8e8';
-                this.ctx.font = '9px Arial';
+                // Field type with indicators (right side, smaller gray text)
+                this.ctx.fillStyle = '#6b7280'; // Gray for type info
+                this.ctx.font = '11px Arial';
                 this.ctx.textAlign = 'right';
-                this.ctx.fillText(typeText, startX + width - 8, fieldY + 7);
+                this.ctx.fillText(typeText, startX + width - 10, fieldY + 7);
                 
                 // Reset text align for next iteration
                 this.ctx.textAlign = 'left';
             });
         } else {
             // Empty state with better design
-            this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-            this.ctx.font = '12px Arial';
+            const emptyY = startY + headerHeight + 25;
+            this.ctx.fillStyle = '#9ca3af'; // Gray color
+            this.ctx.font = '14px Arial';
             this.ctx.textAlign = 'center';
-            this.ctx.fillText('📝', node.x, node.y - 6);
-            this.ctx.font = '10px Arial';
-            this.ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-            this.ctx.fillText('Double-click to add fields', node.x, node.y + 8);
+            this.ctx.fillText('📝', node.x, emptyY);
+            this.ctx.font = '12px Arial';
+            this.ctx.fillStyle = '#6b7280';
+            this.ctx.fillText('Double-click to add fields', node.x, emptyY + 18);
         }
     }
 
