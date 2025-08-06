@@ -325,7 +325,7 @@ class DataModelNode extends Node {
      */
     containsPoint(x, y) {
         // DataModel nodes are rectangular for better field display
-        const width = this.r * 3.5;
+        const width = this.r * 4.5; // Increased from 3.5 to 4.5
         const height = Math.max(this.r * 2, this.fields.length * 18 + 50);
         
         return (

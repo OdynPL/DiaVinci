@@ -774,7 +774,7 @@ class CanvasRenderer {
             
             if (node.type === 'datamodel') {
                 // Special handling for data model nodes
-                const width = node.r * 3.5;
+                const width = node.r * 4.5; // Increased from 3.5 to 4.5
                 const height = Math.max(node.r * 2, node.fields.length * 18 + 50);
                 const x = node.x - width/2;
                 const y = node.y - height/2;
@@ -846,7 +846,7 @@ class CanvasRenderer {
             this.ctx.restore();
         } else if (node.type === 'datamodel') {
             // Draw rounded rectangle for data model nodes with shadow
-            const width = node.r * 3.5;
+            const width = node.r * 4.5; // Increased from 3.5 to 4.5
             const height = Math.max(node.r * 2, node.fields.length * 18 + 50);
             const x = node.x - width/2;
             const y = node.y - height/2;
@@ -912,7 +912,7 @@ class CanvasRenderer {
      * Draw data model content with fields
      */
     drawDataModelContent(node) {
-        const width = node.r * 3.5;
+        const width = node.r * 4.5; // Increased from 3.5 to 4.5
         const height = Math.max(node.r * 2, node.fields.length * 18 + 50);
         const startX = node.x - width/2;
         const startY = node.y - height/2;
