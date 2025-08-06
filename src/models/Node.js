@@ -2,15 +2,27 @@
  * Node model representing diagram nodes
  */
 class Node {
+    static _idCounter = 0; // Static counter for unique IDs
+    
     constructor({x, y, r = 30, id = null, label = 'Node', color = '#b3d1ff', type = 'node', rotation = 0}) {
         this.x = x;
         this.y = y;
         this.r = r;
-        this.id = id || Date.now();
+        this.id = id || this._generateUniqueId();
         this.label = label;
         this.color = color;
         this.type = type; // 'node', 'start', 'stop', 'if'
         this.rotation = rotation; // 0 (horizontal), 90 (vertical) for IF nodes
+    }
+
+    /**
+     * Generate truly unique ID
+     */
+    _generateUniqueId() {
+        const timestamp = Date.now();
+        const counter = ++Node._idCounter;
+        const random = Math.floor(Math.random() * 1000);
+        return `${this.type || 'node'}_${timestamp}_${counter}_${random}`;
     }
 
     /**

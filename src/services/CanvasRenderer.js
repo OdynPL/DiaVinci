@@ -902,7 +902,11 @@ class CanvasRenderer {
         
         // Draw database icon
         this.ctx.fillText('📊', startX + 6, startY + 14);
-        this.ctx.fillText(node.label, startX + 26, startY + 14);
+        
+        // Truncate model name if too long to fit
+        const availableWidth = width - 36; // Account for icon and padding
+        const modelName = this.truncateText(node.label, availableWidth, 'bold 14px Arial');
+        this.ctx.fillText(modelName, startX + 26, startY + 14);
         
         // Draw separator line with gradient
         const gradient = this.ctx.createLinearGradient(startX, startY + 28, startX + width, startY + 28);
@@ -940,15 +944,26 @@ class CanvasRenderer {
                 // Field name and type on same line
                 this.ctx.fillStyle = '#ffffff';
                 this.ctx.font = 'bold 10px Arial';
-                this.ctx.fillText(field.name, startX + 20, fieldY + 7);
+                
+                // Calculate available width for field name (account for icon, padding, and type text)
+                this.ctx.textAlign = 'right';
+                let typeText = field.type;
+                if (field.required) typeText += '*';
+                if (field.readOnly) typeText += ' (RO)';
+                this.ctx.font = '9px Arial';
+                const typeTextWidth = this.ctx.measureText(typeText).width;
+                
+                // Truncate field name if needed
+                this.ctx.font = 'bold 10px Arial';
+                this.ctx.textAlign = 'left';
+                const availableFieldNameWidth = width - 28 - typeTextWidth - 16; // icon + padding + type + margins
+                const truncatedFieldName = this.truncateText(field.name, availableFieldNameWidth, 'bold 10px Arial');
+                this.ctx.fillText(truncatedFieldName, startX + 20, fieldY + 7);
                 
                 // Field type with indicators (on same line, right side)
                 this.ctx.fillStyle = '#e8e8e8';
                 this.ctx.font = '9px Arial';
                 this.ctx.textAlign = 'right';
-                let typeText = field.type;
-                if (field.required) typeText += '*';
-                if (field.readOnly) typeText += ' (RO)';
                 this.ctx.fillText(typeText, startX + width - 8, fieldY + 7);
                 
                 // Reset text align for next iteration
@@ -1200,5 +1215,66 @@ class CanvasRenderer {
         this.ctx.fill();
         
         this.ctx.restore();
+    }
+
+    /**
+     * Truncate text to fit within specified width
+     */
+    truncateText(text, maxWidth, font = null) {
+        if (!text) return '';
+        
+        // Save current font if we need to change it
+        const originalFont = this.ctx.font;
+        if (font) {
+            this.ctx.font = font;
+        }
+        
+        // Check if text fits as-is
+        const textWidth = this.ctx.measureText(text).width;
+        if (textWidth <= maxWidth) {
+            // Restore original font if changed
+            if (font) {
+                this.ctx.font = originalFont;
+            }
+            return text;
+        }
+        
+        // Text is too long, truncate with ellipsis
+        const ellipsis = '...';
+        const ellipsisWidth = this.ctx.measureText(ellipsis).width;
+        const availableWidth = maxWidth - ellipsisWidth;
+        
+        if (availableWidth <= 0) {
+            // Not enough space even for ellipsis
+            if (font) {
+                this.ctx.font = originalFont;
+            }
+            return ellipsis;
+        }
+        
+        // Binary search for the longest text that fits
+        let low = 0;
+        let high = text.length;
+        let bestFit = '';
+        
+        while (low <= high) {
+            const mid = Math.floor((low + high) / 2);
+            const substring = text.substring(0, mid);
+            const substringWidth = this.ctx.measureText(substring).width;
+            
+            if (substringWidth <= availableWidth) {
+                bestFit = substring;
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
+        
+        // Restore original font if changed
+        if (font) {
+            this.ctx.font = originalFont;
+        }
+        
+        return bestFit + ellipsis;
     }
 }

@@ -6,15 +6,56 @@ class DataModelNode extends Node {
     constructor({x, y, r = 40, id = null, label = 'Data Model', color = '#8e44ad', type = 'datamodel', fields = []}) {
         super({x, y, r, id, label, color, type});
         this.fields = fields || []; // Array of {name, type, initialValue, required, readOnly}
+        this._fieldCounter = 0; // Counter for generating unique field IDs
+    }
+
+    /**
+     * Generate unique field ID
+     */
+    _generateFieldId() {
+        return `field_${this.id}_${Date.now()}_${++this._fieldCounter}`;
+    }
+
+    /**
+     * Validate field name uniqueness (case-insensitive)
+     */
+    isFieldNameUnique(fieldName, excludeFieldId = null) {
+        if (!fieldName || fieldName.trim() === '') return false;
+        
+        return !this.fields.some(field => 
+            field.id !== excludeFieldId && 
+            field.name.toLowerCase() === fieldName.toLowerCase()
+        );
+    }
+
+    /**
+     * Generate unique field name
+     */
+    generateUniqueFieldName(baseName = 'field') {
+        let counter = 0;
+        let fieldName = baseName;
+        
+        while (!this.isFieldNameUnique(fieldName)) {
+            counter++;
+            fieldName = `${baseName}_${counter}`;
+        }
+        
+        return fieldName;
     }
 
     /**
      * Add a new field to the data model
      */
     addField(field) {
+        // Ensure unique field name
+        let fieldName = field.name || 'field';
+        if (!this.isFieldNameUnique(fieldName)) {
+            fieldName = this.generateUniqueFieldName(fieldName);
+        }
+
         const newField = {
-            id: Date.now() + Math.random(),
-            name: field.name || 'field',
+            id: this._generateFieldId(),
+            name: fieldName,
             type: field.type || 'String',
             initialValue: field.initialValue || '',
             required: field.required || false,
@@ -30,6 +71,13 @@ class DataModelNode extends Node {
     updateField(fieldId, updates) {
         const fieldIndex = this.fields.findIndex(f => f.id === fieldId);
         if (fieldIndex !== -1) {
+            // If updating name, ensure uniqueness
+            if (updates.name !== undefined) {
+                if (!this.isFieldNameUnique(updates.name, fieldId)) {
+                    throw new Error(`Field name '${updates.name}' is already in use`);
+                }
+            }
+            
             this.fields[fieldIndex] = {...this.fields[fieldIndex], ...updates};
             return this.fields[fieldIndex];
         }
@@ -101,7 +149,8 @@ class DataModelNode extends Node {
             label: this.label,
             color: this.color,
             type: this.type,
-            fields: this.fields
+            fields: this.fields,
+            _fieldCounter: this._fieldCounter
         };
     }
 
@@ -109,7 +158,9 @@ class DataModelNode extends Node {
      * Create DataModelNode from plain object
      */
     static fromJSON(data) {
-        return new DataModelNode(data);
+        const node = new DataModelNode(data);
+        node._fieldCounter = data._fieldCounter || 0;
+        return node;
     }
 
     /**

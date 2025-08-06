@@ -76,16 +76,40 @@ class DataModelEditor {
                 
                 <!-- Model Name Section -->
                 <div class="px-6 pt-4 pb-3 border-b border-gray-100 flex-shrink-0">
-                    <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
-                        </svg>
-                        Model Name
-                    </label>
-                    <input type="text" 
-                           class="model-name-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" 
-                           value="${this.currentNode.label}" 
-                           placeholder="Enter model name">
+                    <div class="flex gap-4">
+                        <div class="flex-1">
+                            <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                                </svg>
+                                Model Name
+                            </label>
+                            <input type="text" 
+                                   class="model-name-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" 
+                                   value="${this.currentNode.label}" 
+                                   placeholder="Enter model name"
+                                   maxlength="50"
+                                   title="${this.currentNode.label}">
+                        </div>
+                        <div class="flex-shrink-0">
+                            <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+                                </svg>
+                                Model ID
+                            </label>
+                            <div class="flex items-center bg-gray-50 border border-gray-300 rounded-lg">
+                                <div class="px-4 py-2 text-sm text-gray-600 font-mono flex-1 min-w-0">
+                                    <span class="truncate block" title="${this.currentNode.id}">${this.currentNode.id}</span>
+                                </div>
+                                <button class="copy-id-btn px-3 py-2 text-gray-400 hover:text-gray-600 transition-colors" title="Copy ID">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Tabs Navigation -->
@@ -276,6 +300,28 @@ class DataModelEditor {
             this.currentNode.setLabel(e.target.value);
         });
         
+        // Copy ID button
+        this.modal.querySelector('.copy-id-btn').addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(this.currentNode.id);
+                // Show temporary feedback
+                const button = this.modal.querySelector('.copy-id-btn');
+                const originalHTML = button.innerHTML;
+                button.innerHTML = `
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                `;
+                button.classList.add('text-green-500');
+                setTimeout(() => {
+                    button.innerHTML = originalHTML;
+                    button.classList.remove('text-green-500');
+                }, 1500);
+            } catch (error) {
+                console.error('Failed to copy ID:', error);
+            }
+        });
+        
         // JSON tab event listeners
         this.modal.querySelector('.import-json-btn').addEventListener('click', () => this.importFromJSON());
         this.modal.querySelector('.copy-json-btn').addEventListener('click', () => this.copyJSONToClipboard());
@@ -454,7 +500,9 @@ class DataModelEditor {
                     <input type="text" 
                            class="field-name w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" 
                            value="${field.name}" 
-                           placeholder="field_name">
+                           placeholder="field_name"
+                           maxlength="25"
+                           title="${field.name}">
                 </div>
                 
                 <div class="col-span-2">
@@ -532,9 +580,42 @@ class DataModelEditor {
     setupFieldEventListeners(fieldElement, field) {
         const fieldId = field.id;
         
-        // Field name change
+        // Field name change with uniqueness validation
         fieldElement.querySelector('.field-name').addEventListener('input', (e) => {
-            this.currentNode.updateField(fieldId, { name: e.target.value });
+            const newName = e.target.value.trim();
+            
+            // Check character limit
+            if (newName.length > 25) {
+                e.target.classList.add('border-red-500', 'bg-red-50');
+                e.target.classList.remove('border-gray-300');
+                this.showFieldValidationError(e.target, 'Field name cannot exceed 25 characters');
+                return;
+            }
+            
+            const isUnique = this.currentNode.isFieldNameUnique(newName, fieldId);
+            
+            if (!isUnique && newName !== '') {
+                // Show error styling
+                e.target.classList.add('border-red-500', 'bg-red-50');
+                e.target.classList.remove('border-gray-300');
+                
+                // Show tooltip or validation message
+                this.showFieldValidationError(e.target, 'Field name must be unique');
+            } else {
+                // Remove error styling
+                e.target.classList.remove('border-red-500', 'bg-red-50');
+                e.target.classList.add('border-gray-300');
+                this.hideFieldValidationError(e.target);
+                
+                // Update the field
+                try {
+                    this.currentNode.updateField(fieldId, { name: newName });
+                } catch (error) {
+                    // Handle the error from the model
+                    e.target.classList.add('border-red-500', 'bg-red-50');
+                    this.showFieldValidationError(e.target, error.message);
+                }
+            }
         });
         
         // Field type change
@@ -564,11 +645,58 @@ class DataModelEditor {
     }
 
     /**
+     * Validate field name uniqueness
+     */
+    validateFieldNameUniqueness(fieldName, excludeFieldId = null) {
+        return this.currentNode.isFieldNameUnique(fieldName, excludeFieldId);
+    }
+
+    /**
+     * Show field validation error
+     */
+    showFieldValidationError(inputElement, message) {
+        // Remove existing error message
+        this.hideFieldValidationError(inputElement);
+        
+        // Create error message element
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'field-error-message absolute z-10 bg-red-100 border border-red-400 text-red-700 px-2 py-1 rounded text-xs mt-1 shadow-sm';
+        errorDiv.textContent = message;
+        errorDiv.style.top = '100%';
+        errorDiv.style.left = '0';
+        
+        // Position relative to input
+        const container = inputElement.parentElement;
+        container.style.position = 'relative';
+        container.appendChild(errorDiv);
+    }
+
+    /**
+     * Hide field validation error
+     */
+    hideFieldValidationError(inputElement) {
+        const container = inputElement.parentElement;
+        const existingError = container.querySelector('.field-error-message');
+        if (existingError) {
+            container.removeChild(existingError);
+        }
+    }
+
+    /**
+     * Generate unique field name
+     */
+    generateUniqueFieldName(baseName = 'field') {
+        return this.currentNode.generateUniqueFieldName(baseName);
+    }
+
+    /**
      * Add new field
      */
     addField() {
+        const uniqueName = this.currentNode.generateUniqueFieldName('field');
+        
         const newField = this.currentNode.addField({
-            name: `field_${this.currentNode.fields.length}`,
+            name: uniqueName,
             type: 'String',
             initialValue: '',
             required: false,
@@ -739,26 +867,60 @@ class DataModelEditor {
      */
     generateJSONSchema() {
         const schema = {
+            $schema: "http://json-schema.org/draft-07/schema#",
+            $id: `#/datamodel/${this.currentNode.id}`,
             type: "object",
             title: this.currentNode.label || "DataModel",
+            description: `Data model schema for ${this.currentNode.label || 'DataModel'}`,
             properties: {},
-            required: []
+            required: [],
+            additionalProperties: false
         };
 
+        // Validate field names for uniqueness before generating
+        const fieldNames = new Set();
+        const duplicateFields = [];
+        
         this.currentNode.fields.forEach(field => {
+            const fieldName = field.name.trim();
+            if (!fieldName) return; // Skip empty field names
+            
+            if (fieldNames.has(fieldName.toLowerCase())) {
+                duplicateFields.push(fieldName);
+                return;
+            }
+            fieldNames.add(fieldName.toLowerCase());
+
             const property = {
                 type: this.mapFieldTypeToJSON(field.type),
-                description: `${field.name} field`
+                description: `${fieldName} field`
             };
 
-            // Add default value if provided
+            // Add format for special types
+            if (field.type === 'Email') {
+                property.format = 'email';
+            } else if (field.type === 'URL') {
+                property.format = 'uri';
+            } else if (field.type === 'Date') {
+                property.format = 'date-time';
+            } else if (field.type === 'Phone') {
+                property.pattern = '^[+]?[1-9]?[0-9]{7,15}$';
+            }
+
+            // Add default value if provided and valid
             if (field.initialValue && field.initialValue.trim() !== '') {
-                property.default = this.parseDefaultValue(field.initialValue, field.type);
+                try {
+                    property.default = this.parseDefaultValue(field.initialValue, field.type);
+                } catch (error) {
+                    // If parsing fails, add as string with comment
+                    property.default = field.initialValue;
+                    property.description += ' (default value may need validation)';
+                }
             }
 
             // Add to required array if field is required
             if (field.required) {
-                schema.required.push(field.name);
+                schema.required.push(fieldName);
             }
 
             // Add readOnly property
@@ -766,8 +928,16 @@ class DataModelEditor {
                 property.readOnly = true;
             }
 
-            schema.properties[field.name] = property;
+            schema.properties[fieldName] = property;
         });
+
+        // Add metadata
+        schema._metadata = {
+            modelId: this.currentNode.id,
+            generated: new Date().toISOString(),
+            fieldCount: Object.keys(schema.properties).length,
+            duplicateFields: duplicateFields.length > 0 ? duplicateFields : undefined
+        };
 
         return schema;
     }
@@ -868,29 +1038,50 @@ class DataModelEditor {
         try {
             const schema = JSON.parse(jsonText);
             
-            if (!schema.properties || typeof schema.properties !== 'object') {
-                this.showValidationMessage('Invalid schema: "properties" object is required', 'error');
-                return;
+            // Enhanced validation
+            if (!this.validateJSONSchema(schema)) {
+                return; // Error messages are shown in validateJSONSchema
             }
 
             // Clear existing fields
             this.currentNode.fields = [];
 
+            // Track field names to ensure uniqueness
+            const fieldNames = new Set();
+            let duplicateCount = 0;
+
             // Import fields from schema
             Object.entries(schema.properties).forEach(([fieldName, property]) => {
+                let finalFieldName = fieldName;
+                
+                // Ensure unique field names
+                if (fieldNames.has(fieldName.toLowerCase())) {
+                    duplicateCount++;
+                    finalFieldName = `${fieldName}_${duplicateCount}`;
+                    while (fieldNames.has(finalFieldName.toLowerCase())) {
+                        duplicateCount++;
+                        finalFieldName = `${fieldName}_${duplicateCount}`;
+                    }
+                }
+                fieldNames.add(finalFieldName.toLowerCase());
+
                 const fieldType = this.mapJSONTypeToField(property.type, property.format);
                 const isRequired = Array.isArray(schema.required) && schema.required.includes(fieldName);
                 const isReadOnly = property.readOnly === true;
                 
                 let initialValue = '';
                 if (property.default !== undefined) {
-                    initialValue = typeof property.default === 'object' 
-                        ? JSON.stringify(property.default) 
-                        : String(property.default);
+                    try {
+                        initialValue = typeof property.default === 'object' 
+                            ? JSON.stringify(property.default) 
+                            : String(property.default);
+                    } catch (error) {
+                        initialValue = '';
+                    }
                 }
 
                 this.currentNode.addField({
-                    name: fieldName,
+                    name: finalFieldName,
                     type: fieldType,
                     initialValue: initialValue,
                     required: isRequired,
@@ -904,7 +1095,13 @@ class DataModelEditor {
                 this.modal.querySelector('.model-name-input').value = schema.title;
             }
 
-            this.showValidationMessage(`Successfully imported ${Object.keys(schema.properties).length} fields`, 'success');
+            const importedCount = Object.keys(schema.properties).length;
+            let message = `Successfully imported ${importedCount} fields`;
+            if (duplicateCount > 0) {
+                message += ` (${duplicateCount} duplicate names were auto-renamed)`;
+            }
+            
+            this.showValidationMessage(message, 'success');
             
             // Switch to Fields tab to see the imported fields
             this.switchTab('properties');
@@ -913,6 +1110,63 @@ class DataModelEditor {
         } catch (error) {
             this.showValidationMessage(`Invalid JSON: ${error.message}`, 'error');
         }
+    }
+
+    /**
+     * Validate JSON schema structure
+     */
+    validateJSONSchema(schema) {
+        // Check basic structure
+        if (typeof schema !== 'object' || schema === null) {
+            this.showValidationMessage('Schema must be a valid JSON object', 'error');
+            return false;
+        }
+
+        if (!schema.properties || typeof schema.properties !== 'object') {
+            this.showValidationMessage('Schema must contain a "properties" object', 'error');
+            return false;
+        }
+
+        if (Object.keys(schema.properties).length === 0) {
+            this.showValidationMessage('Schema must contain at least one property', 'error');
+            return false;
+        }
+
+        // Validate each property
+        for (const [fieldName, property] of Object.entries(schema.properties)) {
+            if (!fieldName || fieldName.trim() === '') {
+                this.showValidationMessage('Field names cannot be empty', 'error');
+                return false;
+            }
+
+            if (!property.type) {
+                this.showValidationMessage(`Field "${fieldName}" must have a type`, 'error');
+                return false;
+            }
+
+            const validTypes = ['string', 'number', 'integer', 'boolean', 'object', 'array'];
+            if (!validTypes.includes(property.type)) {
+                this.showValidationMessage(`Field "${fieldName}" has invalid type: ${property.type}`, 'error');
+                return false;
+            }
+        }
+
+        // Validate required array if present
+        if (schema.required && !Array.isArray(schema.required)) {
+            this.showValidationMessage('"required" must be an array', 'error');
+            return false;
+        }
+
+        if (schema.required) {
+            for (const requiredField of schema.required) {
+                if (!schema.properties[requiredField]) {
+                    this.showValidationMessage(`Required field "${requiredField}" not found in properties`, 'error');
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -933,7 +1187,7 @@ class DataModelEditor {
     }
 
     /**
-     * Validate JSON syntax
+     * Validate JSON syntax and schema
      */
     validateJSON() {
         const jsonEditor = this.modal.querySelector('.json-editor');
@@ -945,8 +1199,46 @@ class DataModelEditor {
         }
 
         try {
-            JSON.parse(jsonText);
-            this.showValidationMessage('Valid JSON', 'success');
+            const schema = JSON.parse(jsonText);
+            
+            // Basic JSON syntax is valid, now validate schema structure
+            if (this.validateJSONSchema(schema)) {
+                // Additional validation checks
+                const warnings = [];
+                
+                // Check for potential issues
+                if (!schema.title) {
+                    warnings.push('Missing title');
+                }
+                
+                if (!schema.description) {
+                    warnings.push('Missing description');
+                }
+                
+                if (Object.keys(schema.properties).length === 0) {
+                    warnings.push('No properties defined');
+                }
+                
+                // Check for duplicate field names (case-insensitive)
+                const fieldNames = Object.keys(schema.properties);
+                const lowerCaseNames = fieldNames.map(name => name.toLowerCase());
+                const duplicates = fieldNames.filter((name, index) => 
+                    lowerCaseNames.indexOf(name.toLowerCase()) !== index
+                );
+                
+                if (duplicates.length > 0) {
+                    warnings.push(`Duplicate field names: ${duplicates.join(', ')}`);
+                }
+                
+                let message = 'Valid JSON Schema';
+                if (warnings.length > 0) {
+                    message += ` (Warnings: ${warnings.join(', ')})`;
+                }
+                
+                this.showValidationMessage(message, warnings.length > 0 ? 'warning' : 'success');
+            }
+            // Error messages are already shown by validateJSONSchema
+            
         } catch (error) {
             this.showValidationMessage(`Invalid JSON: ${error.message}`, 'error');
         }
@@ -958,7 +1250,24 @@ class DataModelEditor {
     showValidationMessage(message, type) {
         const messageElement = this.modal.querySelector('.json-validation-message');
         messageElement.textContent = message;
-        messageElement.className = `json-validation-message mt-2 text-sm ${type === 'error' ? 'text-red-600' : 'text-green-600'}`;
+        
+        // Remove existing classes
+        messageElement.classList.remove('text-red-600', 'text-green-600', 'text-yellow-600');
+        
+        // Add appropriate class based on type
+        if (type === 'error') {
+            messageElement.classList.add('text-red-600');
+        } else if (type === 'warning') {
+            messageElement.classList.add('text-yellow-600');
+        } else {
+            messageElement.classList.add('text-green-600');
+        }
+        
+        messageElement.className = `json-validation-message mt-2 text-sm ${
+            type === 'error' ? 'text-red-600' : 
+            type === 'warning' ? 'text-yellow-600' : 
+            'text-green-600'
+        }`;
         messageElement.classList.remove('hidden');
 
         // Auto-hide success messages after 3 seconds
