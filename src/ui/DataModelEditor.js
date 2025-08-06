@@ -303,7 +303,7 @@ class DataModelEditor {
         const headerDiv = document.createElement('div');
         headerDiv.className = 'field-header bg-gray-50 px-3 py-2 rounded-t-lg border border-gray-200';
         headerDiv.innerHTML = `
-            <div class="grid grid-cols-6 gap-3">
+            <div class="grid grid-cols-12 gap-3">
                 <div class="col-span-1">
                     <label class="block text-xs font-medium text-gray-700 flex items-center">
                         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -312,7 +312,7 @@ class DataModelEditor {
                         #
                     </label>
                 </div>
-                <div class="col-span-2">
+                <div class="col-span-4">
                     <label class="block text-xs font-medium text-gray-700 flex items-center">
                         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
@@ -320,7 +320,7 @@ class DataModelEditor {
                         Field Name
                     </label>
                 </div>
-                <div class="col-span-1">
+                <div class="col-span-2">
                     <label class="block text-xs font-medium text-gray-700 flex items-center">
                         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
@@ -328,7 +328,7 @@ class DataModelEditor {
                         Type
                     </label>
                 </div>
-                <div class="col-span-1">
+                <div class="col-span-2">
                     <label class="block text-xs font-medium text-gray-700 flex items-center">
                         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
@@ -336,7 +336,7 @@ class DataModelEditor {
                         Initial Value
                     </label>
                 </div>
-                <div class="col-span-1">
+                <div class="col-span-3">
                     <label class="block text-xs font-medium text-gray-700 flex items-center">
                         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"/>
@@ -378,24 +378,24 @@ class DataModelEditor {
         const typeIcon = this.getTypeIcon(field.type);
         
         fieldDiv.innerHTML = `
-            <div class="grid grid-cols-6 gap-3 items-center">
+            <div class="grid grid-cols-12 gap-3 items-center">
                 <div class="col-span-1 flex items-center">
-                    <div class="drag-handle flex items-center justify-center w-6 h-6 text-gray-400 hover:text-gray-600 cursor-move mr-2">
+                    <div class="drag-handle flex items-center justify-center w-6 h-6 text-gray-400 hover:text-gray-600 cursor-move mr-1">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"/>
                         </svg>
                     </div>
-                    <span class="field-number text-sm font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-full min-w-[24px] text-center">${index + 1}</span>
+                    <span class="field-number text-xs font-medium text-gray-500 bg-gray-100 px-1 py-1 rounded-full min-w-[20px] text-center">${index + 1}</span>
                 </div>
                 
-                <div class="col-span-2">
+                <div class="col-span-4">
                     <input type="text" 
                            class="field-name w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" 
                            value="${field.name}" 
                            placeholder="field_name">
                 </div>
                 
-                <div class="col-span-1">
+                <div class="col-span-2">
                     <select class="field-type w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all">
                         ${this.supportedTypes.map(type => 
                             `<option value="${type}" ${field.type === type ? 'selected' : ''}>${this.getTypeIcon(type)} ${type}</option>`
@@ -403,24 +403,33 @@ class DataModelEditor {
                     </select>
                 </div>
                 
-                <div class="col-span-1">
+                <div class="col-span-2">
                     <input type="text" 
                            class="field-value w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" 
                            value="${field.initialValue}" 
                            placeholder="default value">
                 </div>
                 
-                <div class="col-span-1 flex items-center justify-between">
-                    <label class="flex items-center text-xs text-gray-700 bg-gray-50 px-2 py-2 rounded-md">
+                <div class="col-span-3 flex items-center justify-between gap-2">
+                    <label class="flex items-center text-xs text-gray-700 bg-gray-50 px-2 py-1 rounded-md flex-1">
                         <input type="checkbox" 
-                               class="field-list mr-2 text-violet-500 focus:ring-violet-500 rounded" 
-                               ${field.isList ? 'checked' : ''}>
+                               class="field-required mr-1 text-violet-500 focus:ring-violet-500 rounded" 
+                               ${field.required ? 'checked' : ''}>
                         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        List
+                        <span class="whitespace-nowrap">Required</span>
                     </label>
-                    <button class="remove-field-btn text-red-500 hover:text-red-700 p-2 rounded-md hover:bg-red-50 transition-all ml-2">
+                    <label class="flex items-center text-xs text-gray-700 bg-gray-50 px-2 py-1 rounded-md flex-1">
+                        <input type="checkbox" 
+                               class="field-readonly mr-1 text-violet-500 focus:ring-violet-500 rounded" 
+                               ${field.readOnly ? 'checked' : ''}>
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                        <span class="whitespace-nowrap">Read Only</span>
+                    </label>
+                    <button class="remove-field-btn text-red-500 hover:text-red-700 p-1 rounded-md hover:bg-red-50 transition-all flex-shrink-0">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                         </svg>
@@ -476,9 +485,14 @@ class DataModelEditor {
             this.currentNode.updateField(fieldId, { initialValue: e.target.value });
         });
         
-        // Is list checkbox
-        fieldElement.querySelector('.field-list').addEventListener('change', (e) => {
-            this.currentNode.updateField(fieldId, { isList: e.target.checked });
+        // Required checkbox
+        fieldElement.querySelector('.field-required').addEventListener('change', (e) => {
+            this.currentNode.updateField(fieldId, { required: e.target.checked });
+        });
+        
+        // Read Only checkbox
+        fieldElement.querySelector('.field-readonly').addEventListener('change', (e) => {
+            this.currentNode.updateField(fieldId, { readOnly: e.target.checked });
         });
         
         // Remove field button
@@ -495,7 +509,8 @@ class DataModelEditor {
             name: `field_${this.currentNode.fields.length}`,
             type: 'String',
             initialValue: '',
-            isList: false
+            required: false,
+            readOnly: false
         });
         
         this.renderFields();

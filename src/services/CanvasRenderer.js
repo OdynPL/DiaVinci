@@ -942,11 +942,13 @@ class CanvasRenderer {
                 this.ctx.font = 'bold 10px Arial';
                 this.ctx.fillText(field.name, startX + 20, fieldY + 7);
                 
-                // Field type with list indicator (on same line, right side)
+                // Field type with indicators (on same line, right side)
                 this.ctx.fillStyle = '#e8e8e8';
                 this.ctx.font = '9px Arial';
                 this.ctx.textAlign = 'right';
-                const typeText = field.isList ? `[${field.type}]` : field.type;
+                let typeText = field.type;
+                if (field.required) typeText += '*';
+                if (field.readOnly) typeText += ' (RO)';
                 this.ctx.fillText(typeText, startX + width - 8, fieldY + 7);
                 
                 // Reset text align for next iteration

@@ -5,7 +5,7 @@
 class DataModelNode extends Node {
     constructor({x, y, r = 40, id = null, label = 'Data Model', color = '#8e44ad', type = 'datamodel', fields = []}) {
         super({x, y, r, id, label, color, type});
-        this.fields = fields || []; // Array of {name, type, initialValue, isList}
+        this.fields = fields || []; // Array of {name, type, initialValue, required, readOnly}
     }
 
     /**
@@ -17,7 +17,8 @@ class DataModelNode extends Node {
             name: field.name || 'field',
             type: field.type || 'String',
             initialValue: field.initialValue || '',
-            isList: field.isList || false
+            required: field.required || false,
+            readOnly: field.readOnly || false
         };
         this.fields.push(newField);
         return newField;
