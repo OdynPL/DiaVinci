@@ -685,7 +685,7 @@ class DataModelEditor {
     /**
      * Generate unique field name
      */
-    generateUniqueFieldName(baseName = 'field') {
+    generateUniqueFieldName(baseName = 'field_Name') {
         return this.currentNode.generateUniqueFieldName(baseName);
     }
 
@@ -693,7 +693,7 @@ class DataModelEditor {
      * Add new field
      */
     addField() {
-        const uniqueName = this.currentNode.generateUniqueFieldName('field');
+        const uniqueName = this.currentNode.generateUniqueFieldName('field_Name');
         
         const newField = this.currentNode.addField({
             name: uniqueName,

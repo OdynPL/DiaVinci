@@ -31,13 +31,13 @@ class DataModelNode extends Node {
     /**
      * Generate unique field name
      */
-    generateUniqueFieldName(baseName = 'field') {
-        let counter = 0;
-        let fieldName = baseName;
+    generateUniqueFieldName(baseName = 'field_Name') {
+        let counter = 1;
+        let fieldName = `${baseName}${counter}`;
         
         while (!this.isFieldNameUnique(fieldName)) {
             counter++;
-            fieldName = `${baseName}_${counter}`;
+            fieldName = `${baseName}${counter}`;
         }
         
         return fieldName;
@@ -48,9 +48,10 @@ class DataModelNode extends Node {
      */
     addField(field) {
         // Ensure unique field name
-        let fieldName = field.name || 'field';
+        let fieldName = field.name || 'field_Name1';
         if (!this.isFieldNameUnique(fieldName)) {
-            fieldName = this.generateUniqueFieldName(fieldName);
+            // If the provided name is not unique, generate a new one from base
+            fieldName = this.generateUniqueFieldName('field_Name');
         }
 
         const newField = {
