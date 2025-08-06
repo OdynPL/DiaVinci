@@ -7,6 +7,7 @@ class DataModelEditor {
         this.currentNode = null;
         this.isOpen = false;
         this.modal = null;
+        this.activeTab = 'properties'; // Default active tab
         this.supportedTypes = DataModelNode.getSupportedTypes();
     }
 
@@ -52,7 +53,7 @@ class DataModelEditor {
         this.modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
         
         this.modal.innerHTML = `
-            <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full mx-4 max-h-[85vh] overflow-hidden border border-gray-200">
+            <div class="bg-white rounded-xl shadow-2xl max-w-5xl w-full mx-4 max-h-[90vh] overflow-hidden border border-gray-200">
                 <div class="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-violet-50 to-purple-50">
                     <div class="flex items-center">
                         <div class="w-10 h-10 bg-violet-100 rounded-lg flex items-center justify-center mr-3">
@@ -73,41 +74,109 @@ class DataModelEditor {
                     </button>
                 </div>
                 
-                <div class="p-6 overflow-y-auto max-h-[calc(85vh-140px)]">
-                    <!-- Model Name -->
-                    <div class="mb-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                <!-- Model Name Section -->
+                <div class="px-6 pt-6 pb-4 border-b border-gray-100">
+                    <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                        </svg>
+                        Model Name
+                    </label>
+                    <input type="text" 
+                           class="model-name-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" 
+                           value="${this.currentNode.label}" 
+                           placeholder="Enter model name">
+                </div>
+
+                <!-- Tabs Navigation -->
+                <div class="border-b border-gray-200">
+                    <nav class="flex px-6">
+                        <button class="tab-btn px-6 py-3 text-sm font-medium border-b-2 transition-colors focus:outline-none" 
+                                data-tab="properties">
+                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                             </svg>
-                            Model Name
-                        </label>
-                        <input type="text" 
-                               class="model-name-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" 
-                               value="${this.currentNode.label}" 
-                               placeholder="Enter model name">
-                    </div>
-                    
-                    <!-- Fields Section -->
-                    <div class="mb-6">
-                        <div class="flex items-center justify-between mb-6">
-                            <div class="flex items-center">
-                                <svg class="w-5 h-5 text-gray-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                </svg>
-                                <h3 class="text-lg font-medium text-gray-900">Fields</h3>
-                                <span class="ml-2 px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">${this.currentNode.fields.length}</span>
+                            Properties
+                        </button>
+                        <button class="tab-btn px-6 py-3 text-sm font-medium border-b-2 transition-colors focus:outline-none" 
+                                data-tab="settings">
+                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            Settings
+                        </button>
+                    </nav>
+                </div>
+                
+                <!-- Tab Content -->
+                <div class="overflow-y-auto" style="max-height: calc(90vh - 240px);">
+                    <!-- Properties Tab -->
+                    <div class="tab-content" data-tab="properties">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center">
+                                    <svg class="w-5 h-5 text-gray-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                    <h3 class="text-lg font-medium text-gray-900">Fields</h3>
+                                    <span class="ml-2 px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full field-count">${this.currentNode.fields.length}</span>
+                                </div>
+                                <button class="add-field-btn bg-gradient-to-r from-violet-500 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-violet-600 hover:to-purple-700 transition-all flex items-center shadow-md hover:shadow-lg text-sm">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                    </svg>
+                                    Add Field
+                                </button>
                             </div>
-                            <button class="add-field-btn bg-gradient-to-r from-violet-500 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-violet-600 hover:to-purple-700 transition-all flex items-center shadow-md hover:shadow-lg">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                                </svg>
-                                Add Field
-                            </button>
+                            
+                            <div class="fields-container space-y-3">
+                                <!-- Fields will be rendered here -->
+                            </div>
                         </div>
-                        
-                        <div class="fields-container space-y-3">
-                            <!-- Fields will be rendered here -->
+                    </div>
+
+                    <!-- Settings Tab -->
+                    <div class="tab-content hidden" data-tab="settings">
+                        <div class="p-6">
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">Model Settings</h3>
+                            
+                            <div class="space-y-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                                    <textarea class="model-description w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" 
+                                              rows="3" 
+                                              placeholder="Describe what this model represents..."></textarea>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Validation Rules</label>
+                                    <div class="space-y-2">
+                                        <label class="flex items-center">
+                                            <input type="checkbox" class="mr-2 text-violet-500 focus:ring-violet-500 rounded">
+                                            <span class="text-sm text-gray-700">Require all fields</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" class="mr-2 text-violet-500 focus:ring-violet-500 rounded">
+                                            <span class="text-sm text-gray-700">Enable validation</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" class="mr-2 text-violet-500 focus:ring-violet-500 rounded">
+                                            <span class="text-sm text-gray-700">Allow null values</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Model Type</label>
+                                    <select class="model-type w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all">
+                                        <option value="entity">Entity</option>
+                                        <option value="dto">Data Transfer Object</option>
+                                        <option value="view">View Model</option>
+                                        <option value="document">Document</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -154,6 +223,17 @@ class DataModelEditor {
             this.currentNode.setLabel(e.target.value);
         });
         
+        // Tab switching
+        this.modal.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const tabName = e.currentTarget.dataset.tab;
+                this.switchTab(tabName);
+            });
+        });
+        
+        // Initialize tabs
+        this.switchTab(this.activeTab);
+        
         // Escape key to close
         this.escapeHandler = (e) => {
             if (e.key === 'Escape' && this.isOpen) {
@@ -164,19 +244,54 @@ class DataModelEditor {
     }
 
     /**
+     * Switch between tabs
+     */
+    switchTab(tabName) {
+        this.activeTab = tabName;
+        
+        // Update tab buttons
+        this.modal.querySelectorAll('.tab-btn').forEach(btn => {
+            const isActive = btn.dataset.tab === tabName;
+            if (isActive) {
+                btn.classList.add('border-violet-500', 'text-violet-600');
+                btn.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700');
+            } else {
+                btn.classList.remove('border-violet-500', 'text-violet-600');
+                btn.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700');
+            }
+        });
+        
+        // Update tab content
+        this.modal.querySelectorAll('.tab-content').forEach(content => {
+            const isActive = content.dataset.tab === tabName;
+            if (isActive) {
+                content.classList.remove('hidden');
+            } else {
+                content.classList.add('hidden');
+            }
+        });
+    }
+
+    /**
      * Render all fields
      */
     renderFields() {
         const container = this.modal.querySelector('.fields-container');
         container.innerHTML = '';
         
+        // Update field count
+        const fieldCount = this.modal.querySelector('.field-count');
+        if (fieldCount) {
+            fieldCount.textContent = this.currentNode.fields.length;
+        }
+        
         if (this.currentNode.fields.length === 0) {
             container.innerHTML = `
-                <div class="text-center py-12 text-gray-500 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-                    <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="text-center py-8 text-gray-500 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                    <svg class="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
-                    <p class="text-lg font-medium">No fields defined yet</p>
+                    <p class="font-medium">No fields defined yet</p>
                     <p class="text-sm mt-2">Click "Add Field" to get started with your data model</p>
                 </div>
             `;
@@ -194,63 +309,63 @@ class DataModelEditor {
      */
     createFieldElement(field, index) {
         const fieldDiv = document.createElement('div');
-        fieldDiv.className = 'field-item bg-white p-5 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all';
+        fieldDiv.className = 'field-item bg-white p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all';
         fieldDiv.dataset.fieldId = field.id;
         
         const typeIcon = this.getTypeIcon(field.type);
         
         fieldDiv.innerHTML = `
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 items-end">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 items-end">
+                <div class="sm:col-span-1">
+                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                         </svg>
                         Field Name
                     </label>
                     <input type="text" 
-                           class="field-name w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" 
+                           class="field-name w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" 
                            value="${field.name}" 
                            placeholder="field_name">
                 </div>
                 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
-                        <span class="mr-2">${typeIcon}</span>
+                <div class="sm:col-span-1">
+                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                        <span class="mr-1">${typeIcon}</span>
                         Type
                     </label>
-                    <select class="field-type w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all">
+                    <select class="field-type w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all">
                         ${this.supportedTypes.map(type => 
                             `<option value="${type}" ${field.type === type ? 'selected' : ''}>${this.getTypeIcon(type)} ${type}</option>`
                         ).join('')}
                     </select>
                 </div>
                 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="sm:col-span-1 lg:col-span-1">
+                    <label class="block text-xs font-medium text-gray-700 mb-1 flex items-center">
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                         </svg>
                         Initial Value
                     </label>
                     <input type="text" 
-                           class="field-value w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" 
+                           class="field-value w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" 
                            value="${field.initialValue}" 
                            placeholder="default value">
                 </div>
                 
-                <div class="flex items-center justify-between">
-                    <label class="flex items-center text-sm text-gray-700 bg-gray-50 px-3 py-2 rounded-lg">
+                <div class="sm:col-span-1 lg:col-span-1 xl:col-span-1 flex items-center justify-between">
+                    <label class="flex items-center text-xs text-gray-700 bg-gray-50 px-2 py-2 rounded-md">
                         <input type="checkbox" 
                                class="field-list mr-2 text-violet-500 focus:ring-violet-500 rounded" 
                                ${field.isList ? 'checked' : ''}>
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
                         </svg>
-                        Is List
+                        List
                     </label>
-                    <button class="remove-field-btn text-red-500 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-all ml-3">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button class="remove-field-btn text-red-500 hover:text-red-700 p-2 rounded-md hover:bg-red-50 transition-all ml-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                         </svg>
                     </button>

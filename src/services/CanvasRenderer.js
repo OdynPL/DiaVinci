@@ -886,26 +886,26 @@ class CanvasRenderer {
      */
     drawDataModelContent(node) {
         const width = node.r * 3.5;
-        const height = Math.max(node.r * 2, node.fields.length * 22 + 50);
+        const height = Math.max(node.r * 2, node.fields.length * 18 + 45);
         const startX = node.x - width/2;
         const startY = node.y - height/2;
         
         // Draw header background (darker)
         this.ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-        this.ctx.fillRect(startX, startY, width, 30);
+        this.ctx.fillRect(startX, startY, width, 28);
         
         // Draw title with icon
         this.ctx.fillStyle = '#fff';
-        this.ctx.font = 'bold 13px Arial';
+        this.ctx.font = 'bold 12px Arial';
         this.ctx.textAlign = 'left';
         this.ctx.textBaseline = 'middle';
         
         // Draw database icon
-        this.ctx.fillText('📊', startX + 8, startY + 15);
-        this.ctx.fillText(node.label, startX + 28, startY + 15);
+        this.ctx.fillText('📊', startX + 6, startY + 14);
+        this.ctx.fillText(node.label, startX + 24, startY + 14);
         
         // Draw separator line with gradient
-        const gradient = this.ctx.createLinearGradient(startX, startY + 30, startX + width, startY + 30);
+        const gradient = this.ctx.createLinearGradient(startX, startY + 28, startX + width, startY + 28);
         gradient.addColorStop(0, 'rgba(255, 255, 255, 0.1)');
         gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.3)');
         gradient.addColorStop(1, 'rgba(255, 255, 255, 0.1)');
@@ -913,58 +913,61 @@ class CanvasRenderer {
         this.ctx.strokeStyle = gradient;
         this.ctx.lineWidth = 1;
         this.ctx.beginPath();
-        this.ctx.moveTo(startX + 5, startY + 30);
-        this.ctx.lineTo(startX + width - 5, startY + 30);
+        this.ctx.moveTo(startX + 4, startY + 28);
+        this.ctx.lineTo(startX + width - 4, startY + 28);
         this.ctx.stroke();
         
         // Draw fields with better formatting
         if (node.fields.length > 0) {
-            this.ctx.font = '11px Arial';
+            this.ctx.font = '10px Arial';
             this.ctx.textAlign = 'left';
             
             node.fields.forEach((field, index) => {
-                const fieldY = startY + 45 + (index * 22);
+                const fieldY = startY + 40 + (index * 18);
                 const isEven = index % 2 === 0;
                 
                 // Alternate row background
                 if (isEven) {
                     this.ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-                    this.ctx.fillRect(startX + 2, fieldY - 8, width - 4, 20);
+                    this.ctx.fillRect(startX + 1, fieldY - 6, width - 2, 16);
                 }
                 
                 // Field type icon
                 const typeIcon = this.getTypeIcon(field.type);
                 this.ctx.fillStyle = '#e8e8e8';
-                this.ctx.fillText(typeIcon, startX + 8, fieldY + 2);
+                this.ctx.fillText(typeIcon, startX + 6, fieldY + 1);
                 
                 // Field name
                 this.ctx.fillStyle = '#fff';
-                this.ctx.font = 'bold 11px Arial';
-                this.ctx.fillText(field.name, startX + 25, fieldY + 2);
+                this.ctx.font = 'bold 10px Arial';
+                this.ctx.fillText(field.name, startX + 20, fieldY + 1);
                 
                 // Field type with list indicator
                 this.ctx.fillStyle = '#ddd';
-                this.ctx.font = '10px Arial';
+                this.ctx.font = '9px Arial';
                 const typeText = field.isList ? `[${field.type}]` : field.type;
-                this.ctx.fillText(typeText, startX + 8, fieldY + 12);
+                this.ctx.fillText(typeText, startX + 6, fieldY + 10);
                 
-                // Initial value if exists
+                // Initial value if exists (truncated)
                 if (field.initialValue) {
                     this.ctx.fillStyle = '#bbb';
-                    this.ctx.font = 'italic 9px Arial';
-                    const valueText = `= ${field.initialValue}`;
-                    this.ctx.fillText(valueText, startX + 80, fieldY + 12);
+                    this.ctx.font = 'italic 8px Arial';
+                    let valueText = field.initialValue;
+                    if (valueText.length > 12) {
+                        valueText = valueText.substring(0, 12) + '...';
+                    }
+                    this.ctx.fillText(`= ${valueText}`, startX + 70, fieldY + 10);
                 }
             });
         } else {
             // Empty state with better design
             this.ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-            this.ctx.font = '12px Arial';
+            this.ctx.font = '11px Arial';
             this.ctx.textAlign = 'center';
-            this.ctx.fillText('📝', node.x, node.y - 5);
-            this.ctx.font = '10px Arial';
+            this.ctx.fillText('📝', node.x, node.y - 4);
+            this.ctx.font = '9px Arial';
             this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-            this.ctx.fillText('Double-click to add fields', node.x, node.y + 10);
+            this.ctx.fillText('Double-click to add fields', node.x, node.y + 8);
         }
     }
 
