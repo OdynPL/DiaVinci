@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Import Test - DiaVinci Security</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Core classes -->
+    <script src="src/core/Logger.js"></script>
+    <script src="src/core/ErrorHandler.js"></script>
+    <script src="src/core/EventBus.js"></script>
+    
+    <!-- Models -->
+    <script src="src/models/Node.js"></script>
+    <script src="src/models/DataModelNode.js"></script>
+    
+    <!-- Utilities -->
+    <script src="src/utils/InputValidator.js"></script>
+    <script src="src/utils/SecurityConfig.js"></script>
+    
+    <!-- UI -->
+    <script src="src/ui/DataModelEditor.js"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-800 mb-8">🧪 JSON Import Security Test</h1>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Test Controls -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4">Test Controls</h2>
+                
+                <button id="testValidJSON" class="bg-green-500 text-white px-4 py-2 rounded mr-2 mb-2">
+                    Test Valid JSON
+                </button>
+                
+                <button id="testLargeJSON" class="bg-blue-500 text-white px-4 py-2 rounded mr-2 mb-2">
+                    Test Large JSON
+                </button>
+                
+                <button id="testMaliciousJSON" class="bg-red-500 text-white px-4 py-2 rounded mr-2 mb-2">
+                    Test Malicious JSON
+                </button>
+                
+                <button id="testEdgeCaseJSON" class="bg-yellow-500 text-white px-4 py-2 rounded mr-2 mb-2">
+                    Test Edge Cases
+                </button>
+                
+                <button id="clearResults" class="bg-gray-500 text-white px-4 py-2 rounded mr-2 mb-2">
+                    Clear Results
+                </button>
+                
+                <div class="mt-4">
+                    <button id="openDataModelEditor" class="bg-purple-500 text-white px-6 py-3 rounded font-semibold">
+                        Open Data Model Editor
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Test Results -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4">Test Results</h2>
+                <div id="testResults" class="space-y-2 max-h-96 overflow-y-auto">
+                    <p class="text-gray-600">Click a test button to run security tests...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sample JSON Schemas -->
+        <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold mb-4">Sample JSON Schemas for Testing</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <h3 class="font-medium mb-2">✅ Valid Schema:</h3>
+                    <pre class="bg-gray-100 p-3 rounded text-xs overflow-x-auto"><code id="validSchema">{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "User Profile",
+  "properties": {
+    "firstName": {
+      "type": "string",
+      "description": "User's first name"
+    },
+    "lastName": {
+      "type": "string", 
+      "description": "User's last name"
+    },
+    "email": {
+      "type": "string",
+      "format": "email"
+    },
+    "age": {
+      "type": "number",
+      "default": 25
+    }
+  },
+  "required": ["firstName", "lastName", "email"]
+}</code></pre>
+                </div>
+                
+                <div>
+                    <h3 class="font-medium mb-2">⚠️ Large Schema:</h3>
+                    <pre class="bg-gray-100 p-3 rounded text-xs overflow-x-auto"><code id="largeSchema">{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Complex System Configuration",
+  "description": "A comprehensive configuration schema with many fields to test performance and security with larger inputs",
+  "properties": {
+    "field1": {"type": "string"},
+    "field2": {"type": "number"},
+    "field3": {"type": "boolean"},
+    "...": {"type": "string", "description": "And many more fields..."}
+  }
+}</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize components
+        const eventBus = new EventBus();
+        const dataModelEditor = new DataModelEditor(eventBus);
+        
+        let testCount = 0;
+        
+        function logTest(message, type = 'info') {
+            testCount++;
+            const resultsDiv = document.getElementById('testResults');
+            const div = document.createElement('div');
+            
+            let className = 'p-2 rounded text-sm ';
+            switch(type) {
+                case 'pass': className += 'bg-green-100 text-green-800'; break;
+                case 'fail': className += 'bg-red-100 text-red-800'; break;
+                case 'warning': className += 'bg-yellow-100 text-yellow-800'; break;
+                default: className += 'bg-blue-100 text-blue-800'; break;
+            }
+            
+            div.className = className;
+            div.innerHTML = `<span class="font-mono text-xs">[${testCount.toString().padStart(3, '0')}]</span> ${message}`;
+            resultsDiv.appendChild(div);
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        }
+        
+        // Test 1: Valid JSON Schema
+        document.getElementById('testValidJSON').addEventListener('click', () => {
+            logTest('🧪 Testing Valid JSON Schema Import...', 'info');
+            
+            const validJSON = {
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "type": "object", 
+                "title": "Test Model",
+                "properties": {
+                    "name": {"type": "string", "default": "John Doe"},
+                    "age": {"type": "number", "default": 30},
+                    "email": {"type": "string", "format": "email"},
+                    "active": {"type": "boolean", "default": true}
+                },
+                "required": ["name", "email"]
+            };
+            
+            try {
+                // Test JSON validation
+                const jsonText = JSON.stringify(validJSON, null, 2);
+                const validation = InputValidator.validateDataModelInput(jsonText, 'json');
+                
+                if (validation.valid) {
+                    logTest('✅ Valid JSON passed security validation', 'pass');
+                } else {
+                    logTest('❌ Valid JSON failed security validation: ' + validation.errors.join(', '), 'fail');
+                }
+                
+                // Test field name sanitization
+                Object.keys(validJSON.properties).forEach(fieldName => {
+                    const sanitized = InputValidator.sanitizeFieldName(fieldName);
+                    if (sanitized === fieldName) {
+                        logTest(`✅ Field name "${fieldName}" accepted as-is`, 'pass');
+                    } else {
+                        logTest(`⚠️ Field name "${fieldName}" sanitized to "${sanitized}"`, 'warning');
+                    }
+                });
+                
+            } catch (error) {
+                logTest('❌ Error testing valid JSON: ' + error.message, 'fail');
+            }
+        });
+        
+        // Test 2: Large JSON (performance test)
+        document.getElementById('testLargeJSON').addEventListener('click', () => {
+            logTest('🧪 Testing Large JSON Performance...', 'info');
+            
+            // Generate large but valid JSON
+            const largeJSON = {
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "type": "object",
+                "title": "Large Configuration Model",
+                "description": "A large configuration with many fields to test security and performance limits",
+                "properties": {}
+            };
+            
+            // Add 50 fields
+            for (let i = 1; i <= 50; i++) {
+                largeJSON.properties[`config_field_${i}`] = {
+                    "type": "string",
+                    "description": `Configuration field number ${i} for testing purposes`,
+                    "default": `default_value_${i}`
+                };
+            }
+            
+            const jsonText = JSON.stringify(largeJSON, null, 2);
+            logTest(`📊 Generated JSON size: ${jsonText.length} characters`, 'info');
+            
+            try {
+                const startTime = performance.now();
+                const validation = InputValidator.validateDataModelInput(jsonText, 'json');
+                const endTime = performance.now();
+                
+                logTest(`⏱️ Validation took: ${(endTime - startTime).toFixed(2)}ms`, 'info');
+                
+                if (validation.valid) {
+                    logTest('✅ Large JSON passed security validation', 'pass');
+                } else {
+                    logTest('❌ Large JSON failed validation: ' + validation.errors.join(', '), 'fail');
+                }
+                
+                if (jsonText.length > 10000) {
+                    logTest('✅ Successfully handled large JSON (>10KB)', 'pass');
+                }
+                
+            } catch (error) {
+                logTest('❌ Error testing large JSON: ' + error.message, 'fail');
+            }
+        });
+        
+        // Test 3: Malicious JSON
+        document.getElementById('testMaliciousJSON').addEventListener('click', () => {
+            logTest('🧪 Testing Malicious JSON Patterns...', 'info');
+            
+            const maliciousPatterns = [
+                {
+                    name: 'XSS in field name',
+                    json: '{"&lt;script&gt;alert(\\"xss\\")&lt;/script&gt;": {"type": "string"}}'
+                },
+                {
+                    name: 'JavaScript URL',
+                    json: '{"field": {"type": "string", "default": "javascript:alert(\\"xss\\")"}}'
+                },
+                {
+                    name: 'Event handler',
+                    json: '{"field": {"type": "string", "onclick": "alert(\\"xss\\")"}}'
+                },
+                {
+                    name: 'Iframe injection',
+                    json: '{"field": {"type": "string", "default": "&lt;iframe src=\\"javascript:alert(\\\\\\"xss\\\\\\")\\\"&gt;&lt;/iframe&gt;"}}'
+                }
+            ];
+            
+            maliciousPatterns.forEach(pattern => {
+                try {
+                    const validation = InputValidator.validateDataModelInput(pattern.json, 'json');
+                    
+                    if (!validation.valid) {
+                        logTest(`✅ ${pattern.name}: BLOCKED - ${validation.errors[0]}`, 'pass');
+                    } else {
+                        logTest(`❌ ${pattern.name}: NOT BLOCKED`, 'fail');
+                    }
+                } catch (error) {
+                    logTest(`⚠️ ${pattern.name}: Error during validation - ${error.message}`, 'warning');
+                }
+            });
+        });
+        
+        // Test 4: Edge Cases
+        document.getElementById('testEdgeCaseJSON').addEventListener('click', () => {
+            logTest('🧪 Testing Edge Cases...', 'info');
+            
+            const edgeCases = [
+                {
+                    name: 'Empty JSON',
+                    json: '{}'
+                },
+                {
+                    name: 'JSON with special characters',
+                    json: '{"field-with-dash": {"type": "string"}, "field.with.dot": {"type": "number"}}'
+                },
+                {
+                    name: 'JSON with unicode',
+                    json: '{"fieldWithUnicode🚀": {"type": "string", "default": "Hello 🌍"}}'
+                },
+                {
+                    name: 'Very long field name',
+                    json: `{"${'a'.repeat(100)}": {"type": "string"}}`
+                }
+            ];
+            
+            edgeCases.forEach(testCase => {
+                try {
+                    const validation = InputValidator.validateDataModelInput(testCase.json, 'json');
+                    
+                    if (validation.valid) {
+                        logTest(`✅ ${testCase.name}: Accepted`, 'pass');
+                    } else {
+                        logTest(`⚠️ ${testCase.name}: Rejected - ${validation.errors[0]}`, 'warning');
+                    }
+                } catch (error) {
+                    logTest(`❌ ${testCase.name}: Error - ${error.message}`, 'fail');
+                }
+            });
+        });
+        
+        // Clear results
+        document.getElementById('clearResults').addEventListener('click', () => {
+            document.getElementById('testResults').innerHTML = '<p class="text-gray-600">Results cleared. Click a test button to run tests...</p>';
+            testCount = 0;
+        });
+        
+        // Open Data Model Editor
+        document.getElementById('openDataModelEditor').addEventListener('click', () => {
+            const testNode = new DataModelNode({
+                x: 100, y: 100,
+                label: 'JSON Import Test Model'
+            });
+            
+            dataModelEditor.open(testNode);
+            logTest('🎛️ Data Model Editor opened for manual testing', 'info');
+        });
+        
+        // Run initial test
+        logTest('🔧 JSON Import Security Test initialized', 'info');
+        logTest('📋 Use the buttons above to test different scenarios', 'info');
+        logTest('💡 Open Data Model Editor to test JSON import manually', 'info');
+    </script>
+</body>
+</html>

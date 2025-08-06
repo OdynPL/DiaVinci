@@ -31,7 +31,7 @@ class DataModelNode extends Node {
     }
 
     /**
-     * Validate field name format
+     * Validate field name format with enhanced security
      */
     validateFieldName(fieldName) {
         const errors = [];
@@ -39,6 +39,11 @@ class DataModelNode extends Node {
         if (!fieldName || fieldName.trim() === '') {
             errors.push('Field name is required');
         } else {
+            // Security check: detect potential XSS/script injection
+            if (/<script|javascript:|on\w+\s*=|<iframe|<object|<embed/i.test(fieldName)) {
+                errors.push('Field name contains potentially dangerous content');
+            }
+            
             // Check field name format (alphanumeric, underscore, no spaces at start/end)
             if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(fieldName.trim())) {
                 errors.push('Field name must start with letter or underscore, and contain only letters, numbers, and underscores');
@@ -49,8 +54,17 @@ class DataModelNode extends Node {
                 errors.push('Field name cannot exceed 25 characters');
             }
             
+            // Security check: prevent SQL injection patterns
+            if (/('|(\\)|;|--|\/\*|\*\/|xp_|sp_|@@|union|select|insert|update|delete|drop|alter|create)/i.test(fieldName)) {
+                errors.push('Field name contains potentially dangerous SQL patterns');
+            }
+            
             // Check reserved words
-            const reservedWords = ['id', 'class', 'type', 'new', 'delete', 'return', 'function', 'var', 'let', 'const'];
+            const reservedWords = [
+                'id', 'class', 'type', 'new', 'delete', 'return', 'function', 'var', 'let', 'const',
+                'select', 'insert', 'update', 'delete', 'drop', 'alter', 'create', 'table', 'database',
+                'script', 'iframe', 'object', 'embed', 'link', 'meta', 'style'
+            ];
             if (reservedWords.includes(fieldName.toLowerCase())) {
                 errors.push('Field name cannot be a reserved word');
             }
@@ -60,7 +74,7 @@ class DataModelNode extends Node {
     }
 
     /**
-     * Validate initial value based on field type
+     * Validate initial value based on field type with enhanced security
      */
     validateInitialValue(value, type) {
         const errors = [];
@@ -69,6 +83,30 @@ class DataModelNode extends Node {
             return errors; // Empty values are allowed
         }
         
+        // Security checks first
+        if (typeof value !== 'string') {
+            value = String(value);
+        }
+        
+        // Check for XSS patterns
+        if (/<script|javascript:|on\w+\s*=|<iframe|<object|<embed|<link|<meta/i.test(value)) {
+            errors.push('Value contains potentially dangerous script content');
+            return errors; // Return immediately for security violations
+        }
+        
+        // Check for SQL injection patterns
+        if (/('|(\\)|;|--|\/\*|\*\/|xp_|sp_|@@|union.*select|insert.*into|update.*set|delete.*from|drop.*table|alter.*table|create.*table)/i.test(value)) {
+            errors.push('Value contains potentially dangerous SQL patterns');
+            return errors; // Return immediately for security violations
+        }
+        
+        // Length security check (prevent DoS)
+        if (value.length > 1000) {
+            errors.push('Value is too long (maximum 1000 characters)');
+            return errors;
+        }
+        
+        // Type-specific validation
         switch (type) {
             case 'Number':
                 if (isNaN(value) || isNaN(parseFloat(value))) {

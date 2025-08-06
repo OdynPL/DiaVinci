@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔒 Data Model Security Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .test-result { margin: 8px 0; padding: 8px; border-radius: 4px; }
+        .test-pass { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .test-fail { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .test-warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .security-violation { background-color: #ff6b6b; color: white; font-weight: bold; }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="container mx-auto max-w-4xl">
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
+                🔒 Data Model Security Test Suite
+            </h1>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Input Validation Tests -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h2 class="text-xl font-semibold mb-4 text-red-600">🛡️ Input Validation Tests</h2>
+                    <div id="input-tests" class="space-y-2"></div>
+                    <button onclick="runInputValidationTests()" class="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                        Run Input Security Tests
+                    </button>
+                </div>
+                
+                <!-- XSS Protection Tests -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h2 class="text-xl font-semibold mb-4 text-orange-600">⚠️ XSS Protection Tests</h2>
+                    <div id="xss-tests" class="space-y-2"></div>
+                    <button onclick="runXSSTests()" class="mt-4 bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">
+                        Run XSS Tests
+                    </button>
+                </div>
+                
+                <!-- SQL Injection Tests -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h2 class="text-xl font-semibold mb-4 text-purple-600">💉 SQL Injection Tests</h2>
+                    <div id="sql-tests" class="space-y-2"></div>
+                    <button onclick="runSQLInjectionTests()" class="mt-4 bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">
+                        Run SQL Injection Tests
+                    </button>
+                </div>
+                
+                <!-- Data Model Security Tests -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h2 class="text-xl font-semibold mb-4 text-blue-600">🏗️ Data Model Security</h2>
+                    <div id="datamodel-tests" class="space-y-2"></div>
+                    <button onclick="runDataModelSecurityTests()" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                        Run Data Model Tests
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Security Summary -->
+            <div class="mt-8 bg-gray-50 p-4 rounded-lg">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">📊 Security Summary</h2>
+                <div id="security-summary" class="text-sm text-gray-600">
+                    Click the test buttons above to run security validations.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Dependencies -->
+    <script src="../src/utils/InputValidator.js"></script>
+    <script src="../src/utils/SecurityConfig.js"></script>
+    <script src="../src/models/DataModelNode.js"></script>
+    <script src="../src/models/Node.js"></script>
+
+    <script>
+        let testResults = {
+            total: 0,
+            passed: 0,
+            failed: 0,
+            warnings: 0
+        };
+
+        function logTest(message, type = 'info') {
+            const container = document.getElementById('datamodel-tests');
+            const div = document.createElement('div');
+            div.className = `test-result ${type === 'pass' ? 'test-pass' : type === 'fail' ? 'test-fail' : type === 'warning' ? 'test-warning' : ''}`;
+            div.textContent = message;
+            container.appendChild(div);
+            
+            testResults.total++;
+            if (type === 'pass') testResults.passed++;
+            else if (type === 'fail') testResults.failed++;
+            else if (type === 'warning') testResults.warnings++;
+            
+            updateSecuritySummary();
+        }
+
+        function logTestToContainer(container, message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `test-result ${type === 'pass' ? 'test-pass' : type === 'fail' ? 'test-fail' : type === 'warning' ? 'test-warning' : ''}`;
+            div.textContent = message;
+            container.appendChild(div);
+            
+            testResults.total++;
+            if (type === 'pass') testResults.passed++;
+            else if (type === 'fail') testResults.failed++;
+            else if (type === 'warning') testResults.warnings++;
+            
+            updateSecuritySummary();
+        }
+
+        function updateSecuritySummary() {
+            const summary = document.getElementById('security-summary');
+            const score = testResults.total > 0 ? Math.round((testResults.passed / testResults.total) * 100) : 0;
+            
+            summary.innerHTML = `
+                <div class="grid grid-cols-4 gap-4 text-center">
+                    <div class="bg-green-100 p-3 rounded">
+                        <div class="text-2xl font-bold text-green-600">${testResults.passed}</div>
+                        <div class="text-sm text-green-800">Passed</div>
+                    </div>
+                    <div class="bg-red-100 p-3 rounded">
+                        <div class="text-2xl font-bold text-red-600">${testResults.failed}</div>
+                        <div class="text-sm text-red-800">Failed</div>
+                    </div>
+                    <div class="bg-yellow-100 p-3 rounded">
+                        <div class="text-2xl font-bold text-yellow-600">${testResults.warnings}</div>
+                        <div class="text-sm text-yellow-800">Warnings</div>
+                    </div>
+                    <div class="bg-blue-100 p-3 rounded">
+                        <div class="text-2xl font-bold text-blue-600">${score}%</div>
+                        <div class="text-sm text-blue-800">Security Score</div>
+                    </div>
+                </div>
+                <div class="mt-4 text-center">
+                    <span class="${score >= 90 ? 'text-green-600' : score >= 70 ? 'text-yellow-600' : 'text-red-600'}">
+                        Security Status: ${score >= 90 ? '🟢 Excellent' : score >= 70 ? '🟡 Good' : '🔴 Needs Improvement'}
+                    </span>
+                </div>
+            `;
+        }
+
+        function runInputValidationTests() {
+            const container = document.getElementById('input-tests');
+            container.innerHTML = '';
+            
+            const testCases = [
+                { input: 'validFieldName', expected: true, description: 'Valid field name' },
+                { input: '&lt;script&gt;alert("xss")&lt;/script&gt;', expected: false, description: 'XSS in field name' },
+                { input: 'field" OR 1=1 --', expected: false, description: 'SQL injection in field name' },
+                { input: '', expected: false, description: 'Empty field name' },
+                { input: 'a'.repeat(100), expected: false, description: 'Field name too long' },
+                { input: '123invalid', expected: false, description: 'Field name starting with number' }
+            ];
+            
+            testCases.forEach(testCase => {
+                try {
+                    const validation = InputValidator.validateDataModelInput(testCase.input, 'fieldName');
+                    const passed = (validation.valid === testCase.expected);
+                    
+                    logTestToContainer(container, 
+                        `${testCase.description}: ${passed ? 'PASS' : 'FAIL'}`,
+                        passed ? 'pass' : 'fail'
+                    );
+                } catch (error) {
+                    logTestToContainer(container, 
+                        `${testCase.description}: ERROR - ${error.message}`,
+                        'fail'
+                    );
+                }
+            });
+        }
+
+        function runXSSTests() {
+            const container = document.getElementById('xss-tests');
+            container.innerHTML = '';
+            
+            const xssPayloads = [
+                '&lt;script&gt;alert("XSS")&lt;/script&gt;',
+                'javascript:alert("XSS")',
+                '&lt;img src="x" onerror="alert(\'XSS\')"&gt;',
+                '&lt;iframe src="javascript:alert(\'XSS\')"&gt;&lt;/iframe&gt;',
+                '&lt;object data="javascript:alert(\'XSS\')"&gt;&lt;/object&gt;',
+                '&lt;embed src="javascript:alert(\'XSS\')"&gt;',
+                '&lt;link rel="stylesheet" href="javascript:alert(\'XSS\')"&gt;',
+                '&lt;meta http-equiv="refresh" content="0;url=javascript:alert(\'XSS\')"&gt;'
+            ];
+            
+            xssPayloads.forEach((payload, index) => {
+                try {
+                    const validation = InputValidator.validateDataModelInput(payload, 'fieldValue');
+                    const blocked = !validation.valid;
+                    
+                    logTestToContainer(container,
+                        `XSS Payload ${index + 1}: ${blocked ? 'BLOCKED ✅' : 'NOT BLOCKED ❌'}`,
+                        blocked ? 'pass' : 'fail'
+                    );
+                } catch (error) {
+                    logTestToContainer(container,
+                        `XSS Payload ${index + 1}: ERROR - ${error.message}`,
+                        'fail'
+                    );
+                }
+            });
+        }
+
+        function runSQLInjectionTests() {
+            const container = document.getElementById('sql-tests');
+            container.innerHTML = '';
+            
+            const sqlPayloads = [
+                "'; DROP TABLE users; --",
+                "1' OR '1'='1",
+                "admin'--",
+                "1'; INSERT INTO users VALUES('hacker','password'); --",
+                "' UNION SELECT * FROM users --",
+                "1' AND 1=1 --",
+                "' OR 1=1 #",
+                "admin') OR ('1'='1'--"
+            ];
+            
+            sqlPayloads.forEach((payload, index) => {
+                try {
+                    const validation = InputValidator.validateDataModelInput(payload, 'fieldValue');
+                    const blocked = !validation.valid;
+                    
+                    logTestToContainer(container,
+                        `SQL Injection ${index + 1}: ${blocked ? 'BLOCKED ✅' : 'NOT BLOCKED ❌'}`,
+                        blocked ? 'pass' : 'fail'
+                    );
+                } catch (error) {
+                    logTestToContainer(container,
+                        `SQL Injection ${index + 1}: ERROR - ${error.message}`,
+                        'fail'
+                    );
+                }
+            });
+        }
+
+        function runDataModelSecurityTests() {
+            const container = document.getElementById('datamodel-tests');
+            container.innerHTML = '';
+            
+            try {
+                // Test 1: Create Data Model with malicious name
+                const model1 = new DataModelNode({
+                    x: 100, y: 100, 
+                    label: '&lt;script&gt;alert("XSS")&lt;/script&gt;'
+                });
+                
+                const labelSafe = !/<script/i.test(model1.label);
+                logTestToContainer(container,
+                    `Malicious model name handling: ${labelSafe ? 'SAFE ✅' : 'UNSAFE ❌'}`,
+                    labelSafe ? 'pass' : 'fail'
+                );
+                
+                // Test 2: Add field with malicious name
+                try {
+                    model1.addField({
+                        name: '&lt;script&gt;alert("field")&lt;/script&gt;',
+                        type: 'String'
+                    });
+                    logTestToContainer(container, 'Malicious field name: NOT BLOCKED ❌', 'fail');
+                } catch (error) {
+                    logTestToContainer(container, 'Malicious field name: BLOCKED ✅', 'pass');
+                }
+                
+                // Test 3: Field validation with XSS
+                const validField = model1.addField({
+                    name: 'testField',
+                    type: 'String',
+                    initialValue: '&lt;script&gt;alert("value")&lt;/script&gt;'
+                });
+                
+                const fieldErrors = model1.validateInitialValue('&lt;script&gt;alert("test")&lt;/script&gt;', 'String');
+                const xssBlocked = fieldErrors.length > 0;
+                logTestToContainer(container,
+                    `XSS in field value: ${xssBlocked ? 'BLOCKED ✅' : 'NOT BLOCKED ❌'}`,
+                    xssBlocked ? 'pass' : 'fail'
+                );
+                
+                // Test 4: SQL injection in field values
+                const sqlErrors = model1.validateInitialValue("'; DROP TABLE users; --", 'String');
+                const sqlBlocked = sqlErrors.length > 0;
+                logTestToContainer(container,
+                    `SQL injection in field value: ${sqlBlocked ? 'BLOCKED ✅' : 'NOT BLOCKED ❌'}`,
+                    sqlBlocked ? 'pass' : 'fail'
+                );
+                
+                // Test 5: Model validation
+                const validation = model1.isValidForSave();
+                logTestToContainer(container,
+                    `Model validation works: ${validation ? 'YES ✅' : 'NO ❌'}`,
+                    validation ? 'pass' : 'fail'
+                );
+                
+                // Test 6: Field name format validation
+                const nameValidation = model1.validateFieldName('validName123');
+                const nameValid = nameValidation.length === 0;
+                logTestToContainer(container,
+                    `Valid field name accepted: ${nameValid ? 'YES ✅' : 'NO ❌'}`,
+                    nameValid ? 'pass' : 'fail'
+                );
+                
+                // Test 7: Reserved word protection
+                const reservedValidation = model1.validateFieldName('script');
+                const reservedBlocked = reservedValidation.length > 0;
+                logTestToContainer(container,
+                    `Reserved word blocked: ${reservedBlocked ? 'YES ✅' : 'NO ❌'}`,
+                    reservedBlocked ? 'pass' : 'fail'
+                );
+                
+            } catch (error) {
+                logTestToContainer(container, `Data Model test error: ${error.message}`, 'fail');
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateSecuritySummary();
+            
+            // Auto-run tests
+            setTimeout(() => {
+                runInputValidationTests();
+                runXSSTests();
+                runSQLInjectionTests();
+                runDataModelSecurityTests();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

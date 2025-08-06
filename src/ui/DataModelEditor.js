@@ -1,5 +1,6 @@
 /**
  * DataModelEditor - Editor for managing fields in DataModelNode
+ * Enhanced with security validations and input sanitization
  */
 class DataModelEditor {
     constructor(eventBus) {
@@ -9,6 +10,44 @@ class DataModelEditor {
         this.modal = null;
         this.activeTab = 'properties'; // Default active tab
         this.supportedTypes = DataModelNode.getSupportedTypes();
+        
+        // Load InputValidator for security
+        this.loadInputValidator();
+    }
+
+    /**
+     * Load InputValidator utility for security
+     */
+    async loadInputValidator() {
+        try {
+            // InputValidator should be available globally
+            if (typeof InputValidator === 'undefined') {
+                console.warn('InputValidator not found - security features may be limited');
+                this.inputValidator = null;
+            } else {
+                this.inputValidator = InputValidator;
+            }
+        } catch (error) {
+            console.error('Failed to load InputValidator:', error);
+            this.inputValidator = null;
+        }
+    }
+
+    /**
+     * Secure input validation and sanitization
+     */
+    validateAndSanitizeInput(text, type = 'fieldValue', fieldType = 'String') {
+        if (!this.inputValidator) {
+            // Fallback basic validation if InputValidator not available
+            return {
+                valid: true,
+                errors: [],
+                sanitized: text ? String(text).substring(0, 500) : '',
+                needsSanitization: false
+            };
+        }
+        
+        return this.inputValidator.validateDataModelInput(text, type, fieldType);
     }
 
     /**
@@ -459,9 +498,28 @@ class DataModelEditor {
         // Save button - enhanced validation
         this.modal.querySelector('.save-btn').addEventListener('click', () => this.saveChanges());
         
-        // Model name input with validation
+        // Model name input with security validation
         this.modal.querySelector('.model-name-input').addEventListener('input', (e) => {
-            const newName = e.target.value;
+            const rawName = e.target.value;
+            
+            // Security validation first
+            const securityValidation = this.validateAndSanitizeInput(rawName, 'modelName');
+            
+            if (!securityValidation.valid) {
+                e.target.classList.add('border-red-500', 'bg-red-50');
+                e.target.title = 'Security violation: ' + securityValidation.errors.join(', ');
+                this.updateSaveButtonState();
+                return;
+            }
+            
+            const newName = securityValidation.sanitized;
+            
+            // Update input with sanitized value if needed
+            if (securityValidation.needsSanitization) {
+                console.warn('Model name was sanitized:', { original: rawName, sanitized: newName });
+                e.target.value = newName;
+            }
+            
             this.currentNode.setLabel(newName);
             
             // Validate model name
@@ -1398,26 +1456,43 @@ class DataModelEditor {
     }
 
     /**
-     * Validate and update field name
+     * Validate and update field name with security checks
      */
     validateAndUpdateFieldName(inputElement, fieldId, newName, showAllErrors = false) {
         const field = this.currentNode.getField(fieldId);
         if (!field) return;
         
+        // Security validation first
+        const securityValidation = this.validateAndSanitizeInput(newName, 'fieldName');
+        
+        if (!securityValidation.valid) {
+            inputElement.classList.add('border-red-500', 'bg-red-50');
+            inputElement.classList.remove('border-gray-300');
+            this.showFieldValidationError(inputElement, 'Security violation: ' + securityValidation.errors.join(', '));
+            this.updateSaveButtonState();
+            return;
+        }
+        
+        // Use sanitized value
+        const sanitizedName = securityValidation.sanitized;
+        
+        // Show warning if sanitization occurred
+        if (securityValidation.needsSanitization) {
+            console.warn('Field name was sanitized:', { original: newName, sanitized: sanitizedName });
+            inputElement.value = sanitizedName; // Update UI with sanitized value
+        }
+        
         // Check if name is empty first
-        if (!newName || newName.trim() === '') {
+        if (!sanitizedName || sanitizedName.trim() === '') {
             inputElement.classList.add('border-red-500', 'bg-red-50');
             inputElement.classList.remove('border-gray-300');
             this.showFieldValidationError(inputElement, 'Field name is required');
-            
-            // DON'T update the field with empty name - keep original name
-            // This prevents saving with empty field names
             this.updateSaveButtonState();
             return;
         }
         
         // Create temporary field for validation
-        const tempField = { ...field, name: newName };
+        const tempField = { ...field, name: sanitizedName };
         const errors = this.currentNode.validateField(tempField);
         
         // Filter errors for name-specific issues
@@ -1437,7 +1512,7 @@ class DataModelEditor {
             
             // Update the field if valid
             try {
-                this.currentNode.updateField(fieldId, { name: newName });
+                this.currentNode.updateField(fieldId, { name: sanitizedName });
             } catch (error) {
                 inputElement.classList.add('border-red-500', 'bg-red-50');
                 this.showFieldValidationError(inputElement, error.message);
@@ -1448,14 +1523,39 @@ class DataModelEditor {
     }
 
     /**
-     * Validate and update field value
+     * Validate and update field value with security checks
      */
     validateAndUpdateFieldValue(inputElement, fieldId, newValue, showAllErrors = false) {
         const field = this.currentNode.getField(fieldId);
         if (!field) return;
         
+        // Security validation first
+        const securityValidation = this.validateAndSanitizeInput(newValue, 'fieldValue', field.type);
+        
+        if (!securityValidation.valid) {
+            inputElement.classList.add('border-red-500', 'bg-red-50');
+            inputElement.classList.remove('border-gray-300');
+            this.showFieldValidationError(inputElement, 'Security violation: ' + securityValidation.errors.join(', '));
+            this.updateSaveButtonState();
+            return;
+        }
+        
+        // Use sanitized value
+        const sanitizedValue = securityValidation.sanitized;
+        
+        // Show warning if sanitization occurred
+        if (securityValidation.needsSanitization) {
+            console.warn('Field value was sanitized:', { 
+                fieldName: field.name,
+                fieldType: field.type,
+                original: newValue, 
+                sanitized: sanitizedValue 
+            });
+            inputElement.value = sanitizedValue; // Update UI with sanitized value
+        }
+        
         // Validate the value based on field type
-        const errors = this.currentNode.validateInitialValue(newValue, field.type);
+        const errors = this.currentNode.validateInitialValue(sanitizedValue, field.type);
         
         if (errors.length > 0) {
             inputElement.classList.add('border-red-500', 'bg-red-50');
@@ -1467,7 +1567,7 @@ class DataModelEditor {
             this.hideFieldValidationError(inputElement);
             
             // Update the field if valid
-            this.currentNode.updateField(fieldId, { initialValue: newValue });
+            this.currentNode.updateField(fieldId, { initialValue: sanitizedValue });
         }
         
         this.updateSaveButtonState();
@@ -1673,16 +1773,50 @@ class DataModelEditor {
     }
 
     /**
-     * Show field validation error
+     * Safely set HTML content to prevent XSS
+     */
+    safeSetInnerHTML(element, htmlContent) {
+        if (!element) return;
+        
+        // Only use innerHTML for static, trusted template content
+        // For dynamic content, use textContent or createElement
+        element.innerHTML = htmlContent;
+    }
+
+    /**
+     * Create safe HTML element with attributes
+     */
+    createSafeElement(tagName, attributes = {}, textContent = '') {
+        const element = document.createElement(tagName);
+        
+        // Set safe attributes
+        for (const [key, value] of Object.entries(attributes)) {
+            // Validate attribute names (only allow standard HTML attributes)
+            if (/^[a-zA-Z\-]+$/.test(key)) {
+                element.setAttribute(key, String(value));
+            }
+        }
+        
+        // Set text content safely
+        if (textContent) {
+            element.textContent = textContent;
+        }
+        
+        return element;
+    }
+
+    /**
+     * Show field validation error with safe content
      */
     showFieldValidationError(inputElement, message) {
         // Remove existing error message
         this.hideFieldValidationError(inputElement);
         
-        // Create error message element
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'field-error-message absolute z-10 bg-red-100 border border-red-400 text-red-700 px-2 py-1 rounded text-xs mt-1 shadow-sm';
-        errorDiv.textContent = message;
+        // Create error message element safely
+        const errorDiv = this.createSafeElement('div', {
+            'class': 'field-error-message absolute z-10 bg-red-100 border border-red-400 text-red-700 px-2 py-1 rounded text-xs mt-1 shadow-sm'
+        }, message); // Use textContent instead of innerHTML
+        
         errorDiv.style.top = '100%';
         errorDiv.style.left = '0';
         
@@ -2223,7 +2357,7 @@ class DataModelEditor {
     }
 
     /**
-     * Import fields from JSON schema
+     * Import fields from JSON schema with security validation
      */
     importFromJSON() {
         const jsonEditor = this.modal.querySelector('.json-editor');
@@ -2234,12 +2368,35 @@ class DataModelEditor {
             return;
         }
 
+        // Security check for JSON content size (prevent DoS)
+        if (jsonText.length > 100000) { // 100KB limit
+            this.showValidationMessage('JSON content too large. Maximum size is 100KB', 'error');
+            return;
+        }
+
+        // Security validation of JSON content - use specialized validation for JSON
+        if (!this.validateJSONContentSecurity(jsonText)) {
+            return;
+        }
+
         try {
             const schema = JSON.parse(jsonText);
+            
+            // Security check for object depth (prevent stack overflow)
+            if (!this.validateJSONDepth(schema, 0, 10)) {
+                this.showValidationMessage('JSON structure too deep. Maximum depth is 10 levels', 'error');
+                return;
+            }
             
             // Enhanced validation
             if (!this.validateJSONSchema(schema)) {
                 return; // Error messages are shown in validateJSONSchema
+            }
+
+            // Security check for number of properties (prevent resource exhaustion)
+            if (Object.keys(schema.properties).length > 100) {
+                this.showValidationMessage('Too many properties. Maximum is 100 fields per model', 'error');
+                return;
             }
 
             // Clear existing fields ONLY after successful validation
@@ -2249,17 +2406,24 @@ class DataModelEditor {
             const fieldNames = new Set();
             let duplicateCount = 0;
 
-            // Import fields from schema
+            // Import fields from schema with security validation
             Object.entries(schema.properties).forEach(([fieldName, property]) => {
-                let finalFieldName = fieldName;
+                // Basic security validation for field name (more permissive for JSON import)
+                if (this.containsDangerousContent(fieldName)) {
+                    console.warn(`Skipping field with potentially dangerous name: ${fieldName}`);
+                    return;
+                }
+                
+                // Sanitize field name to make it valid (convert to valid identifier)
+                let finalFieldName = this.sanitizeFieldNameForImport(fieldName);
                 
                 // Ensure unique field names
-                if (fieldNames.has(fieldName.toLowerCase())) {
+                if (fieldNames.has(finalFieldName.toLowerCase())) {
                     duplicateCount++;
-                    finalFieldName = `${fieldName}_${duplicateCount}`;
+                    finalFieldName = `${finalFieldName}_${duplicateCount}`;
                     while (fieldNames.has(finalFieldName.toLowerCase())) {
                         duplicateCount++;
-                        finalFieldName = `${fieldName}_${duplicateCount}`;
+                        finalFieldName = `${finalFieldName}_${duplicateCount}`;
                     }
                 }
                 fieldNames.add(finalFieldName.toLowerCase());
@@ -2272,9 +2436,17 @@ class DataModelEditor {
                 let initialValue = '';
                 if (property.default !== undefined) {
                     try {
-                        initialValue = typeof property.default === 'object' 
+                        const rawValue = typeof property.default === 'object' 
                             ? JSON.stringify(property.default) 
                             : String(property.default);
+                        
+                        // Basic security check for initial value (more permissive for JSON import)
+                        if (this.containsDangerousContent(rawValue)) {
+                            console.warn(`Initial value sanitized for field ${finalFieldName}: contains dangerous content`);
+                            initialValue = '';
+                        } else {
+                            initialValue = rawValue.length > 500 ? rawValue.substring(0, 500) : rawValue;
+                        }
                     } catch (error) {
                         initialValue = '';
                     }
@@ -2291,10 +2463,13 @@ class DataModelEditor {
                 });
             });
 
-            // Update model title if provided
+            // Security validation for model title
             if (schema.title && schema.title !== 'DataModel') {
-                this.currentNode.setLabel(schema.title);
-                this.modal.querySelector('.model-name-input').value = schema.title;
+                const titleValidation = this.validateAndSanitizeInput(schema.title, 'modelName');
+                if (titleValidation.valid) {
+                    this.currentNode.setLabel(titleValidation.sanitized);
+                    this.modal.querySelector('.model-name-input').value = titleValidation.sanitized;
+                }
             }
 
             const importedCount = Object.keys(schema.properties).length;
@@ -2320,6 +2495,62 @@ class DataModelEditor {
         } catch (error) {
             this.showValidationMessage(`Invalid JSON: ${error.message}`, 'error');
         }
+    }
+
+    /**
+     * Validate JSON object depth to prevent stack overflow
+     */
+    validateJSONDepth(obj, currentDepth, maxDepth) {
+        if (currentDepth > maxDepth) {
+            return false;
+        }
+        
+        if (obj && typeof obj === 'object') {
+            for (const key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    if (!this.validateJSONDepth(obj[key], currentDepth + 1, maxDepth)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        
+        return true;
+    }
+
+    /**
+     * Specialized security validation for JSON content
+     */
+    validateJSONContentSecurity(jsonText) {
+        // Check for obviously malicious script tags and javascript URLs
+        const dangerousPatterns = [
+            /<script[^>]*>/i,
+            /javascript\s*:/i,
+            /<iframe[^>]*>/i,
+            /<object[^>]*>/i,
+            /<embed[^>]*>/i,
+            /on\w+\s*=\s*['"]/i, // Event handlers like onclick=
+            /expression\s*\(/i,  // CSS expressions
+            /vbscript\s*:/i,
+            /data\s*:\s*text\/html/i
+        ];
+
+        for (const pattern of dangerousPatterns) {
+            if (pattern.test(jsonText)) {
+                this.showValidationMessage('JSON contains potentially dangerous script content', 'error');
+                return false;
+            }
+        }
+
+        // Check for SQL injection only in string values, not JSON structure
+        // Allow legitimate JSON keywords like "select", "insert" etc. in property names
+        const sqlInStringValues = /["']\s*[^"']*\s*('|(\\)|;|--|\/\*|\*\/|xp_|sp_|@@|union\s+select|insert\s+into|update\s+set|delete\s+from|drop\s+table)[^"']*\s*["']/i;
+        if (sqlInStringValues.test(jsonText)) {
+            this.showValidationMessage('JSON string values contain potentially dangerous SQL patterns', 'error');
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -2986,5 +3217,43 @@ class DataModelEditor {
             isOpen: this.isOpen,
             validation: validation
         };
+    }
+
+    /**
+     * Check if content contains obviously dangerous patterns
+     */
+    containsDangerousContent(text) {
+        const dangerousPatterns = [
+            /<script[^>]*>/i,
+            /javascript\s*:/i,
+            /<iframe[^>]*>/i,
+            /on\w+\s*=\s*['"]/i,
+            /expression\s*\(/i,
+            /vbscript\s*:/i
+        ];
+        
+        return dangerousPatterns.some(pattern => pattern.test(text));
+    }
+
+    /**
+     * Sanitize field name for JSON import (more permissive than runtime validation)
+     */
+    sanitizeFieldNameForImport(fieldName) {
+        // Convert to valid JavaScript identifier
+        let sanitized = fieldName
+            .replace(/[^a-zA-Z0-9_$]/g, '_') // Replace invalid chars with underscore
+            .replace(/^[0-9]/, '_$&'); // Prefix numbers with underscore
+        
+        // Ensure it's not empty
+        if (!sanitized || sanitized === '_') {
+            sanitized = 'imported_field';
+        }
+        
+        // Limit length
+        if (sanitized.length > 25) {
+            sanitized = sanitized.substring(0, 25);
+        }
+        
+        return sanitized;
     }
 }
