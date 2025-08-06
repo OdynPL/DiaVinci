@@ -2135,9 +2135,52 @@ class DataModelEditor {
             } else if (field.type === 'URL') {
                 property.format = 'uri';
             } else if (field.type === 'Date') {
+                property.format = 'date';
+            } else if (field.type === 'DateTime') {
                 property.format = 'date-time';
+            } else if (field.type === 'Time') {
+                property.format = 'time';
             } else if (field.type === 'Phone') {
+                property.format = 'phone';
                 property.pattern = '^[+]?[1-9]?[0-9]{7,15}$';
+            } else if (field.type === 'Currency') {
+                property.format = 'currency';
+            } else if (field.type === 'UUID') {
+                property.format = 'uuid';
+            } else if (field.type === 'Password') {
+                property.format = 'password';
+            } else if (field.type === 'Color') {
+                property.format = 'color';
+            } else if (field.type === 'Base64') {
+                property.format = 'base64';
+            } else if (field.type === 'Binary') {
+                property.format = 'binary';
+            } else if (field.type === 'Decimal') {
+                property.format = 'decimal';
+            } else if (field.type === 'Duration') {
+                property.format = 'duration';
+            } else if (field.type === 'HTML') {
+                property.format = 'html';
+            } else if (field.type === 'XML') {
+                property.format = 'xml';
+            } else if (field.type === 'Markdown') {
+                property.format = 'markdown';
+            } else if (field.type === 'IPv4') {
+                property.format = 'ipv4';
+            } else if (field.type === 'IPv6') {
+                property.format = 'ipv6';
+            } else if (field.type === 'MAC') {
+                property.format = 'mac';
+            } else if (field.type === 'Credit Card') {
+                property.format = 'credit-card';
+            } else if (field.type === 'IBAN') {
+                property.format = 'iban';
+            } else if (field.type === 'Country Code') {
+                property.format = 'country-code';
+            } else if (field.type === 'Language Code') {
+                property.format = 'language-code';
+            } else if (field.type === 'Timezone') {
+                property.format = 'timezone';
             }
 
             // Add default value if provided and valid

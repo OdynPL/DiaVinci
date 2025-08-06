@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Persistence Typów</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 10px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Persistence Typów - Round-trip JSON Schema</h1>
+    
+    <div class="test-container">
+        <h2>Test Podstawowy</h2>
+        <button onclick="runBasicTest()">Uruchom Test Podstawowy</button>
+        <div id="basic-results"></div>
+    </div>
+
+    <div class="test-container">
+        <h2>Test Wszystkich Typów</h2>
+        <button onclick="runAllTypesTest()">Uruchom Test Wszystkich Typów</button>
+        <div id="alltypes-results"></div>
+    </div>
+
+    <div class="test-container">
+        <h2>Test Scenariusza Użytkownika</h2>
+        <button onclick="runUserScenarioTest()">Uruchom Test Scenariusza</button>
+        <div id="scenario-results"></div>
+    </div>
+
+    <!-- Load dependencies -->
+    <script src="src/core/DataModelNode.js"></script>
+    <script src="src/ui/DataModelEditor.js"></script>
+    <script src="src/validation/InputValidator.js"></script>
+    <script src="src/security/SecurityConfig.js"></script>
+
+    <script>
+        let dataModelEditor;
+        let testModel;
+
+        // Initialize before tests
+        document.addEventListener('DOMContentLoaded', function() {
+            // Create dummy container for DataModelEditor
+            const container = document.createElement('div');
+            container.style.display = 'none';
+            document.body.appendChild(container);
+            
+            // Initialize DataModelEditor
+            dataModelEditor = new DataModelEditor(container);
+        });
+
+        function showResult(containerId, result, isSuccess = true) {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = `test-result ${isSuccess ? 'success' : 'error'}`;
+            div.innerHTML = result;
+            container.appendChild(div);
+        }
+
+        function showInfo(containerId, info) {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = 'test-result info';
+            div.innerHTML = info;
+            container.appendChild(div);
+        }
+
+        function clearResults(containerId) {
+            document.getElementById(containerId).innerHTML = '';
+        }
+
+        async function runBasicTest() {
+            clearResults('basic-results');
+            showInfo('basic-results', 'Rozpoczynam test podstawowy...');
+
+            try {
+                // Create test model
+                testModel = new DataModelNode('TestModel');
+                
+                // Add Base64 field
+                const base64Field = {
+                    name: 'encodedData',
+                    type: 'Base64',
+                    initialValue: 'SGVsbG8gV29ybGQ=',
+                    isRequired: true
+                };
+                
+                testModel.addField(base64Field);
+                showInfo('basic-results', `✓ Utworzono pole Base64: ${base64Field.name} = ${base64Field.type}`);
+
+                // Generate JSON Schema
+                const jsonSchema = dataModelEditor.generateJSONSchema(testModel);
+                showInfo('basic-results', `✓ Wygenerowano JSON Schema`);
+                showInfo('basic-results', `<pre>Schema: ${JSON.stringify(jsonSchema, null, 2)}</pre>`);
+
+                // Check if format is preserved
+                const fieldSchema = jsonSchema.properties.encodedData;
+                if (fieldSchema.format === 'base64') {
+                    showResult('basic-results', '✓ Format base64 został poprawnie zapisany w schemacie!');
+                } else {
+                    showResult('basic-results', `✗ Brak formatu base64 w schemacie. Znaleziono: ${fieldSchema.format || 'brak'}`, false);
+                    return;
+                }
+
+                // Import back from JSON
+                const importedModel = await dataModelEditor.importFromJSON(JSON.stringify(jsonSchema));
+                showInfo('basic-results', '✓ Zaimportowano model z JSON Schema');
+
+                // Check field type preservation
+                const importedField = importedModel.fields.find(f => f.name === 'encodedData');
+                if (importedField && importedField.type === 'Base64') {
+                    showResult('basic-results', '✓ Typ Base64 został zachowany po round-trip!');
+                } else {
+                    showResult('basic-results', `✗ Typ się zmienił! Oczekiwano: Base64, Otrzymano: ${importedField ? importedField.type : 'brak pola'}`, false);
+                    return;
+                }
+
+                showResult('basic-results', '🎉 Test podstawowy ZAKOŃCZONY SUKCESEM!');
+
+            } catch (error) {
+                showResult('basic-results', `✗ Błąd testu: ${error.message}`, false);
+                console.error('Test error:', error);
+            }
+        }
+
+        async function runAllTypesTest() {
+            clearResults('alltypes-results');
+            showInfo('alltypes-results', 'Rozpoczynam test wszystkich typów...');
+
+            const specialTypes = [
+                'Base64', 'UUID', 'Password', 'Color', 'Binary', 'Decimal',
+                'Duration', 'HTML', 'XML', 'Markdown', 'IPv4', 'IPv6', 'MAC',
+                'Credit Card', 'IBAN', 'Country Code', 'Language Code', 'Timezone',
+                'Email', 'URL', 'Date', 'DateTime', 'Time', 'Phone', 'Currency'
+            ];
+
+            try {
+                for (const type of specialTypes) {
+                    // Create test model
+                    const model = new DataModelNode(`Test${type}Model`);
+                    
+                    // Add field
+                    const field = {
+                        name: `test${type}Field`,
+                        type: type,
+                        initialValue: type === 'Base64' ? 'SGVsbG8=' : 'test',
+                        isRequired: false
+                    };
+                    
+                    model.addField(field);
+
+                    // Generate JSON Schema
+                    const jsonSchema = dataModelEditor.generateJSONSchema(model);
+                    
+                    // Import back
+                    const importedModel = await dataModelEditor.importFromJSON(JSON.stringify(jsonSchema));
+                    
+                    // Check preservation
+                    const importedField = importedModel.fields.find(f => f.name === field.name);
+                    
+                    if (importedField && importedField.type === type) {
+                        showResult('alltypes-results', `✓ ${type}: Round-trip OK`);
+                    } else {
+                        showResult('alltypes-results', `✗ ${type}: ${field.type} → ${importedField ? importedField.type : 'BRAK'}`, false);
+                    }
+                }
+
+                showResult('alltypes-results', '🎉 Test wszystkich typów ZAKOŃCZONY!');
+
+            } catch (error) {
+                showResult('alltypes-results', `✗ Błąd testu: ${error.message}`, false);
+                console.error('All types test error:', error);
+            }
+        }
+
+        async function runUserScenarioTest() {
+            clearResults('scenario-results');
+            showInfo('scenario-results', 'Symulacja scenariusza użytkownika...');
+
+            try {
+                // Step 1: User creates model with Base64 field
+                const model = new DataModelNode('UserTestModel');
+                const base64Field = {
+                    name: 'attachment',
+                    type: 'Base64',
+                    initialValue: 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==',
+                    isRequired: true,
+                    description: 'Encoded file attachment'
+                };
+                model.addField(base64Field);
+                showInfo('scenario-results', '1. ✓ Użytkownik utworzył pole Base64');
+
+                // Step 2: User saves to JSON
+                const savedJSON = dataModelEditor.generateJSONSchema(model);
+                showInfo('scenario-results', '2. ✓ Model zapisany do JSON');
+
+                // Step 3: User closes and reopens component
+                showInfo('scenario-results', '3. ✓ Symulacja zamknięcia/otwarcia komponentu');
+
+                // Step 4: User loads from JSON
+                const restoredModel = await dataModelEditor.importFromJSON(JSON.stringify(savedJSON));
+                showInfo('scenario-results', '4. ✓ Model wczytany z JSON');
+
+                // Step 5: User goes to JSON view and applies JSON
+                const finalJSON = dataModelEditor.generateJSONSchema(restoredModel);
+                const finalModel = await dataModelEditor.importFromJSON(JSON.stringify(finalJSON));
+                showInfo('scenario-results', '5. ✓ Użytkownik przeszedł do JSON i zastosował');
+
+                // Step 6: Check final field type
+                const finalField = finalModel.fields.find(f => f.name === 'attachment');
+                if (finalField && finalField.type === 'Base64') {
+                    showResult('scenario-results', '6. ✓ Typ Base64 zachowany po całym procesie!');
+                    showResult('scenario-results', '🎉 SCENARIUSZ UŻYTKOWNIKA - SUKCES!');
+                } else {
+                    showResult('scenario-results', `6. ✗ Typ się zmienił na: ${finalField ? finalField.type : 'BRAK'}`, false);
+                }
+
+                // Show detailed comparison
+                showInfo('scenario-results', `<pre>Porównanie:
+Oryginalny typ: ${base64Field.type}
+Po pierwszym zapisie/wczytaniu: ${restoredModel.fields[0].type}
+Po drugim round-trip: ${finalField ? finalField.type : 'BRAK'}</pre>`);
+
+            } catch (error) {
+                showResult('scenario-results', `✗ Błąd scenariusza: ${error.message}`, false);
+                console.error('User scenario test error:', error);
+            }
+        }
+    </script>
+</body>
+</html>
