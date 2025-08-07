@@ -193,7 +193,7 @@ class DataModelEditor {
         // Check if there are unsaved changes with validation errors
         const validation = this.currentNode.isValidForSave();
         if (!validation.valid) {
-            const shouldClose = confirm(`There are validation errors in this model:\n\n${validation.error}\n\nAre you sure you want to close without saving? All changes will be lost.`);
+            const shouldClose = confirm(`${t('validationErrorsInModel')}\n\n${validation.error}\n\n${t('sureToCloseWithoutSaving')}`);
             if (!shouldClose) {
                 return; // Don't close if user wants to fix errors
             }
@@ -521,7 +521,7 @@ class DataModelEditor {
             
             if (!securityValidation.valid) {
                 e.target.classList.add('border-red-500', 'bg-red-50');
-                e.target.title = 'Security violation: ' + securityValidation.errors.join(', ');
+                e.target.title = t('securityViolation') + ' ' + securityValidation.errors.join(', ');
                 this.updateSaveButtonState();
                 return;
             }
@@ -539,10 +539,10 @@ class DataModelEditor {
             // Validate model name
             if (!newName || newName.trim() === '') {
                 e.target.classList.add('border-red-500', 'bg-red-50');
-                e.target.title = 'Model name is required';
+                e.target.title = t('modelNameRequired');
             } else if (newName.length > 50) {
                 e.target.classList.add('border-red-500', 'bg-red-50');
-                e.target.title = 'Model name cannot exceed 50 characters';
+                e.target.title = t('modelNameTooLong');
             } else {
                 e.target.classList.remove('border-red-500', 'bg-red-50');
                 e.target.classList.add('border-gray-300');
@@ -947,8 +947,8 @@ class DataModelEditor {
                 return `
                     <select class="${baseClasses}">
                         <option value="">${t('selectValue')}</option>
-                        <option value="true" ${field.initialValue === 'true' ? 'selected' : ''}>True</option>
-                        <option value="false" ${field.initialValue === 'false' ? 'selected' : ''}>False</option>
+                        <option value="true" ${field.initialValue === 'true' ? 'selected' : ''}>${t('trueValue')}</option>
+                        <option value="false" ${field.initialValue === 'false' ? 'selected' : ''}>${t('falseValue')}</option>
                     </select>
                 `;
                 
@@ -1045,7 +1045,7 @@ class DataModelEditor {
                 return `
                     <select class="country-selector w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                             title="Wybierz kraj lub region">
-                        <option value="">Select country...</option>
+                        <option value="">${t('selectCountry')}</option>
                         ${countries.map(country => 
                             `<option value="${country.code}" ${field.initialValue === country.code ? 'selected' : ''}>${country.code} - ${country.name}</option>`
                         ).join('')}
@@ -1057,7 +1057,7 @@ class DataModelEditor {
                 return `
                     <select class="language-selector w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                             title="Wybierz język lub lokalizację">
-                        <option value="">Select language...</option>
+                        <option value="">${t('selectLanguage')}</option>
                         ${languages.map(lang => 
                             `<option value="${lang.code}" ${field.initialValue === lang.code ? 'selected' : ''}>${lang.code} - ${lang.name}</option>`
                         ).join('')}
@@ -1069,7 +1069,7 @@ class DataModelEditor {
                 return `
                     <select class="timezone-selector w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                             title="Wybierz strefę czasową">
-                        <option value="">Select timezone...</option>
+                        <option value="">${t('selectTimezone')}</option>
                         ${timezones.map(tz => 
                             `<option value="${tz.zone}" ${field.initialValue === tz.zone ? 'selected' : ''}>${tz.zone} - ${tz.name}</option>`
                         ).join('')}
@@ -2492,7 +2492,7 @@ class DataModelEditor {
                 this.updateJSONLineNumbers(jsonEditor);
             } catch (error) {
                 console.error('Error updating JSON content:', error);
-                this.showValidationMessage(`Error generating JSON: ${error.message}`, 'error');
+                this.showValidationMessage(`${t('errorGeneratingJson')} ${error.message}`, 'error');
             }
         }
     }
@@ -2505,13 +2505,13 @@ class DataModelEditor {
         const jsonText = jsonEditor.value.trim();
 
         if (!jsonText) {
-            this.showValidationMessage('Please enter JSON schema to accept', 'error');
+            this.showValidationMessage(t('pleaseEnterJsonSchema'), 'error');
             return;
         }
 
         // Security check for JSON content size (prevent DoS)
         if (jsonText.length > 100000) { // 100KB limit
-            this.showValidationMessage('JSON content too large. Maximum size is 100KB', 'error');
+            this.showValidationMessage(t('jsonTooLarge'), 'error');
             return;
         }
 
@@ -2525,7 +2525,7 @@ class DataModelEditor {
             
             // Security check for object depth (prevent stack overflow)
             if (!this.validateJSONDepth(schema, 0, 10)) {
-                this.showValidationMessage('JSON structure too deep. Maximum depth is 10 levels', 'error');
+                this.showValidationMessage(t('jsonTooDeep'), 'error');
                 return;
             }
             
@@ -2536,7 +2536,7 @@ class DataModelEditor {
 
             // Security check for number of properties (prevent resource exhaustion)
             if (Object.keys(schema.properties).length > 100) {
-                this.showValidationMessage('Too many properties. Maximum is 100 fields per model', 'error');
+                this.showValidationMessage(t('tooManyProperties'), 'error');
                 return;
             }
 
@@ -2634,7 +2634,7 @@ class DataModelEditor {
             }, 100);
 
         } catch (error) {
-            this.showValidationMessage(`Invalid JSON: ${error.message}`, 'error');
+            this.showValidationMessage(`${t('invalidJson')} ${error.message}`, 'error');
         }
     }
 
@@ -2678,7 +2678,7 @@ class DataModelEditor {
 
         for (const pattern of dangerousPatterns) {
             if (pattern.test(jsonText)) {
-                this.showValidationMessage('JSON contains potentially dangerous script content', 'error');
+                this.showValidationMessage(t('jsonDangerousScript'), 'error');
                 return false;
             }
         }
@@ -2687,7 +2687,7 @@ class DataModelEditor {
         // Allow legitimate JSON keywords like "select", "insert" etc. in property names
         const sqlInStringValues = /["']\s*[^"']*\s*('|(\\)|;|--|\/\*|\*\/|xp_|sp_|@@|union\s+select|insert\s+into|update\s+set|delete\s+from|drop\s+table)[^"']*\s*["']/i;
         if (sqlInStringValues.test(jsonText)) {
-            this.showValidationMessage('JSON string values contain potentially dangerous SQL patterns', 'error');
+            this.showValidationMessage(t('jsonDangerousSQL'), 'error');
             return false;
         }
 
@@ -2700,29 +2700,29 @@ class DataModelEditor {
     validateJSONSchema(schema) {
         // Check basic structure
         if (typeof schema !== 'object' || schema === null) {
-            this.showValidationMessage('Schema must be a valid JSON object', 'error');
+            this.showValidationMessage(t('schemaMustBeObject'), 'error');
             return false;
         }
 
         if (!schema.properties || typeof schema.properties !== 'object') {
-            this.showValidationMessage('Schema must contain a "properties" object', 'error');
+            this.showValidationMessage(t('schemaMustHaveProperties'), 'error');
             return false;
         }
 
         if (Object.keys(schema.properties).length === 0) {
-            this.showValidationMessage('Schema must contain at least one property', 'error');
+            this.showValidationMessage(t('schemaMinimumOneProperty'), 'error');
             return false;
         }
 
         // Validate each property
         for (const [fieldName, property] of Object.entries(schema.properties)) {
             if (!fieldName || fieldName.trim() === '') {
-                this.showValidationMessage('Field names cannot be empty', 'error');
+                this.showValidationMessage(t('fieldNamesCannotBeEmpty'), 'error');
                 return false;
             }
 
             if (!property.type) {
-                this.showValidationMessage(`Field "${fieldName}" must have a type`, 'error');
+                this.showValidationMessage(`${t('fieldName')} "${fieldName}" ${t('fieldMustHaveType')}`, 'error');
                 return false;
             }
 
@@ -2732,7 +2732,7 @@ class DataModelEditor {
             
             for (const propType of propertyTypes) {
                 if (!validTypes.includes(propType)) {
-                    this.showValidationMessage(`Field "${fieldName}" has invalid type: ${propType}`, 'error');
+                    this.showValidationMessage(`${t('fieldName')} "${fieldName}" ${t('fieldInvalidType')} ${propType}`, 'error');
                     return false;
                 }
             }
@@ -2740,14 +2740,14 @@ class DataModelEditor {
 
         // Validate required array if present
         if (schema.required && !Array.isArray(schema.required)) {
-            this.showValidationMessage('"required" must be an array', 'error');
+            this.showValidationMessage(t('requiredMustBeArray'), 'error');
             return false;
         }
 
         if (schema.required) {
             for (const requiredField of schema.required) {
                 if (!schema.properties[requiredField]) {
-                    this.showValidationMessage(`Required field "${requiredField}" not found in properties`, 'error');
+                    this.showValidationMessage(t('requiredFieldNotFound').replace('${field}', requiredField), 'error');
                     return false;
                 }
             }
@@ -2881,7 +2881,7 @@ class DataModelEditor {
             this.updateSaveButtonState();
 
             // Show subtle notification about auto-sync
-            this.showValidationMessage('JSON automatically synchronized with fields', 'success');
+            this.showValidationMessage(t('jsonAutoSynchronized'), 'success');
 
         } catch (error) {
             console.warn('Safe JSON sync failed:', error);
@@ -2896,12 +2896,12 @@ class DataModelEditor {
         
         try {
             await navigator.clipboard.writeText(jsonEditor.value);
-            this.showValidationMessage('JSON copied to clipboard', 'success');
+            this.showValidationMessage(t('jsonCopiedToClipboard'), 'success');
         } catch (error) {
             // Fallback for older browsers
             jsonEditor.select();
             document.execCommand('copy');
-            this.showValidationMessage('JSON copied to clipboard', 'success');
+            this.showValidationMessage(t('jsonCopiedToClipboard'), 'success');
         }
     }
 

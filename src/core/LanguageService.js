@@ -146,6 +146,40 @@ const translations = {
         options: "Options",
         noFieldsDefinedYet: "No fields defined yet",
         selectValue: "Select...",
+        selectCountry: "Select country...",
+        selectLanguage: "Select language...",
+        selectTimezone: "Select timezone...",
+        
+        // Validation messages
+        validationErrorsInModel: "There are validation errors in this model:",
+        sureToCloseWithoutSaving: "Are you sure you want to close without saving? All changes will be lost.",
+        modelNameRequired: "Model name is required",
+        modelNameTooLong: "Model name cannot exceed 50 characters",
+        securityViolation: "Security violation:",
+        
+        // JSON validation messages
+        errorGeneratingJson: "Error generating JSON:",
+        pleaseEnterJsonSchema: "Please enter JSON schema to accept",
+        jsonTooLarge: "JSON content too large. Maximum size is 100KB",
+        jsonTooDeep: "JSON structure too deep. Maximum depth is 10 levels",
+        tooManyProperties: "Too many properties. Maximum is 100 fields per model",
+        invalidJson: "Invalid JSON:",
+        jsonDangerousScript: "JSON contains potentially dangerous script content",
+        jsonDangerousSQL: "JSON string values contain potentially dangerous SQL patterns",
+        schemaMustBeObject: "Schema must be a valid JSON object",
+        schemaMustHaveProperties: "Schema must contain a \"properties\" object",
+        schemaMinimumOneProperty: "Schema must contain at least one property",
+        fieldNamesCannotBeEmpty: "Field names cannot be empty",
+        fieldMustHaveType: "must have a type",
+        fieldInvalidType: "has invalid type:",
+        requiredMustBeArray: "\"required\" must be an array",
+        requiredFieldNotFound: "Required field \"${field}\" not found in properties",
+        jsonAutoSynchronized: "JSON automatically synchronized with fields",
+        jsonCopiedToClipboard: "JSON copied to clipboard",
+        
+        // Boolean values
+        trueValue: "True",
+        falseValue: "False",
         
         // Load projects
         loadProjectTitle: "Load Project",
@@ -351,6 +385,40 @@ const translations = {
         options: "Opcje",
         noFieldsDefinedYet: "Nie zdefiniowano jeszcze żadnych pól",
         selectValue: "Wybierz...",
+        selectCountry: "Wybierz kraj...",
+        selectLanguage: "Wybierz język...",
+        selectTimezone: "Wybierz strefę czasową...",
+        
+        // Validation messages
+        validationErrorsInModel: "W tym modelu występują błędy walidacji:",
+        sureToCloseWithoutSaving: "Czy na pewno chcesz zamknąć bez zapisywania? Wszystkie zmiany zostaną utracone.",
+        modelNameRequired: "Nazwa modelu jest wymagana",
+        modelNameTooLong: "Nazwa modelu nie może przekraczać 50 znaków",
+        securityViolation: "Naruszenie bezpieczeństwa:",
+        
+        // JSON validation messages
+        errorGeneratingJson: "Błąd podczas generowania JSON:",
+        pleaseEnterJsonSchema: "Proszę wprowadzić schemat JSON do zaakceptowania",
+        jsonTooLarge: "Zawartość JSON jest zbyt duża. Maksymalny rozmiar to 100KB",
+        jsonTooDeep: "Struktura JSON jest zbyt głęboka. Maksymalna głębokość to 10 poziomów",
+        tooManyProperties: "Zbyt wiele właściwości. Maksimum to 100 pól na model",
+        invalidJson: "Nieprawidłowy JSON:",
+        jsonDangerousScript: "JSON zawiera potencjalnie niebezpieczną zawartość skryptu",
+        jsonDangerousSQL: "Wartości tekstowe JSON zawierają potencjalnie niebezpieczne wzorce SQL",
+        schemaMustBeObject: "Schemat musi być prawidłowym obiektem JSON",
+        schemaMustHaveProperties: "Schemat musi zawierać obiekt \"properties\"",
+        schemaMinimumOneProperty: "Schemat musi zawierać przynajmniej jedną właściwość",
+        fieldNamesCannotBeEmpty: "Nazwy pól nie mogą być puste",
+        fieldMustHaveType: "musi mieć typ",
+        fieldInvalidType: "ma nieprawidłowy typ:",
+        requiredMustBeArray: "\"required\" musi być tablicą",
+        requiredFieldNotFound: "Wymagane pole \"${field}\" nie znalezione we właściwościach",
+        jsonAutoSynchronized: "JSON automatycznie zsynchronizowany z polami",
+        jsonCopiedToClipboard: "JSON skopiowany do schowka",
+        
+        // Boolean values
+        trueValue: "Prawda",
+        falseValue: "Fałsz",
         
         // Load projects
         loadProjectTitle: "Wczytaj Projekt",
