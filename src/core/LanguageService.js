@@ -17,6 +17,9 @@ const translations = {
         decision: "Decision",
         data: "Data",
         dataModel: "Data Model",
+        singleWay: "Single Way",
+        dualWay: "Dual Way", 
+        line: "Line",
         
         // Bottom navigation
         newProject: "New Project",
@@ -40,6 +43,35 @@ const translations = {
         projectName: "Project Name",
         save: "Save",
         cancel: "Cancel",
+        enterProjectName: "Enter project name...",
+        saveAsPrivate: "Save as private project",
+        projectNameRequired: "Project name is required",
+        passwordRequired: "Password is required for private projects",
+        projectPassword: "Project Password",
+        enterPasswordPlaceholder: "Enter password for private project...",
+        rememberPassword: "Remember this password - it cannot be recovered!",
+        
+        // Password dialog
+        enterPasswordTitle: "Enter Password",
+        enterPasswordMessage: "Please enter the password for project:",
+        enterPasswordPlaceholder2: "Enter password...",
+        unlock: "Unlock",
+        passwordCannotBeEmpty: "Password cannot be empty",
+        incorrectPassword: "Incorrect password. Please try again.",
+        confirm: "Confirm",
+        
+        // Load dialog
+        noProjectsFound: "No saved projects found",
+        custom: "Custom",
+        private: "PRIVATE",
+        public: "PUBLIC",
+        makeProjectPrivate: "Make this project private",
+        
+        // Data Model Editor
+        fieldSpecificErrors: "Field-specific errors:",
+        unnamedField: "Unnamed Field",
+        unknownField: "Unknown Field",
+        pleaseFixErrors: "Please fix these errors before saving.",
         
         // Load projects
         loadProjectTitle: "Load Project",
@@ -116,6 +148,9 @@ const translations = {
         decision: "Decyzja",
         data: "Dane",
         dataModel: "Model Danych",
+        singleWay: "Droga Pojedyncza",
+        dualWay: "Droga Podwójna",
+        line: "Linia",
         
         // Bottom navigation
         newProject: "Nowy Projekt",
@@ -139,6 +174,35 @@ const translations = {
         projectName: "Nazwa Projektu",
         save: "Zapisz",
         cancel: "Anuluj",
+        enterProjectName: "Wprowadź nazwę projektu...",
+        saveAsPrivate: "Zapisz jako prywatny projekt",
+        projectNameRequired: "Nazwa projektu jest wymagana",
+        passwordRequired: "Hasło jest wymagane dla prywatnych projektów",
+        projectPassword: "Hasło Projektu",
+        enterPasswordPlaceholder: "Wprowadź hasło dla prywatnego projektu...",
+        rememberPassword: "Zapamiętaj to hasło - nie można go odzyskać!",
+        
+        // Password dialog
+        enterPasswordTitle: "Wprowadź Hasło",
+        enterPasswordMessage: "Proszę wprowadzić hasło dla projektu:",
+        enterPasswordPlaceholder2: "Wprowadź hasło...",
+        unlock: "Odblokuj",
+        passwordCannotBeEmpty: "Hasło nie może być puste",
+        incorrectPassword: "Nieprawidłowe hasło. Spróbuj ponownie.",
+        confirm: "Potwierdź",
+        
+        // Load dialog
+        noProjectsFound: "Nie znaleziono zapisanych projektów",
+        custom: "Niestandardowy",
+        private: "PRYWATNY",
+        public: "PUBLICZNY",
+        makeProjectPrivate: "Ustaw ten projekt jako prywatny",
+        
+        // Data Model Editor
+        fieldSpecificErrors: "Błędy specyficzne dla pól:",
+        unnamedField: "Pole bez nazwy",
+        unknownField: "Nieznane pole",
+        pleaseFixErrors: "Proszę naprawić te błędy przed zapisaniem.",
         
         // Load projects
         loadProjectTitle: "Wczytaj Projekt",

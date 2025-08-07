@@ -40,13 +40,13 @@ class DialogFactory {
      * Create save project dialog
      */
     static createSaveDialog(onSave, onCancel) {
-        const dialog = DialogFactory.createBaseDialog('save-dialog', 'Save Project', {
+        const dialog = DialogFactory.createBaseDialog('save-dialog', t('saveProjectTitle'), {
             maxWidth: '450px'
         });
         
         // Project name input
         const nameLabel = document.createElement('label');
-        nameLabel.textContent = 'Project Name:';
+        nameLabel.textContent = t('projectName') + ':';
         nameLabel.style.display = 'block';
         nameLabel.style.marginBottom = '6px';
         nameLabel.style.fontWeight = 'bold';
@@ -54,7 +54,7 @@ class DialogFactory {
         
         const input = document.createElement('input');
         input.type = 'text';
-        input.placeholder = 'Enter project name...';
+        input.placeholder = t('enterProjectName');
         input.value = DialogFactory.generateDefaultProjectName();
         input.maxLength = 200; // Limit project name length
         input.style.width = '100%';
@@ -134,7 +134,7 @@ class DialogFactory {
         
         const privacyLabel = document.createElement('label');
         privacyLabel.htmlFor = 'save-private-checkbox';
-        privacyLabel.textContent = 'Save as private project';
+        privacyLabel.textContent = t('saveAsPrivate');
         privacyLabel.style.cursor = 'pointer';
         privacyLabel.style.fontWeight = '500';
         privacyLabel.style.color = '#495057';
@@ -148,7 +148,7 @@ class DialogFactory {
         passwordContainer.style.marginBottom = '20px';
         
         const passwordLabel = document.createElement('label');
-        passwordLabel.textContent = 'Project Password:';
+        passwordLabel.textContent = t('projectPassword') + ':';
         passwordLabel.style.display = 'block';
         passwordLabel.style.marginBottom = '6px';
         passwordLabel.style.fontWeight = 'bold';
@@ -156,7 +156,7 @@ class DialogFactory {
         
         const passwordInput = document.createElement('input');
         passwordInput.type = 'password';
-        passwordInput.placeholder = 'Enter password for private project...';
+        passwordInput.placeholder = t('enterPasswordPlaceholder');
         passwordInput.style.width = '100%';
         passwordInput.style.padding = '10px 12px';
         passwordInput.style.border = '2px solid #e1e8ed';
@@ -182,7 +182,7 @@ class DialogFactory {
         });
         
         const passwordNote = document.createElement('div');
-        passwordNote.textContent = '⚠️ Remember this password - it cannot be recovered!';
+        passwordNote.textContent = '⚠️ ' + t('rememberPassword');
         passwordNote.style.fontSize = '12px';
         passwordNote.style.color = '#e67e22';
         passwordNote.style.marginTop = '6px';
@@ -218,8 +218,8 @@ class DialogFactory {
         });
         
         const buttonContainer = DialogFactory.createButtonContainer();
-        const cancelBtn = DialogFactory.createButton('Cancel', 'secondary');
-        const saveBtn = DialogFactory.createButton('Save', 'primary');
+        const cancelBtn = DialogFactory.createButton(t('cancel'), 'secondary');
+        const saveBtn = DialogFactory.createButton(t('save'), 'primary');
         
         const handleSave = () => {
             const projectName = input.value.trim();
@@ -231,7 +231,7 @@ class DialogFactory {
             passwordInput.style.borderColor = '#e1e8ed';
             
             if (!projectName) {
-                errorMsg.textContent = '⚠️ Project name is required';
+                errorMsg.textContent = '⚠️ ' + t('projectNameRequired');
                 errorMsg.style.display = 'block';
                 input.style.borderColor = '#e74c3c';
                 input.focus();
@@ -242,7 +242,7 @@ class DialogFactory {
             const password = isPrivate ? passwordInput.value.trim() : null;
             
             if (isPrivate && !password) {
-                passwordError.textContent = '⚠️ Password is required for private projects';
+                passwordError.textContent = '⚠️ ' + t('passwordRequired');
                 passwordError.style.display = 'block';
                 passwordInput.style.borderColor = '#e74c3c';
                 passwordInput.focus();
@@ -328,7 +328,7 @@ class DialogFactory {
             
             if (updatedProjects.length === 0) {
                 const noProjects = document.createElement('div');
-                noProjects.textContent = 'No saved projects found';
+                noProjects.textContent = t('noProjectsFound');
                 noProjects.style.padding = '20px';
                 noProjects.style.textAlign = 'center';
                 noProjects.style.color = '#666';
@@ -344,7 +344,7 @@ class DialogFactory {
         // Initial population
         if (projects.length === 0) {
             const noProjects = document.createElement('div');
-            noProjects.textContent = 'No saved projects found';
+            noProjects.textContent = t('noProjectsFound');
             noProjects.style.padding = '20px';
             noProjects.style.textAlign = 'center';
             noProjects.style.color = '#666';
@@ -467,7 +467,7 @@ class DialogFactory {
         container.style.alignItems = 'center';
         
         const label = document.createElement('span');
-        label.textContent = 'Custom:';
+        label.textContent = t('custom') + ':';
         label.style.fontSize = '12px';
         label.style.marginRight = '6px';
         label.style.color = '#333';
@@ -635,7 +635,7 @@ class DialogFactory {
         
         const statusDiv = document.createElement('div');
         const isPrivate = project.isPrivate || false;
-        statusDiv.textContent = isPrivate ? 'PRIVATE' : 'PUBLIC';
+        statusDiv.textContent = isPrivate ? t('private') : t('public');
         statusDiv.style.fontSize = '12px';
         statusDiv.style.fontWeight = 'normal';
         statusDiv.style.padding = '2px 6px';
@@ -875,7 +875,7 @@ class DialogFactory {
         
         // Project name input
         const nameLabel = document.createElement('label');
-        nameLabel.textContent = 'Project Name:';
+        nameLabel.textContent = t('projectName') + ':';
         nameLabel.style.display = 'block';
         nameLabel.style.marginBottom = '6px';
         nameLabel.style.fontWeight = 'bold';
@@ -883,7 +883,7 @@ class DialogFactory {
         
         const nameInput = document.createElement('input');
         nameInput.type = 'text';
-        nameInput.placeholder = 'Enter project name...';
+        nameInput.placeholder = t('enterProjectName');
         nameInput.value = DialogFactory.generateDefaultProjectName();
         nameInput.maxLength = 200; // Limit project name length
         nameInput.style.width = '100%';
@@ -963,7 +963,7 @@ class DialogFactory {
         
         const privacyLabel = document.createElement('label');
         privacyLabel.htmlFor = 'is-private-checkbox';
-        privacyLabel.textContent = 'Make this project private';
+        privacyLabel.textContent = t('makeProjectPrivate');
         privacyLabel.style.cursor = 'pointer';
         privacyLabel.style.fontWeight = '500';
         privacyLabel.style.color = '#495057';
@@ -977,7 +977,7 @@ class DialogFactory {
         passwordContainer.style.marginBottom = '20px';
         
         const passwordLabel = document.createElement('label');
-        passwordLabel.textContent = 'Project Password:';
+        passwordLabel.textContent = t('projectPassword') + ':';
         passwordLabel.style.display = 'block';
         passwordLabel.style.marginBottom = '6px';
         passwordLabel.style.fontWeight = 'bold';
@@ -1135,12 +1135,12 @@ class DialogFactory {
      * Create password verification dialog
      */
     static createPasswordDialog(projectName, onConfirm, onCancel) {
-        const dialog = DialogFactory.createBaseDialog('password-dialog', 'Enter Password', {
+        const dialog = DialogFactory.createBaseDialog('password-dialog', t('enterPasswordTitle'), {
             maxWidth: '400px'
         });
         
         const message = document.createElement('div');
-        message.innerHTML = `Please enter the password for project:<br><strong>"${projectName}"</strong>`;
+        message.innerHTML = `${t('enterPasswordMessage')}<br><strong>"${projectName}"</strong>`;
         message.style.marginBottom = '20px';
         message.style.textAlign = 'center';
         message.style.color = '#333';
@@ -1148,7 +1148,7 @@ class DialogFactory {
         
         const passwordInput = document.createElement('input');
         passwordInput.type = 'password';
-        passwordInput.placeholder = 'Enter password...';
+        passwordInput.placeholder = t('enterPasswordPlaceholder2');
         passwordInput.style.width = '100%';
         passwordInput.style.padding = '10px 12px';
         passwordInput.style.border = '2px solid #e1e8ed';
@@ -1180,8 +1180,8 @@ class DialogFactory {
         errorMessage.style.fontWeight = '500';
         
         const buttonContainer = DialogFactory.createButtonContainer();
-        const cancelBtn = DialogFactory.createButton('Cancel', 'secondary');
-        const unlockBtn = this.createButton('Unlock', 'primary');
+        const cancelBtn = DialogFactory.createButton(t('cancel'), 'secondary');
+        const unlockBtn = this.createButton(t('unlock'), 'primary');
         
         const showError = (message) => {
             errorMessage.textContent = message;
@@ -1193,7 +1193,7 @@ class DialogFactory {
         const handleUnlock = () => {
             const password = passwordInput.value.trim();
             if (!password) {
-                showError('⚠️ Password cannot be empty');
+                showError('⚠️ ' + t('passwordCannotBeEmpty'));
                 return;
             }
             
@@ -1201,7 +1201,7 @@ class DialogFactory {
             if (success !== false) {
                 dialog.remove();
             } else {
-                showError('❌ Incorrect password. Please try again.');
+                showError('❌ ' + t('incorrectPassword'));
                 passwordInput.value = '';
             }
         };
@@ -1239,7 +1239,10 @@ class DialogFactory {
     /**
      * Create confirmation dialog
      */
-    static createConfirmDialog(title, message, onConfirm, onCancel, confirmText = 'Confirm', cancelText = 'Cancel') {
+    static createConfirmDialog(title, message, onConfirm, onCancel, confirmText = null, cancelText = null) {
+        // Use default translations if not provided
+        confirmText = confirmText || t('confirm');
+        cancelText = cancelText || t('cancel');
         const dialog = DialogFactory.createBaseDialog('confirm-dialog', title, {
             maxWidth: '450px'
         });

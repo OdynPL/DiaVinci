@@ -1931,10 +1931,10 @@ class DataModelEditor {
             
             // If there are field errors, show them
             if (validation.fieldErrors) {
-                errorMessage += `Field-specific errors:\n`;
+                errorMessage += `${t('fieldSpecificErrors')}\n`;
                 Object.keys(validation.fieldErrors).forEach(fieldId => {
                     const field = this.currentNode.getField(fieldId);
-                    const fieldName = field ? field.name || 'Unnamed Field' : 'Unknown Field';
+                    const fieldName = field ? field.name || t('unnamedField') : t('unknownField');
                     const errors = validation.fieldErrors[fieldId];
                     
                     errorMessage += `\n🔸 ${fieldName}:\n`;
@@ -1943,7 +1943,7 @@ class DataModelEditor {
                     });
                 });
                 
-                errorMessage += `\nPlease fix these errors before saving.`;
+                errorMessage += `\n${t('pleaseFixErrors')}`;
             }
             
             alert(errorMessage);
