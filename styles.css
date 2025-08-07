@@ -367,6 +367,37 @@ input[type="text"]:focus {
     font-size: 11px;
 }
 
+/* Remove focus outline from terminal toggle button */
+#terminal-toggle-btn:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+/* Bottom navigation layout fixes */
+.bottom-nav {
+    position: relative;
+}
+
+.bottom-nav > div {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+}
+
+/* Ensure terminal button stays on the left */
+#terminal-toggle-btn {
+    margin-right: auto;
+    flex-shrink: 0;
+}
+
+/* Ensure button group stays on the right */
+.bottom-nav .flex-nowrap {
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
 /* Terminal scrollbar */
 .terminal-content::-webkit-scrollbar {
     width: 8px;
