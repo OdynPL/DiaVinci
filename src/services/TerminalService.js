@@ -124,6 +124,19 @@ class TerminalService {
         setTimeout(() => {
             this.initializeContentHeight();
         }, 100);
+        
+        // Auto-focus on command input when clicking anywhere in terminal
+        if (this.terminalPanel) {
+            this.terminalPanel.addEventListener('click', (e) => {
+                // Don't interfere with other interactive elements
+                if (!e.target.matches('button, input, select, a, .terminal-resize-handle')) {
+                    if (this.commandInput && this.isVisible) {
+                        this.commandInput.focus();
+                        console.log('Terminal clicked - focused command input');
+                    }
+                }
+            });
+        }
     }
 
     /**
@@ -153,9 +166,21 @@ class TerminalService {
     show() {
         if (!this.terminalPanel) return;
 
+        console.log('Terminal show() called');
+        
         this.isVisible = true;
         this.terminalPanel.classList.remove('hidden');
         this.toggleButton?.classList.add('active');
+        
+        // Calculate dynamic bottom position based on bottom navigation height
+        const bottomNav = document.querySelector('.bottom-nav');
+        const bottomNavHeight = bottomNav ? bottomNav.offsetHeight : 60; // Default 60px if not found
+        this.terminalPanel.style.bottom = `${bottomNavHeight + 10}px`; // Add 10px gap
+        
+        console.log('Terminal positioned above bottom nav:', {
+            bottomNavHeight,
+            terminalBottom: `${bottomNavHeight + 10}px`
+        });
         
         // Restore last height if available
         if (this.lastHeight && this.lastHeight > 0) {
@@ -171,14 +196,50 @@ class TerminalService {
         const mainContent = document.querySelector('.main-content') || document.body;
         mainContent.classList.add('terminal-open');
 
-        // Auto-scroll to bottom
+        console.log('Terminal visibility set, calling scrollToBottom...');
+        
+        // Auto-scroll to bottom immediately
         this.scrollToBottom();
+        
+        // Auto-scroll to bottom again after DOM updates
+        setTimeout(() => {
+            console.log('Terminal show() - first delayed scroll');
+            this.scrollToBottom();
+        }, 50);
+        
+        // Auto-scroll to bottom one more time to ensure it worked
+        setTimeout(() => {
+            console.log('Terminal show() - second delayed scroll');
+            this.scrollToBottom();
+        }, 200);
 
         // Focus on command input for immediate use
         if (this.commandInput) {
+            // Multiple attempts to ensure focus works
+            this.commandInput.focus();
+            
             setTimeout(() => {
                 this.commandInput.focus();
+                console.log('Terminal show() - first focus attempt');
             }, 100);
+            
+            setTimeout(() => {
+                this.commandInput.focus();
+                console.log('Terminal show() - second focus attempt');
+                // One final scroll after focus to ensure command line is visible
+                this.scrollToBottom();
+            }, 250);
+            
+            // Final focus attempt after all animations complete
+            setTimeout(() => {
+                if (this.isVisible) {
+                    this.commandInput.focus();
+                    console.log('Terminal show() - final focus attempt', {
+                        focused: document.activeElement === this.commandInput,
+                        commandInputExists: !!this.commandInput
+                    });
+                }
+            }, 500);
         }
     }
 
@@ -206,6 +267,20 @@ class TerminalService {
         this.terminalOutput.innerHTML = '';
         this.history = [];
         this.filteredHistory = [];
+        
+        // Auto-scroll to bottom to ensure command line is visible
+        if (this.isVisible) {
+            setTimeout(() => {
+                this.scrollToBottom();
+                this.ensureCommandLineVisible();
+                
+                // Focus on command input after clear
+                if (this.commandInput) {
+                    this.commandInput.focus();
+                    console.log('Clear - refocused command input');
+                }
+            }, 50);
+        }
     }
 
     /**
@@ -369,32 +444,12 @@ class TerminalService {
     }
 
     /**
-     * Ensure command line is always visible
+     * Ensure command line is always visible (now it's always visible due to new structure)
      */
     ensureCommandLineVisible() {
-        const commandLine = document.querySelector('.terminal-command-line');
-        const terminalContent = this.terminalOutput?.parentElement;
-        
-        if (commandLine && terminalContent) {
-            // Multiple approaches to ensure visibility
-            
-            // 1. Force scroll to bottom immediately
-            terminalContent.scrollTop = terminalContent.scrollHeight;
-            
-            // 2. Use scrollIntoView with delay
-            setTimeout(() => {
-                commandLine.scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'end',
-                    inline: 'nearest'
-                });
-            }, 50);
-            
-            // 3. Double-check with another scroll
-            setTimeout(() => {
-                terminalContent.scrollTop = terminalContent.scrollHeight;
-            }, 150);
-        }
+        // Command line is now always visible since it's outside the scrollable content area
+        // Just scroll the content to bottom to show latest logs
+        this.scrollToBottom();
     }
 
     /**
@@ -462,28 +517,36 @@ class TerminalService {
     scrollToBottom() {
         if (!this.terminalOutput) return;
         
-        const terminalContent = this.terminalOutput.parentElement;
+        // Only need to scroll the terminal-content now, since command line is always visible
+        const terminalContent = document.querySelector('.terminal-content');
+        
         if (terminalContent) {
-            // Force immediate scroll to bottom first
-            terminalContent.scrollTop = terminalContent.scrollHeight;
+            console.log('ScrollToBottom: Scrolling terminal-content to bottom...', {
+                scrollHeight: terminalContent.scrollHeight,
+                clientHeight: terminalContent.clientHeight,
+                scrollTop: terminalContent.scrollTop
+            });
             
-            // Then ensure command line is visible with slight delay
-            setTimeout(() => {
-                const commandLine = document.querySelector('.terminal-command-line');
-                if (commandLine) {
-                    // Force scroll to bottom again
-                    terminalContent.scrollTop = terminalContent.scrollHeight;
-                    
-                    // Then smooth scroll to command line
-                    setTimeout(() => {
-                        commandLine.scrollIntoView({ 
-                            behavior: 'smooth', 
-                            block: 'end',
-                            inline: 'nearest'
-                        });
-                    }, 50);
-                }
-            }, 10);
+            // Simple and reliable approach - scroll to maximum
+            const maxScroll = terminalContent.scrollHeight - terminalContent.clientHeight;
+            terminalContent.scrollTop = maxScroll;
+            
+            console.log('ScrollToBottom: Scroll completed', {
+                scrollTop: terminalContent.scrollTop,
+                maxScroll: maxScroll,
+                isAtBottom: terminalContent.scrollTop >= maxScroll - 1
+            });
+            
+            // Double check with requestAnimationFrame for reliability
+            requestAnimationFrame(() => {
+                terminalContent.scrollTop = maxScroll;
+                console.log('ScrollToBottom: RAF verification', {
+                    scrollTop: terminalContent.scrollTop,
+                    isAtBottom: terminalContent.scrollTop >= maxScroll - 1
+                });
+            });
+        } else {
+            console.warn('ScrollToBottom: Terminal content element not found');
         }
     }
 
@@ -621,12 +684,22 @@ class TerminalService {
         const terminalContent = this.terminalPanel.querySelector('.terminal-content');
         if (!terminalContent) return;
 
-        // Calculate header height (fixed at 48px)
+        // Calculate header height (fixed at 48px) and command line height (responsive)
         const headerHeight = 48;
-        const contentHeight = terminalHeight - headerHeight;
+        const isMobile = window.innerWidth <= 768;
+        const commandLineHeight = isMobile ? 54 : 50; // Reduced to match much smaller command line
+        const contentHeight = terminalHeight - headerHeight - commandLineHeight;
         
         // Apply new height to content area
         terminalContent.style.height = `${contentHeight}px`;
+        
+        console.log('UpdateTerminalContentHeight:', {
+            terminalHeight,
+            headerHeight,
+            commandLineHeight,
+            contentHeight,
+            isMobile
+        });
         
         // Ensure content stays scrolled to bottom if it was at bottom
         if (this.isVisible && this.shouldAutoScroll()) {
@@ -641,7 +714,7 @@ class TerminalService {
     shouldAutoScroll() {
         if (!this.terminalOutput) return true;
         
-        const terminalContent = this.terminalOutput.parentElement;
+        const terminalContent = document.querySelector('.terminal-content');
         if (!terminalContent) return true;
         
         const scrollTop = terminalContent.scrollTop;
@@ -878,10 +951,19 @@ class TerminalService {
                 break;
         }
         
+        console.log('ExecuteCommand finished, calling scrollToBottom...');
+        
         // Ensure terminal scrolls to bottom and command line remains visible after executing command
         setTimeout(() => {
+            console.log('ExecuteCommand - delayed scroll');
             this.scrollToBottom();
             this.ensureCommandLineVisible();
+            
+            // Ensure focus returns to command input for next command
+            if (this.commandInput) {
+                this.commandInput.focus();
+                console.log('ExecuteCommand - refocused command input');
+            }
         }, 100);
     }
 

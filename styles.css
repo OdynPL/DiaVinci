@@ -292,7 +292,7 @@ input[type="text"]:focus {
 .terminal-panel {
     height: 30vh;
     min-height: 200px;
-    max-height: 90vh; /* Allow up to 90% of viewport height */
+    max-height: 90vh; /* Restore to 90vh for maximum space */
     transition: all 0.3s ease-in-out;
     background-color: #f8fafc;
     border: 1px solid #e2e8f0;
@@ -300,14 +300,22 @@ input[type="text"]:focus {
     resize: vertical;
     overflow: hidden;
     box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
-    position: relative;
+    display: flex;
+    flex-direction: column; /* Stack header, content, command line vertically */
+    /* Use fixed positioning above bottom navigation */
+    position: fixed;
+    bottom: 60px; /* Leave space for bottom navigation (approximately 60px height) */
+    left: 0;
+    right: 0;
+    z-index: 60; /* Higher than bottom-nav z-index: 50 */
 }
 
 .terminal-panel.hidden {
-    height: 0;
-    min-height: 0;
+    height: 0 !important;
+    min-height: 0 !important;
     opacity: 0;
     pointer-events: none;
+    transform: translateY(100%); /* Slide down when hidden */
 }
 
 /* Resize handle styles */
@@ -333,6 +341,7 @@ input[type="text"]:focus {
     cursor: default;
     background-color: #e2e8f0;
     border-bottom: 1px solid #cbd5e1;
+    flex-shrink: 0; /* Header has fixed height */
 }
 
 .terminal-content {
@@ -342,31 +351,22 @@ input[type="text"]:focus {
     overflow-y: auto;
     overflow-x: hidden;
     scroll-behavior: smooth; /* Smooth scrolling for better UX */
-    display: flex;
-    flex-direction: column;
+    flex: 1; /* Take remaining space between header and command line */
     min-height: 0; /* Allow shrinking */
-    /* Height will be set dynamically by JavaScript during resize */
 }
 
 #terminal-output {
-    flex: 1; /* Take available space but allow command line to be visible */
-    overflow-y: auto;
-    padding-bottom: 8px; /* Small padding between logs and command line */
+    padding-bottom: 8px; /* Small padding at bottom of logs */
 }
 
 /* Terminal command line input styling */
 .terminal-command-line {
     background: rgba(59, 130, 246, 0.08);
-    border: 1px solid rgba(59, 130, 246, 0.2);
-    border-radius: 6px;
-    padding: 10px 12px;
-    margin-top: 8px;
-    margin-bottom: 40px; /* Moved padding here to be below command line */
-    position: sticky;
-    bottom: 40px; /* Ensure it's always visible above the bottom */
-    z-index: 20;
-    min-height: 40px; /* Minimum height to ensure visibility */
+    border-top: 1px solid rgba(59, 130, 246, 0.2);
     flex-shrink: 0; /* Prevent shrinking */
+    min-height: 40px; /* Further reduced from 48px for minimal height */
+    padding: 6px 16px 8px 16px; /* Minimal padding for very compact design */
+    box-sizing: border-box; /* Include padding in height calculation */
 }
 
 .terminal-command-line input {
@@ -378,11 +378,36 @@ input[type="text"]:focus {
 
 .terminal-command-line input:focus {
     outline: none;
-    background: rgba(59, 130, 246, 0.1);
+    background: rgba(59, 130, 246, 0.15); /* Slightly more visible when focused */
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3); /* Add subtle focus ring */
+}
+
+/* Make the command line more prominent when focused */
+.terminal-command-line:focus-within {
+    background: rgba(59, 130, 246, 0.12);
+    border-top-color: rgba(59, 130, 246, 0.4);
 }
 
 .terminal-command-line input::placeholder {
     color: #6b7280;
+}
+
+/* Ensure command line is always visible and accessible */
+.terminal-command-line {
+    position: relative;
+    z-index: 10; /* Higher than content */
+    background: rgba(59, 130, 246, 0.08) !important; /* Force background */
+}
+
+/* Add visual separator to make command line more prominent */
+.terminal-command-line::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(59, 130, 246, 0.3), rgba(59, 130, 246, 0.6), rgba(59, 130, 246, 0.3));
 }
 
 .terminal-line {
@@ -548,4 +573,26 @@ input[type="text"]:focus {
 
 .context-menu-separator:hover {
     background-color: transparent !important;
+}
+
+/* Mobile responsive terminal adjustments */
+@media (max-width: 768px) {
+    .terminal-panel {
+        /* Keep terminal above bottom navigation on mobile too */
+        bottom: 70px; /* Slightly more space on mobile for larger bottom nav */
+        max-height: 80vh; /* Restore to 80vh for mobile */
+    }
+    
+    .terminal-command-line {
+        min-height: 44px; /* Slightly bigger on mobile but still compact */
+        padding: 8px 16px 10px 16px; /* Minimal padding on mobile too */
+    }
+}
+
+/* iOS Safari specific adjustments for bottom safe area */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .terminal-panel {
+        padding-bottom: env(safe-area-inset-bottom);
+        /* Removed margin-bottom to prevent conflicts with fixed positioning */
+    }
 }
