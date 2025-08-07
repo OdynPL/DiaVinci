@@ -11,7 +11,7 @@ class UIController {
         
         this.currentProject = null;
         this.currentPage = 1;
-        this.projectsPerPage = 8;
+        this.projectsPerPage = 7;
         this.initialLoad = true;
         
         this.initializeUI();
