@@ -547,7 +547,7 @@ class UIController {
 
             if (hasContent) {
                 DialogFactory.createConfirmDialog(
-                    'Clear Current Project',
+                    t('clearCurrentProjectTitle'),
                     t('clearCurrentProjectConfirm'),
                     () => {
                         this.performCreateProject(projectName, isPrivate, password);
@@ -636,7 +636,7 @@ class UIController {
      */
     clearAllProjects() {
         DialogFactory.createConfirmDialog(
-            'Delete All Projects',
+            t('deleteAllProjectsTitle'),
             t('clearAllProjectsConfirm'),
             () => {
                 const success = this.storageService.clearAllProjects();
@@ -802,7 +802,7 @@ class UIController {
         deleteBtn.addEventListener('click', (event) => {
             event.stopPropagation();
             DialogFactory.createConfirmDialog(
-                'Delete Project',
+                t('deleteProjectTitle'),
                 `Are you sure you want to delete project <strong>"${project.name}"</strong>?<br><br>This action cannot be undone.`,
                 () => {
                     this.deleteProject(project.name);
