@@ -1787,67 +1787,55 @@ class TerminalService {
             return;
         }
 
-        this.addLine('╔══════════════════════════════════════════════════╗', 'info');
-        this.addLine('║                   � NODES                      ║', 'info');
-        this.addLine('╠══════════════════════════════════════════════════╣', 'info');
-        this.addLine(`║ Project: ${(currentProject.name || 'Untitled').padEnd(37)} ║`, 'info');
-        this.addLine(`║ Total Nodes: ${currentProject.nodes.length.toString().padEnd(33)} ║`, 'info');
-        this.addLine('╚══════════════════════════════════════════════════╝', 'info');
+        this.addLine('', 'info');
+        this.addLine('🟢 Nodes', 'info');
+        this.addLine('─'.repeat(30), 'info');
+        this.addLine(`🔸 Project: ${currentProject.name || 'Untitled'}`, 'info');
+        this.addLine(`🔸 Total Nodes: ${currentProject.nodes.length}`, 'info');
         
         if (currentProject.nodes.length === 0) {
-            
-            this.addLine('╔══════════════════════════════════════════════════╗', 'warning');
-            this.addLine('║                � NO NODES FOUND               ║', 'warning');
-            this.addLine('╚══════════════════════════════════════════════════╝', 'warning');
+            this.addLine('', 'warning');
+            this.addLine('⚠️ No Nodes Found', 'warning');
         } else {
             
             
             currentProject.nodes.slice(0, 20).forEach((node, index) => {
                 const type = node.type || 'Unknown';
                 const label = node.label || 'Unnamed';
-                const truncatedLabel = label.length > 30 ? label.substring(0, 27) + '...' : label;
                 const fieldsCount = node.fields ? node.fields.length : 0;
                 
-                this.addLine('╔══════════════════════════════════════════════════╗', 'info');
-                this.addLine(`║ ${(index + 1).toString().padStart(2)}. NODE                                    ║`, 'info');
-                this.addLine('╠══════════════════════════════════════════════════╣', 'info');
-                this.addLine(`║ ID: ${node.id.toString().padEnd(44)} ║`, 'info');
-                this.addLine(`║ Label: ${truncatedLabel.padEnd(41)} ║`, 'info');
-                this.addLine(`║ Type: ${type.padEnd(42)} ║`, 'info');
+                this.addLine('', 'info');
+                this.addLine(`${index + 1}. Node`, 'info');
+                this.addLine('─'.repeat(20), 'info');
+                this.addLine(`🔸 ID: ${node.id}`, 'info');
+                this.addLine(`🔸 Label: ${label}`, 'info');
+                this.addLine(`🔸 Type: ${type}`, 'info');
                 
                 if (fieldsCount > 0) {
-                    this.addLine(`║ Fields: ${fieldsCount.toString().padEnd(40)} ║`, 'info');
+                    this.addLine(`🔸 Fields: ${fieldsCount}`, 'info');
                 }
                 
                 if (node.x !== undefined && node.y !== undefined) {
                     const pos = `(${Math.round(node.x)}, ${Math.round(node.y)})`;
-                    this.addLine(`║ Position: ${pos.padEnd(38)} ║`, 'info');
+                    this.addLine(`🔸 Position: ${pos}`, 'info');
                 }
                 
                 if (node.width !== undefined && node.height !== undefined) {
                     const size = `${Math.round(node.width)}×${Math.round(node.height)}`;
-                    this.addLine(`║ Size: ${size.padEnd(42)} ║`, 'info');
+                    this.addLine(`🔸 Size: ${size}`, 'info');
                 }
                 
                 if (node.color) {
-                    this.addLine(`║ Color: ${node.color.padEnd(41)} ║`, 'info');
-                }
-                
-                this.addLine('╚══════════════════════════════════════════════════╝', 'info');
-                
-                if (index < Math.min(currentProject.nodes.length, 20) - 1) {
-                     // Space between nodes
+                    this.addLine(`🔸 Color: ${node.color}`, 'info');
                 }
             });
             
             if (currentProject.nodes.length > 20) {
-                
-                this.addLine('╔══════════════════════════════════════════════════╗', 'warning');
-                this.addLine('║                 📄 MORE NODES                   ║', 'warning');
-                this.addLine('╠══════════════════════════════════════════════════╣', 'warning');
-                this.addLine(`║ Showing: 20 of ${currentProject.nodes.length} total nodes              ║`, 'warning');
-                this.addLine('║ Use "search <text>" to find specific nodes      ║', 'warning');
-                this.addLine('╚══════════════════════════════════════════════════╝', 'warning');
+                this.addLine('', 'warning');
+                this.addLine('📄 More Nodes Available', 'warning');
+                this.addLine('─'.repeat(30), 'warning');
+                this.addLine(`🔸 Showing: 20 of ${currentProject.nodes.length} total nodes`, 'warning');
+                this.addLine('🔸 Use "search <text>" to find specific nodes', 'warning');
             }
         }
         
@@ -1879,64 +1867,51 @@ class TerminalService {
             return;
         }
 
-        this.addLine('╔══════════════════════════════════════════════════╗', 'info');
-        this.addLine('║                 📝 TEXT ELEMENTS                ║', 'info');
-        this.addLine('╠══════════════════════════════════════════════════╣', 'info');
-        this.addLine(`║ Project: ${(currentProject.name || 'Untitled').padEnd(37)} ║`, 'info');
-        this.addLine(`║ Total Texts: ${currentProject.texts.length.toString().padEnd(33)} ║`, 'info');
-        this.addLine('╚══════════════════════════════════════════════════╝', 'info');
+        this.addLine('', 'info');
+        this.addLine('📝 Text Elements', 'info');
+        this.addLine('─'.repeat(30), 'info');
+        this.addLine(`🔸 Project: ${currentProject.name || 'Untitled'}`, 'info');
+        this.addLine(`🔸 Total Texts: ${currentProject.texts.length}`, 'info');
         
         if (currentProject.texts.length === 0) {
-            
-            this.addLine('╔══════════════════════════════════════════════════╗', 'warning');
-            this.addLine('║             📭 NO TEXT ELEMENTS FOUND           ║', 'warning');
-            this.addLine('╚══════════════════════════════════════════════════╝', 'warning');
+            this.addLine('', 'warning');
+            this.addLine('📭 No Text Elements Found', 'warning');
         } else {
             
             
             currentProject.texts.slice(0, 20).forEach((text, index) => {
                 const content = text.text || text.label || 'Empty';
-                const truncatedContent = content.length > 30 ? content.substring(0, 27) + '...' : content;
                 
-                this.addLine('╔══════════════════════════════════════════════════╗', 'info');
-                this.addLine(`║ ${(index + 1).toString().padStart(2)}. TEXT ELEMENT                           ║`, 'info');
-                this.addLine('╠══════════════════════════════════════════════════╣', 'info');
-                this.addLine(`║ ID: ${text.id.toString().padEnd(44)} ║`, 'info');
-                this.addLine(`║ Content: ${truncatedContent.padEnd(38)} ║`, 'info');
+                this.addLine('', 'info');
+                this.addLine(`${index + 1}. Text Element`, 'info');
+                this.addLine('─'.repeat(20), 'info');
+                this.addLine(`🔸 ID: ${text.id}`, 'info');
+                this.addLine(`🔸 Content: ${content}`, 'info');
                 
                 if (text.label && text.label !== content) {
-                    const truncatedLabel = text.label.length > 30 ? text.label.substring(0, 27) + '...' : text.label;
-                    this.addLine(`║ Label: ${truncatedLabel.padEnd(41)} ║`, 'info');
+                    this.addLine(`🔸 Label: ${text.label}`, 'info');
                 }
                 
                 if (text.x !== undefined && text.y !== undefined) {
                     const pos = `(${Math.round(text.x)}, ${Math.round(text.y)})`;
-                    this.addLine(`║ Position: ${pos.padEnd(38)} ║`, 'info');
+                    this.addLine(`🔸 Position: ${pos}`, 'info');
                 }
                 
                 if (text.color) {
-                    this.addLine(`║ Color: ${text.color.padEnd(41)} ║`, 'info');
+                    this.addLine(`🔸 Color: ${text.color}`, 'info');
                 }
                 
                 if (text.fontSize) {
-                    this.addLine(`║ Font Size: ${text.fontSize.toString().padEnd(35)} ║`, 'info');
-                }
-                
-                this.addLine('╚══════════════════════════════════════════════════╝', 'info');
-                
-                if (index < Math.min(currentProject.texts.length, 20) - 1) {
-                     // Space between elements
+                    this.addLine(`🔸 Font Size: ${text.fontSize}`, 'info');
                 }
             });
             
             if (currentProject.texts.length > 20) {
-                
-                this.addLine('╔══════════════════════════════════════════════════╗', 'warning');
-                this.addLine('║              📄 MORE TEXT ELEMENTS              ║', 'warning');
-                this.addLine('╠══════════════════════════════════════════════════╣', 'warning');
-                this.addLine(`║ Showing: 20 of ${currentProject.texts.length} total texts           ║`, 'warning');
-                this.addLine('║ Use "search <text>" to find specific elements   ║', 'warning');
-                this.addLine('╚══════════════════════════════════════════════════╝', 'warning');
+                this.addLine('', 'warning');
+                this.addLine('📄 More Text Elements Available', 'warning');
+                this.addLine('─'.repeat(30), 'warning');
+                this.addLine(`🔸 Showing: 20 of ${currentProject.texts.length} total texts`, 'warning');
+                this.addLine('🔸 Use "search <text>" to find specific elements', 'warning');
             }
         }
         
@@ -1968,65 +1943,50 @@ class TerminalService {
             return;
         }
 
-        this.addLine('╔══════════════════════════════════════════════════╗', 'info');
-        this.addLine('║                🔗 TRANSITIONS                   ║', 'info');
-        this.addLine('╠══════════════════════════════════════════════════╣', 'info');
-        this.addLine(`║ Project: ${(currentProject.name || 'Untitled').padEnd(37)} ║`, 'info');
-        this.addLine(`║ Total Transitions: ${currentProject.transitions.length.toString().padEnd(27)} ║`, 'info');
-        this.addLine('╚══════════════════════════════════════════════════╝', 'info');
+        this.addLine('', 'info');
+        this.addLine('🔗 Transitions', 'info');
+        this.addLine('─'.repeat(30), 'info');
+        this.addLine(`🔸 Project: ${currentProject.name || 'Untitled'}`, 'info');
+        this.addLine(`🔸 Total Transitions: ${currentProject.transitions.length}`, 'info');
         
         if (currentProject.transitions.length === 0) {
-            
-            this.addLine('╔══════════════════════════════════════════════════╗', 'warning');
-            this.addLine('║             � NO TRANSITIONS FOUND             ║', 'warning');
-            this.addLine('╚══════════════════════════════════════════════════╝', 'warning');
+            this.addLine('', 'warning');
+            this.addLine('⚠️ No Transitions Found', 'warning');
         } else {
             
             
             currentProject.transitions.slice(0, 20).forEach((trans, index) => {
                 const fromLabel = trans.from?.label || trans.from?.id || 'Unknown';
                 const toLabel = trans.to?.label || trans.to?.id || 'Unknown';
-                const truncatedFrom = fromLabel.toString().length > 15 ? fromLabel.toString().substring(0, 12) + '...' : fromLabel.toString();
-                const truncatedTo = toLabel.toString().length > 15 ? toLabel.toString().substring(0, 12) + '...' : toLabel.toString();
                 const label = trans.label || 'Unnamed';
-                const truncatedLabel = label.length > 25 ? label.substring(0, 22) + '...' : label;
                 
-                this.addLine('╔══════════════════════════════════════════════════╗', 'info');
-                this.addLine(`║ ${(index + 1).toString().padStart(2)}. TRANSITION                             ║`, 'info');
-                this.addLine('╠══════════════════════════════════════════════════╣', 'info');
-                this.addLine(`║ ID: ${trans.id.toString().padEnd(44)} ║`, 'info');
-                this.addLine(`║ Label: ${truncatedLabel.padEnd(41)} ║`, 'info');
-                this.addLine(`║ From: ${truncatedFrom.padEnd(42)} ║`, 'info');
-                this.addLine(`║ To: ${truncatedTo.padEnd(44)} ║`, 'info');
+                this.addLine('', 'info');
+                this.addLine(`${index + 1}. Transition`, 'info');
+                this.addLine('─'.repeat(20), 'info');
+                this.addLine(`🔸 ID: ${trans.id}`, 'info');
+                this.addLine(`🔸 Label: ${label}`, 'info');
+                this.addLine(`🔸 From: ${fromLabel}`, 'info');
+                this.addLine(`🔸 To: ${toLabel}`, 'info');
                 
                 if (trans.condition) {
-                    const truncatedCondition = trans.condition.length > 35 ? trans.condition.substring(0, 32) + '...' : trans.condition;
-                    this.addLine(`║ Condition: ${truncatedCondition.padEnd(35)} ║`, 'info');
+                    this.addLine(`🔸 Condition: ${trans.condition}`, 'info');
                 }
                 
                 if (trans.style) {
-                    this.addLine(`║ Style: ${trans.style.padEnd(41)} ║`, 'info');
+                    this.addLine(`🔸 Style: ${trans.style}`, 'info');
                 }
                 
                 if (trans.color) {
-                    this.addLine(`║ Color: ${trans.color.padEnd(41)} ║`, 'info');
-                }
-                
-                this.addLine('╚══════════════════════════════════════════════════╝', 'info');
-                
-                if (index < Math.min(currentProject.transitions.length, 20) - 1) {
-                     // Space between transitions
+                    this.addLine(`🔸 Color: ${trans.color}`, 'info');
                 }
             });
             
             if (currentProject.transitions.length > 20) {
-                
-                this.addLine('╔══════════════════════════════════════════════════╗', 'warning');
-                this.addLine('║              📄 MORE TRANSITIONS                ║', 'warning');
-                this.addLine('╠══════════════════════════════════════════════════╣', 'warning');
-                this.addLine(`║ Showing: 20 of ${currentProject.transitions.length} total transitions  ║`, 'warning');
-                this.addLine('║ Use "search <text>" to find specific transitions ║', 'warning');
-                this.addLine('╚══════════════════════════════════════════════════╝', 'warning');
+                this.addLine('', 'warning');
+                this.addLine('📄 More Transitions Available', 'warning');
+                this.addLine('─'.repeat(30), 'warning');
+                this.addLine(`🔸 Showing: 20 of ${currentProject.transitions.length} total transitions`, 'warning');
+                this.addLine('🔸 Use "search <text>" to find specific transitions', 'warning');
             }
         }
         
@@ -2063,15 +2023,14 @@ class TerminalService {
         const transCount = currentProject.transitions.length;
         const totalCount = nodeCount + textCount + transCount;
 
-        this.addLine('╔══════════════════════════════════════════════════╗', 'info');
-        this.addLine('║                📊 ELEMENT COUNT                 ║', 'info');
-        this.addLine('╠══════════════════════════════════════════════════╣', 'info');
-        this.addLine(`║ 📦 Nodes:       ${nodeCount.toString().padStart(6)} elements            ║`, 'info');
-        this.addLine(`║ 📝 Texts:       ${textCount.toString().padStart(6)} elements            ║`, 'info');
-        this.addLine(`║ 🔗 Transitions: ${transCount.toString().padStart(6)} elements            ║`, 'info');
-        this.addLine('╠══════════════════════════════════════════════════╣', 'info');
-        this.addLine(`║ 🎯 Total:       ${totalCount.toString().padStart(6)} elements            ║`, 'success');
-        this.addLine('╚══════════════════════════════════════════════════╝', 'info');
+        this.addLine('', 'info');
+        this.addLine('📊 Element Count', 'info');
+        this.addLine('─'.repeat(30), 'info');
+        this.addLine(`� Nodes: ${nodeCount} elements`, 'info');
+        this.addLine(`� Texts: ${textCount} elements`, 'info');
+        this.addLine(`� Transitions: ${transCount} elements`, 'info');
+        this.addLine('', 'success');
+        this.addLine(`🎯 Total: ${totalCount} elements`, 'success');
         
         this.scrollToBottom();
     }
@@ -2116,40 +2075,42 @@ class TerminalService {
             transitionStyles[style] = (transitionStyles[style] || 0) + 1;
         });
 
-        this.addLine('╔══════════════════════════════════════════════════╗', 'info');
-        this.addLine('║               📊 PROJECT STATISTICS             ║', 'info');
-        this.addLine('╠══════════════════════════════════════════════════╣', 'info');
-        this.addLine('║                   📦 NODES                      ║', 'info');
-        this.addLine(`║ Total Nodes:        ${nodes.length.toString().padStart(6)}                    ║`, 'info');
-        this.addLine(`║ Total Fields:       ${totalFields.toString().padStart(6)}                    ║`, 'info');
-        this.addLine(`║ Avg Fields/Node:    ${nodes.length > 0 ? (totalFields / nodes.length).toFixed(1).padStart(6) : '0'.padStart(6)}                    ║`, 'info');
-        this.addLine('║                                                  ║', 'info');
+        this.addLine('', 'info');
+        this.addLine('📊 Project Statistics', 'info');
+        this.addLine('─'.repeat(50), 'info');
+        
+        this.addLine('📦 Nodes', 'info');
+        this.addLine(`🔸 Total Nodes: ${nodes.length}`, 'info');
+        this.addLine(`🔸 Total Fields: ${totalFields}`, 'info');
+        this.addLine(`🔸 Avg Fields/Node: ${nodes.length > 0 ? (totalFields / nodes.length).toFixed(1) : '0'}`, 'info');
         
         if (Object.keys(nodeTypes).length > 0) {
-            this.addLine('║ Node Types:                                      ║', 'info');
+            this.addLine('', 'info');
+            this.addLine('🔷 Node Types:', 'info');
             Object.entries(nodeTypes).slice(0, 5).forEach(([type, count]) => {
-                this.addLine(`║   ${type.substring(0, 20).padEnd(20)}: ${count.toString().padStart(6)}           ║`, 'info');
+                this.addLine(`   • ${type}: ${count}`, 'info');
             });
         }
         
-        this.addLine('╠══════════════════════════════════════════════════╣', 'info');
-        this.addLine('║                  🔗 TRANSITIONS                 ║', 'info');
-        this.addLine(`║ Total Transitions:  ${transitions.length.toString().padStart(6)}                    ║`, 'info');
+        this.addLine('', 'info');
+        this.addLine('🔗 Transitions', 'info');
+        this.addLine(`🔸 Total Transitions: ${transitions.length}`, 'info');
         
         if (Object.keys(transitionStyles).length > 0) {
-            this.addLine('║ Transition Styles:                               ║', 'info');
+            this.addLine('', 'info');
+            this.addLine('🔷 Transition Styles:', 'info');
             Object.entries(transitionStyles).slice(0, 5).forEach(([style, count]) => {
-                this.addLine(`║   ${style.substring(0, 20).padEnd(20)}: ${count.toString().padStart(6)}           ║`, 'info');
+                this.addLine(`   • ${style}: ${count}`, 'info');
             });
         }
         
-        this.addLine('╠══════════════════════════════════════════════════╣', 'info');
-        this.addLine('║                   📝 TEXTS                      ║', 'info');
-        this.addLine(`║ Total Text Elements: ${texts.length.toString().padStart(6)}                   ║`, 'info');
-        this.addLine('╠══════════════════════════════════════════════════╣', 'info');
-        this.addLine('║                   🎯 SUMMARY                    ║', 'info');
-        this.addLine(`║ Total Elements:     ${(nodes.length + texts.length + transitions.length).toString().padStart(6)}                    ║`, 'success');
-        this.addLine('╚══════════════════════════════════════════════════╝', 'info');
+        this.addLine('', 'info');
+        this.addLine('📝 Texts', 'info');
+        this.addLine(`🔸 Total Text Elements: ${texts.length}`, 'info');
+        
+        this.addLine('', 'success');
+        this.addLine('🎯 Summary', 'success');
+        this.addLine(`🔸 Total Elements: ${(nodes.length + texts.length + transitions.length)}`, 'success');
         
         this.scrollToBottom();
     }
@@ -2158,9 +2119,9 @@ class TerminalService {
      * Show memory usage information
      */
     showMemoryInfo() {
-        this.addLine('╔══════════════════════════════════════════════════╗', 'info');
-        this.addLine('║                💾 MEMORY USAGE                  ║', 'info');
-        this.addLine('╚══════════════════════════════════════════════════╝', 'info');
+        this.addLine('', 'info');
+        this.addLine('💾 Memory Usage', 'info');
+        this.addLine('─'.repeat(30), 'info');
 
         if (performance.memory) {
             const memory = performance.memory;
@@ -2190,9 +2151,9 @@ class TerminalService {
      * Show performance metrics
      */
     showPerformanceMetrics() {
-        this.addLine('╔══════════════════════════════════════════════════╗', 'info');
-        this.addLine('║              ⚡ PERFORMANCE METRICS             ║', 'info');
-        this.addLine('╚══════════════════════════════════════════════════╝', 'info');
+        this.addLine('', 'info');
+        this.addLine('⚡ Performance Metrics', 'info');
+        this.addLine('─'.repeat(30), 'info');
 
         // Page load performance
         if (performance.timing) {
@@ -2238,9 +2199,9 @@ class TerminalService {
             return;
         }
 
-        this.addLine('╔══════════════════════════════════════════════════╗', 'info');
-        this.addLine('║              ✅ PROJECT VALIDATION              ║', 'info');
-        this.addLine('╚══════════════════════════════════════════════════╝', 'info');
+        this.addLine('', 'info');
+        this.addLine('✅ Project Validation', 'info');
+        this.addLine('─'.repeat(30), 'info');
 
         let issues = 0;
         const warnings = [];
@@ -2309,9 +2270,9 @@ class TerminalService {
      * Show system configuration
      */
     showSystemConfig() {
-        this.addLine('╔══════════════════════════════════════════════════╗', 'info');
-        this.addLine('║              ⚙️ SYSTEM CONFIGURATION            ║', 'info');
-        this.addLine('╚══════════════════════════════════════════════════╝', 'info');
+        this.addLine('', 'info');
+        this.addLine('⚙️ System Configuration', 'info');
+        this.addLine('─'.repeat(30), 'info');
 
         // Terminal configuration
         this.addLine('🖥️ Terminal Settings:', 'info');
@@ -2398,9 +2359,9 @@ class TerminalService {
      * Clean temporary data
      */
     cleanupTempData() {
-        this.addLine('╔══════════════════════════════════════════════════╗', 'info');
-        this.addLine('║               🧹 CLEANUP OPERATION              ║', 'info');
-        this.addLine('╚══════════════════════════════════════════════════╝', 'info');
+        this.addLine('', 'info');
+        this.addLine('🧹 Cleanup Operation', 'info');
+        this.addLine('─'.repeat(30), 'info');
 
         let cleaned = 0;
 
@@ -2464,9 +2425,9 @@ class TerminalService {
         const endTime = performance.now();
         const responseTime = (endTime - startTime).toFixed(2);
         
-        this.addLine('╔══════════════════════════════════════════════════╗', 'success');
-        this.addLine('║                📡 PING RESULTS                  ║', 'success');
-        this.addLine('╚══════════════════════════════════════════════════╝', 'success');
+        this.addLine('', 'success');
+        this.addLine('📡 Ping Results', 'success');
+        this.addLine('─'.repeat(30), 'success');
         this.addLine(`🔹 Response Time: ${responseTime}ms`, 'info');
         this.addLine(`🔹 DOM Access: ${testDiv ? '✅ OK' : '❌ Failed'}`, 'info');
         this.addLine(`🔹 Project Access: ${projectAccessible ? '✅ OK' : '❌ Failed'}`, 'info');
@@ -2490,9 +2451,9 @@ class TerminalService {
     showRecentErrors() {
         const errorLogs = this.history.filter(log => log.type === 'error');
         
-        this.addLine('╔══════════════════════════════════════════════════╗', 'error');
-        this.addLine('║                🚨 RECENT ERRORS                 ║', 'error');
-        this.addLine('╚══════════════════════════════════════════════════╝', 'error');
+        this.addLine('', 'error');
+        this.addLine('🚨 Recent Errors', 'error');
+        this.addLine('─'.repeat(30), 'error');
         
         if (errorLogs.length === 0) {
             this.addLine('✅ No recent errors found. System is running smoothly!', 'success');
@@ -2553,9 +2514,9 @@ class TerminalService {
             return;
         }
 
-        this.addLine('╔══════════════════════════════════════════════════╗', 'info');
-        this.addLine(`║            🔍 TRACING ELEMENT ${id.toString().padEnd(16)} ║`, 'info');
-        this.addLine('╚══════════════════════════════════════════════════╝', 'info');
+        this.addLine('', 'info');
+        this.addLine(`🔍 Tracing Element ${id}`, 'info');
+        this.addLine('─'.repeat(30), 'info');
 
         // Show element info
         this.addLine(`🎯 Target: ${targetElement.elementType} "${targetElement.label || 'Unnamed'}"`, 'success');
@@ -2830,8 +2791,7 @@ class TerminalService {
                 // Show field value if it exists
                 if (field.value !== undefined && field.value !== null && field.value !== '') {
                     const value = field.value.toString();
-                    const truncatedValue = value.length > 35 ? value.substring(0, 32) + '...' : value;
-                    this.addLine(`║ Value: ${truncatedValue.padEnd(41)} ║`, 'success');
+                    this.addLine(`🔸 Value: ${value}`, 'success');
                 }
                 
                 
@@ -3112,11 +3072,10 @@ class TerminalService {
             return;
         }
 
-        this.addLine('╔══════════════════════════════════════════════════╗', 'info');
-        this.addLine('║               🔧 DEBUG PROJECT NODES            ║', 'info');
-        this.addLine('╠══════════════════════════════════════════════════╣', 'info');
-        this.addLine(`║ Total Nodes: ${currentProject.nodes.length.toString().padEnd(33)} ║`, 'info');
-        this.addLine('╚══════════════════════════════════════════════════╝', 'info');
+        this.addLine('', 'info');
+        this.addLine('🔧 Debug Project Nodes', 'info');
+        this.addLine('─'.repeat(30), 'info');
+        this.addLine(`🔸 Total Nodes: ${currentProject.nodes.length}`, 'info');
 
         if (currentProject.nodes.length === 0) {
             this.addLine('No nodes found in project.', 'warning');
@@ -3124,37 +3083,31 @@ class TerminalService {
         }
 
         currentProject.nodes.forEach((node, index) => {
-            this.addLine('╔══════════════════════════════════════════════════╗', 'debug');
-            this.addLine(`║ NODE ${(index + 1).toString().padStart(2)}                                      ║`, 'debug');
-            this.addLine('╠══════════════════════════════════════════════════╣', 'debug');
-            this.addLine(`║ ID: ${node.id.toString().padEnd(44)} ║`, 'debug');
-            this.addLine(`║ Type: ${(node.type || 'undefined').padEnd(42)} ║`, 'debug');
-            this.addLine(`║ Label: ${(node.label || 'N/A').padEnd(41)} ║`, 'debug');
+            this.addLine('', 'debug');
+            this.addLine(`Node ${index + 1}`, 'debug');
+            this.addLine('─'.repeat(15), 'debug');
+            this.addLine(`🔸 ID: ${node.id}`, 'debug');
+            this.addLine(`🔸 Type: ${node.type || 'undefined'}`, 'debug');
+            this.addLine(`🔸 Label: ${node.label || 'N/A'}`, 'debug');
             
             if (node.category) {
-                this.addLine(`║ Category: ${node.category.padEnd(38)} ║`, 'debug');
+                this.addLine(`🔸 Category: ${node.category}`, 'debug');
             }
             
             if (node.fields && node.fields.length > 0) {
-                this.addLine(`║ Fields Count: ${node.fields.length.toString().padEnd(34)} ║`, 'debug');
+                this.addLine(`🔸 Fields Count: ${node.fields.length}`, 'debug');
             }
             
             // Show all properties
-            this.addLine('║ All Properties:                              ║', 'debug');
+            this.addLine('🔷 All Properties:', 'debug');
             Object.keys(node).forEach(key => {
                 const value = node[key];
                 const valueStr = (typeof value === 'object' && value !== null) 
                     ? `[${Object.keys(value).join(', ')}]` 
                     : String(value);
                 const truncated = valueStr.length > 30 ? valueStr.substring(0, 27) + '...' : valueStr;
-                this.addLine(`║   ${key}: ${truncated.padEnd(40 - key.length)} ║`, 'debug');
+                this.addLine(`   • ${key}: ${truncated}`, 'debug');
             });
-            
-            this.addLine('╚══════════════════════════════════════════════════╝', 'debug');
-            
-            if (index < currentProject.nodes.length - 1) {
-                
-            }
         });
 
         this.scrollToBottom();
