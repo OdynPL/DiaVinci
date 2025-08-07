@@ -524,3 +524,28 @@ input[type="text"]:focus {
     background-color: #4b5563 !important;
     transform: scale(0.95);
 }
+
+/* Context menu styling for element information */
+.context-menu-info {
+    color: #6b7280 !important;
+    font-weight: 500 !important;
+    cursor: default !important;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+    font-size: 12px !important;
+}
+
+.context-menu-info:hover {
+    background-color: #f3f4f6 !important;
+}
+
+.context-menu-separator {
+    color: #d1d5db !important;
+    cursor: default !important;
+    text-align: center !important;
+    font-size: 8px !important;
+    padding: 2px 0 !important;
+}
+
+.context-menu-separator:hover {
+    background-color: transparent !important;
+}

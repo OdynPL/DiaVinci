@@ -373,8 +373,15 @@ class TerminalService {
      */
     ensureCommandLineVisible() {
         const commandLine = document.querySelector('.terminal-command-line');
-        if (commandLine) {
-            // Use a small timeout to ensure DOM is updated
+        const terminalContent = this.terminalOutput?.parentElement;
+        
+        if (commandLine && terminalContent) {
+            // Multiple approaches to ensure visibility
+            
+            // 1. Force scroll to bottom immediately
+            terminalContent.scrollTop = terminalContent.scrollHeight;
+            
+            // 2. Use scrollIntoView with delay
             setTimeout(() => {
                 commandLine.scrollIntoView({ 
                     behavior: 'smooth', 
@@ -382,6 +389,11 @@ class TerminalService {
                     inline: 'nearest'
                 });
             }, 50);
+            
+            // 3. Double-check with another scroll
+            setTimeout(() => {
+                terminalContent.scrollTop = terminalContent.scrollHeight;
+            }, 150);
         }
     }
 
@@ -452,18 +464,24 @@ class TerminalService {
         
         const terminalContent = this.terminalOutput.parentElement;
         if (terminalContent) {
-            // Use smooth scroll for better UX, with a small delay to ensure content is rendered
+            // Force immediate scroll to bottom first
+            terminalContent.scrollTop = terminalContent.scrollHeight;
+            
+            // Then ensure command line is visible with slight delay
             setTimeout(() => {
-                // Scroll to show the command line at the bottom
                 const commandLine = document.querySelector('.terminal-command-line');
                 if (commandLine) {
-                    commandLine.scrollIntoView({ 
-                        behavior: 'smooth', 
-                        block: 'end',
-                        inline: 'nearest'
-                    });
-                } else {
+                    // Force scroll to bottom again
                     terminalContent.scrollTop = terminalContent.scrollHeight;
+                    
+                    // Then smooth scroll to command line
+                    setTimeout(() => {
+                        commandLine.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'end',
+                            inline: 'nearest'
+                        });
+                    }, 50);
                 }
             }, 10);
         }
@@ -783,6 +801,10 @@ class TerminalService {
                 this.addLine('║ history       - Show command history            ║', 'info');
                 this.addLine('║ time          - Show current time               ║', 'info');
                 this.addLine('║ reset         - Reset application state         ║', 'info');
+                this.addLine('║ find <id>     - Find element by ID              ║', 'info');
+                this.addLine('║ list elements - List all elements with IDs      ║', 'info');
+                this.addLine('║ inspect <id>  - Show detailed element info      ║', 'info');
+                this.addLine('║ debug project - Show project debug info         ║', 'info');
                 this.addLine('╚══════════════════════════════════════════════════╝', 'info');
                 break;
             case 'clear':
@@ -838,15 +860,305 @@ class TerminalService {
                 this.addLine('🔇 Debug mode disabled - normal logging restored.', 'info');
                 break;
             default:
-                this.addLine(`❌ Unknown command: "${command}"`, 'error');
-                this.addLine('💡 Type "help" to see all available commands.', 'info');
+                // Check for commands with parameters
+                if (cmd.startsWith('find ')) {
+                    const id = command.substring(5).trim();
+                    this.findElementById(id);
+                } else if (cmd.startsWith('inspect ')) {
+                    const id = command.substring(8).trim();
+                    this.inspectElementById(id);
+                } else if (cmd === 'list elements') {
+                    this.listAllElements();
+                } else if (cmd === 'debug project') {
+                    this.debugProject();
+                } else {
+                    this.addLine(`❌ Unknown command: "${command}"`, 'error');
+                    this.addLine('💡 Type "help" to see all available commands.', 'info');
+                }
                 break;
         }
         
-        // Ensure command line remains visible after executing command
+        // Ensure terminal scrolls to bottom and command line remains visible after executing command
         setTimeout(() => {
+            this.scrollToBottom();
             this.ensureCommandLineVisible();
         }, 100);
+    }
+
+    /**
+     * Find element by ID
+     */
+    findElementById(id) {
+        if (!id) {
+            this.addLine('❌ Please provide an element ID. Usage: find <id>', 'error');
+            return;
+        }
+
+        // Get current project from global app or fallback to window.container
+        let currentProject = window.app?.diagramController?.currentProject;
+        
+        // Fallback method if window.app is not available yet
+        if (!currentProject && window.container) {
+            try {
+                const diagramController = window.container.resolve('diagramController');
+                currentProject = diagramController?.currentProject;
+            } catch (e) {
+                // Ignore container resolution errors
+            }
+        }
+        
+        if (!currentProject) {
+            this.addLine('❌ No active project found. Please ensure the application is fully loaded.', 'error');
+            return;
+        }
+
+        // Debug: Show project contents
+        this.addLine(`🔍 Searching in project with ${currentProject.nodes.length} nodes, ${currentProject.texts.length} texts, ${currentProject.transitions.length} transitions`, 'debug');
+
+        // Search in all element types
+        const allElements = [
+            ...currentProject.nodes.map(n => ({...n, elementType: 'Node'})),
+            ...currentProject.texts.map(t => ({...t, elementType: 'Text'})),
+            ...currentProject.transitions.map(tr => ({...tr, elementType: 'Transition'}))
+        ];
+
+        // Debug: Show all IDs
+        this.addLine(`🔍 Available IDs: ${allElements.map(el => el.id).join(', ')}`, 'debug');
+        this.addLine(`🔍 Looking for ID: "${id}"`, 'debug');
+
+        const found = allElements.find(el => el.id === id);
+        
+        if (found) {
+            this.addLine('✅ Element found!', 'success');
+            this.addLine(`🔹 Type: ${found.elementType}`, 'info');
+            this.addLine(`🔹 ID: ${found.id}`, 'info');
+            this.addLine(`🔹 Label: ${found.label}`, 'info');
+            
+            if (found.x !== undefined && found.y !== undefined) {
+                this.addLine(`🔹 Position: (${Math.round(found.x)}, ${Math.round(found.y)})`, 'info');
+            }
+            
+            if (found.color) {
+                this.addLine(`🔹 Color: ${found.color}`, 'info');
+            }
+        } else {
+            this.addLine(`❌ Element with ID "${id}" not found.`, 'error');
+            this.addLine('💡 Use "list elements" to see all available elements.', 'info');
+        }
+        
+        // Auto-scroll to bottom after command
+        this.scrollToBottom();
+    }
+
+    /**
+     * Inspect element by ID with detailed information
+     */
+    inspectElementById(id) {
+        if (!id) {
+            this.addLine('❌ Please provide an element ID. Usage: inspect <id>', 'error');
+            return;
+        }
+
+        // Get current project from global app or fallback to window.container
+        let currentProject = window.app?.diagramController?.currentProject;
+        
+        // Fallback method if window.app is not available yet
+        if (!currentProject && window.container) {
+            try {
+                const diagramController = window.container.resolve('diagramController');
+                currentProject = diagramController?.currentProject;
+            } catch (e) {
+                // Ignore container resolution errors
+            }
+        }
+        
+        if (!currentProject) {
+            this.addLine('❌ No active project found. Please ensure the application is fully loaded.', 'error');
+            return;
+        }
+
+        // Search in all element types
+        const allElements = [
+            ...currentProject.nodes.map(n => ({...n, elementType: 'Node'})),
+            ...currentProject.texts.map(t => ({...t, elementType: 'Text'})),
+            ...currentProject.transitions.map(tr => ({...tr, elementType: 'Transition'}))
+        ];
+
+        const found = allElements.find(el => el.id === id);
+        
+        if (found) {
+            this.addLine('╔══════════════════════════════════════════════════╗', 'info');
+            this.addLine('║                ELEMENT INSPECTION               ║', 'info');
+            this.addLine('╠══════════════════════════════════════════════════╣', 'info');
+            this.addLine(`║ Type: ${found.elementType.padEnd(42)} ║`, 'info');
+            this.addLine(`║ ID: ${found.id.padEnd(44)} ║`, 'info');
+            this.addLine(`║ Label: ${found.label.padEnd(41)} ║`, 'info');
+            
+            if (found.x !== undefined && found.y !== undefined) {
+                const pos = `(${Math.round(found.x)}, ${Math.round(found.y)})`;
+                this.addLine(`║ Position: ${pos.padEnd(38)} ║`, 'info');
+            }
+            
+            if (found.color) {
+                this.addLine(`║ Color: ${found.color.padEnd(41)} ║`, 'info');
+            }
+            
+            if (found.type) {
+                this.addLine(`║ Node Type: ${found.type.padEnd(37)} ║`, 'info');
+            }
+            
+            if (found.elementType === 'Transition') {
+                this.addLine(`║ From: ${found.from?.id?.padEnd(42) || 'N/A'} ║`, 'info');
+                this.addLine(`║ To: ${found.to?.id?.padEnd(44) || 'N/A'} ║`, 'info');
+                this.addLine(`║ Style: ${found.style?.padEnd(41) || 'N/A'} ║`, 'info');
+            }
+            
+            if (found.fields && found.fields.length > 0) {
+                this.addLine(`║ Fields: ${found.fields.length.toString().padEnd(40)} ║`, 'info');
+                this.addLine('╠══════════════════════════════════════════════════╣', 'info');
+                found.fields.forEach((field, index) => {
+                    const fieldInfo = `${index + 1}. ${field.name} (${field.type})`;
+                    this.addLine(`║ ${fieldInfo.padEnd(47)} ║`, 'info');
+                });
+            }
+            
+            this.addLine('╚══════════════════════════════════════════════════╝', 'info');
+        } else {
+            this.addLine(`❌ Element with ID "${id}" not found.`, 'error');
+            this.addLine('💡 Use "list elements" to see all available elements.', 'info');
+        }
+        
+        // Auto-scroll to bottom after command
+        this.scrollToBottom();
+    }
+
+    /**
+     * List all elements with their IDs
+     */
+    listAllElements() {
+        // Get current project from global app or fallback to window.container
+        let currentProject = window.app?.diagramController?.currentProject;
+        
+        // Fallback method if window.app is not available yet
+        if (!currentProject && window.container) {
+            try {
+                const diagramController = window.container.resolve('diagramController');
+                currentProject = diagramController?.currentProject;
+            } catch (e) {
+                // Ignore container resolution errors
+            }
+        }
+        
+        if (!currentProject) {
+            this.addLine('❌ No active project found. Please ensure the application is fully loaded.', 'error');
+            return;
+        }
+
+        this.addLine('╔══════════════════════════════════════════════════╗', 'info');
+        this.addLine('║                 ALL ELEMENTS                     ║', 'info');
+        this.addLine('╚══════════════════════════════════════════════════╝', 'info');
+        
+        let totalCount = 0;
+        
+        // List nodes
+        if (currentProject.nodes.length > 0) {
+            this.addLine('🔷 NODES:', 'info');
+            currentProject.nodes.forEach((node, index) => {
+                const nodeInfo = `${index + 1}. ${node.label} (${node.type}) - ID: ${node.id}`;
+                this.addLine(`   ${nodeInfo}`, 'info');
+                totalCount++;
+            });
+            this.addLine('', 'info');
+        }
+        
+        // List text elements
+        if (currentProject.texts.length > 0) {
+            this.addLine('📝 TEXT ELEMENTS:', 'info');
+            currentProject.texts.forEach((text, index) => {
+                const textInfo = `${index + 1}. "${text.label}" - ID: ${text.id}`;
+                this.addLine(`   ${textInfo}`, 'info');
+                totalCount++;
+            });
+            this.addLine('', 'info');
+        }
+        
+        // List transitions
+        if (currentProject.transitions.length > 0) {
+            this.addLine('🔗 TRANSITIONS:', 'info');
+            currentProject.transitions.forEach((transition, index) => {
+                const transInfo = `${index + 1}. ${transition.label} (${transition.from?.label || 'Unknown'} → ${transition.to?.label || 'Unknown'}) - ID: ${transition.id}`;
+                this.addLine(`   ${transInfo}`, 'info');
+                totalCount++;
+            });
+            this.addLine('', 'info');
+        }
+        
+        if (totalCount === 0) {
+            this.addLine('📭 No elements found in current project.', 'warning');
+        } else {
+            this.addLine(`📊 Total elements: ${totalCount}`, 'success');
+        }
+        
+        this.addLine('💡 Use "find <id>" or "inspect <id>" for detailed information.', 'info');
+        
+        // Auto-scroll to bottom after command
+        this.scrollToBottom();
+    }
+
+    /**
+     * Debug project contents
+     */
+    debugProject() {
+        let currentProject = window.app?.diagramController?.currentProject;
+        
+        if (!currentProject && window.container) {
+            try {
+                const diagramController = window.container.resolve('diagramController');
+                currentProject = diagramController?.currentProject;
+            } catch (e) {
+                // Ignore container resolution errors
+            }
+        }
+        
+        if (!currentProject) {
+            this.addLine('❌ No active project found.', 'error');
+            return;
+        }
+
+        this.addLine('🔧 PROJECT DEBUG INFO', 'info');
+        this.addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'info');
+        this.addLine(`📁 Project Name: ${currentProject.name || 'Untitled'}`, 'info');
+        this.addLine(`🔷 Nodes Count: ${currentProject.nodes.length}`, 'info');
+        this.addLine(`📝 Texts Count: ${currentProject.texts.length}`, 'info');
+        this.addLine(`🔗 Transitions Count: ${currentProject.transitions.length}`, 'info');
+        
+        if (currentProject.nodes.length > 0) {
+            this.addLine('', 'info');
+            this.addLine('🔷 NODES DETAILS:', 'info');
+            currentProject.nodes.forEach((node, index) => {
+                this.addLine(`   ${index + 1}. Type: ${node.type || 'node'}, Label: "${node.label}", ID: ${node.id}`, 'info');
+            });
+        }
+        
+        if (currentProject.texts.length > 0) {
+            this.addLine('', 'info');
+            this.addLine('📝 TEXTS DETAILS:', 'info');
+            currentProject.texts.forEach((text, index) => {
+                this.addLine(`   ${index + 1}. Label: "${text.label}", ID: ${text.id}`, 'info');
+            });
+        }
+        
+        if (currentProject.transitions.length > 0) {
+            this.addLine('', 'info');
+            this.addLine('🔗 TRANSITIONS DETAILS:', 'info');
+            currentProject.transitions.forEach((transition, index) => {
+                this.addLine(`   ${index + 1}. Label: "${transition.label}", ID: ${transition.id}`, 'info');
+            });
+        }
+        
+        this.addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'info');
+        
+        this.scrollToBottom();
     }
 }
 

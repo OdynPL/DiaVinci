@@ -3,10 +3,44 @@
  */
 class DialogFactory {
     /**
+     * Create base dialog structure
+     */
+    static createBaseDialog(id, title, extraStyles = {}) {
+        const existing = document.getElementById(id);
+        if (existing) existing.remove();
+        
+        const dialog = document.createElement('div');
+        dialog.id = id;
+        dialog.style.position = 'fixed';
+        dialog.style.top = '50%';
+        dialog.style.left = '50%';
+        dialog.style.transform = 'translate(-50%, -50%)';
+        dialog.style.background = '#fff';
+        dialog.style.border = '1px solid #ccc';
+        dialog.style.borderRadius = '8px';
+        dialog.style.padding = '20px';
+        dialog.style.zIndex = '2000';
+        dialog.style.boxShadow = '0 4px 20px rgba(0,0,0,0.3)';
+        dialog.style.minWidth = extraStyles.minWidth || '300px';
+        
+        if (extraStyles.maxHeight) {
+            dialog.style.maxHeight = extraStyles.maxHeight;
+        }
+        
+        const titleElement = document.createElement('h3');
+        titleElement.textContent = title;
+        titleElement.style.margin = '0 0 15px 0';
+        titleElement.style.color = '#333';
+        dialog.appendChild(titleElement);
+        
+        return dialog;
+    }
+
+    /**
      * Create save project dialog
      */
     static createSaveDialog(onSave, onCancel) {
-        const dialog = this.createBaseDialog('save-dialog', 'Save Project', {
+        const dialog = DialogFactory.createBaseDialog('save-dialog', 'Save Project', {
             maxWidth: '450px'
         });
         
@@ -21,7 +55,7 @@ class DialogFactory {
         const input = document.createElement('input');
         input.type = 'text';
         input.placeholder = 'Enter project name...';
-        input.value = this.generateDefaultProjectName();
+        input.value = DialogFactory.generateDefaultProjectName();
         input.maxLength = 200; // Limit project name length
         input.style.width = '100%';
         input.style.padding = '10px 12px';
@@ -183,9 +217,9 @@ class DialogFactory {
             }
         });
         
-        const buttonContainer = this.createButtonContainer();
-        const cancelBtn = this.createButton('Cancel', 'secondary');
-        const saveBtn = this.createButton('Save', 'primary');
+        const buttonContainer = DialogFactory.createButtonContainer();
+        const cancelBtn = DialogFactory.createButton('Cancel', 'secondary');
+        const saveBtn = DialogFactory.createButton('Save', 'primary');
         
         const handleSave = () => {
             const projectName = input.value.trim();
@@ -270,7 +304,7 @@ class DialogFactory {
      * Create load project dialog
      */
     static createLoadDialog(projects, onLoad, onDelete, onClose) {
-        const dialog = this.createBaseDialog('load-dialog', 'Load Project', {
+        const dialog = DialogFactory.createBaseDialog('load-dialog', 'Load Project', {
             minWidth: '400px',
             maxHeight: '500px'
         });
@@ -301,7 +335,7 @@ class DialogFactory {
                 projectList.appendChild(noProjects);
             } else {
                 updatedProjects.forEach(project => {
-                    const projectItem = this.createProjectItem(project, onLoad, onDelete, dialog, refreshProjectList);
+                    const projectItem = DialogFactory.createProjectItem(project, onLoad, onDelete, dialog, refreshProjectList);
                     projectList.appendChild(projectItem);
                 });
             }
@@ -317,12 +351,12 @@ class DialogFactory {
             projectList.appendChild(noProjects);
         } else {
             projects.forEach(project => {
-                const projectItem = this.createProjectItem(project, onLoad, onDelete, dialog, refreshProjectList);
+                const projectItem = DialogFactory.createProjectItem(project, onLoad, onDelete, dialog, refreshProjectList);
                 projectList.appendChild(projectItem);
             });
         }
         
-        const closeBtn = this.createButton('Close', 'secondary');
+        const closeBtn = DialogFactory.createButton('Close', 'secondary');
         closeBtn.style.width = '100%';
         closeBtn.addEventListener('click', () => {
             dialog.remove();
@@ -354,8 +388,8 @@ class DialogFactory {
         menu.style.minWidth = '200px';
         
         // Project export section
-        const projectTitle = this.createMenuTitle('Export Project');
-        const exportProjectBtn = this.createMenuButton('💾 Export as .lcp File', '#3498db', () => {
+        const projectTitle = DialogFactory.createMenuTitle('Export Project');
+        const exportProjectBtn = DialogFactory.createMenuButton('💾 Export as .lcp File', '#3498db', () => {
             onExportProject();
             menu.remove();
         });
@@ -366,12 +400,12 @@ class DialogFactory {
         separator.style.borderTop = '1px solid #eee';
         
         // Image export section
-        const imageTitle = this.createMenuTitle('Export Image');
-        const whiteBtn = this.createMenuButton('🖼️ White Background', '#27ae60', () => {
+        const imageTitle = DialogFactory.createMenuTitle('Export Image');
+        const whiteBtn = DialogFactory.createMenuButton('🖼️ White Background', '#27ae60', () => {
             onExportWhite();
             menu.remove();
         });
-        const transparentBtn = this.createMenuButton('🖼️ Transparent Background', '#9b59b6', () => {
+        const transparentBtn = DialogFactory.createMenuButton('🖼️ Transparent Background', '#9b59b6', () => {
             onExportTransparent();
             menu.remove();
         });
@@ -405,6 +439,59 @@ class DialogFactory {
     }
 
     /**
+     * Create color box for color picker
+     */
+    static createColorBox(color, onClick) {
+        const colorBox = document.createElement('div');
+        colorBox.style.width = '20px';
+        colorBox.style.height = '20px';
+        colorBox.style.backgroundColor = color;
+        colorBox.style.border = '1px solid #666';
+        colorBox.style.margin = '2px';
+        colorBox.style.cursor = 'pointer';
+        colorBox.style.borderRadius = '3px';
+        colorBox.addEventListener('click', onClick);
+        return colorBox;
+    }
+
+    /**
+     * Create custom color picker input
+     */
+    static createCustomColorPicker(node, onColorChange, onClose) {
+        const container = document.createElement('div');
+        container.style.width = '100%';
+        container.style.marginTop = '8px';
+        container.style.borderTop = '1px solid #ddd';
+        container.style.paddingTop = '8px';
+        container.style.display = 'flex';
+        container.style.alignItems = 'center';
+        
+        const label = document.createElement('span');
+        label.textContent = 'Custom:';
+        label.style.fontSize = '12px';
+        label.style.marginRight = '6px';
+        label.style.color = '#333';
+        
+        const input = document.createElement('input');
+        input.type = 'color';
+        input.style.width = '30px';
+        input.style.height = '25px';
+        input.style.border = 'none';
+        input.style.cursor = 'pointer';
+        input.style.borderRadius = '3px';
+        input.value = node.color || '#b3d1ff';
+        
+        input.addEventListener('change', (e) => {
+            onColorChange(e.target.value);
+            onClose();
+        });
+        
+        container.appendChild(label);
+        container.appendChild(input);
+        return container;
+    }
+
+    /**
      * Create color picker menu
      */
     static createColorPicker(node, x, y, onColorChange) {
@@ -433,7 +520,7 @@ class DialogFactory {
         ];
         
         colors.forEach(color => {
-            const colorBox = this.createColorBox(color, () => {
+            const colorBox = DialogFactory.createColorBox(color, () => {
                 onColorChange(color);
                 menu.remove();
             });
@@ -441,7 +528,7 @@ class DialogFactory {
         });
         
         // Custom color picker
-        const customContainer = this.createCustomColorPicker(node, onColorChange, () => menu.remove());
+        const customContainer = DialogFactory.createCustomColorPicker(node, onColorChange, () => menu.remove());
         menu.appendChild(customContainer);
         
         document.body.appendChild(menu);
@@ -458,92 +545,30 @@ class DialogFactory {
             };
             document.addEventListener('click', removeColorPickerHandler);
         };
-        setTimeout(setupRemoveHandler, 100);        return menu;
+        setTimeout(setupRemoveHandler, 100);
+        
+        return menu;
     }
 
     /**
      * Create IF node options menu
      */
-    static createIFOptionsMenu(node, x, y, onRotateClockwise, onRotateCounterClockwise, onChangeColor) {
-        const menu = document.createElement('div');
-        menu.id = 'if-options-menu';
-        menu.style.position = 'absolute';
-        menu.style.left = `${x}px`;
-        menu.style.top = `${y}px`;
-        menu.style.background = '#fff';
-        menu.style.border = '1px solid #ccc';
-        menu.style.borderRadius = '6px';
-        menu.style.padding = '8px';
-        menu.style.zIndex = '1000';
-        menu.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
-        menu.style.minWidth = '120px';
-        
-        const rotateRightBtn = this.createMenuItem('Rotate Right (90°)', () => {
-            onRotateClockwise();
-            menu.remove();
-        });
-        
-        const rotateLeftBtn = this.createMenuItem('Rotate Left (90°)', () => {
-            onRotateCounterClockwise();
-            menu.remove();
-        });
-        
-        const colorBtn = this.createMenuItem('Change Color', () => {
-            menu.remove();
-            onChangeColor();
-        });
-        
-        menu.appendChild(rotateRightBtn);
-        menu.appendChild(rotateLeftBtn);
-        menu.appendChild(colorBtn);
-        document.body.appendChild(menu);
-
-        // Remove when clicking elsewhere
-        let removeMenuHandler = null;
-        const setupRemoveHandler = () => {
-            removeMenuHandler = function removeMenu() {
-                menu.remove();
-                if (removeMenuHandler) {
-                    document.removeEventListener('click', removeMenuHandler);
-                    removeMenuHandler = null;
-                }
-            };
-            document.addEventListener('click', removeMenuHandler);
-        };
-        setTimeout(setupRemoveHandler, 100);        return menu;
-    }
-
-    // Helper methods
-    
-    static createBaseDialog(id, title, extraStyles = {}) {
-        const existing = document.getElementById(id);
-        if (existing) existing.remove();
-        
-        const dialog = document.createElement('div');
-        dialog.id = id;
-        dialog.style.position = 'fixed';
-        dialog.style.top = '50%';
-        dialog.style.left = '50%';
-        dialog.style.transform = 'translate(-50%, -50%)';
-        dialog.style.background = '#fff';
-        dialog.style.border = '1px solid #ccc';
-        dialog.style.borderRadius = '8px';
-        dialog.style.padding = '20px';
-        dialog.style.zIndex = '2000';
-        dialog.style.boxShadow = '0 4px 20px rgba(0,0,0,0.3)';
-        dialog.style.minWidth = extraStyles.minWidth || '300px';
-        
-        if (extraStyles.maxHeight) {
-            dialog.style.maxHeight = extraStyles.maxHeight;
+    static createIFOptionsMenu(node, x, y, options) {
+        // If old format with callbacks, convert to new format
+        if (typeof options === 'function') {
+            const onRotateClockwise = options;
+            const onRotateCounterClockwise = arguments[4];
+            const onChangeColor = arguments[5];
+            
+            options = [
+                { text: 'Rotate Right (90°)', action: onRotateClockwise },
+                { text: 'Rotate Left (90°)', action: onRotateCounterClockwise },
+                { text: 'Change Color', action: onChangeColor }
+            ];
         }
         
-        const titleElement = document.createElement('h3');
-        titleElement.textContent = title;
-        titleElement.style.margin = '0 0 15px 0';
-        titleElement.style.color = '#333';
-        dialog.appendChild(titleElement);
-        
-        return dialog;
+        // Use the same createContextMenu method for consistency
+        DialogFactory.createContextMenu(x, y, options);
     }
 
     static createButtonContainer() {
@@ -653,7 +678,7 @@ class DialogFactory {
         buttonContainer.style.display = 'flex';
         buttonContainer.style.gap = '8px';
         
-        const loadBtn = this.createSmallButton('Load', '#27ae60', (e) => {
+        const loadBtn = DialogFactory.createSmallButton('Load', '#27ae60', (e) => {
             e.stopPropagation();
             const success = onLoad(project.name);
             if (success !== false && dialog) {
@@ -661,7 +686,7 @@ class DialogFactory {
             }
         });
         
-        const deleteBtn = this.createSmallButton('Delete', '#e74c3c', (e) => {
+        const deleteBtn = DialogFactory.createSmallButton('Delete', '#e74c3c', (e) => {
             e.stopPropagation();
             DialogFactory.createConfirmDialog(
                 'Delete Project',
@@ -728,53 +753,6 @@ class DialogFactory {
         return button;
     }
 
-    static createColorBox(color, onClick) {
-        const colorBox = document.createElement('div');
-        colorBox.style.width = '20px';
-        colorBox.style.height = '20px';
-        colorBox.style.backgroundColor = color;
-        colorBox.style.border = '1px solid #666';
-        colorBox.style.margin = '2px';
-        colorBox.style.cursor = 'pointer';
-        colorBox.style.borderRadius = '3px';
-        colorBox.addEventListener('click', onClick);
-        return colorBox;
-    }
-
-    static createCustomColorPicker(node, onColorChange, onClose) {
-        const container = document.createElement('div');
-        container.style.width = '100%';
-        container.style.marginTop = '8px';
-        container.style.borderTop = '1px solid #ddd';
-        container.style.paddingTop = '8px';
-        container.style.display = 'flex';
-        container.style.alignItems = 'center';
-        
-        const label = document.createElement('span');
-        label.textContent = 'Custom:';
-        label.style.fontSize = '12px';
-        label.style.marginRight = '6px';
-        label.style.color = '#333';
-        
-        const input = document.createElement('input');
-        input.type = 'color';
-        input.style.width = '30px';
-        input.style.height = '25px';
-        input.style.border = 'none';
-        input.style.cursor = 'pointer';
-        input.style.borderRadius = '3px';
-        input.value = node.color || '#b3d1ff';
-        
-        input.addEventListener('change', (e) => {
-            onColorChange(e.target.value);
-            onClose();
-        });
-        
-        container.appendChild(label);
-        container.appendChild(input);
-        return container;
-    }
-
     static createMenuItem(text, onClick) {
         const item = document.createElement('div');
         item.innerHTML = text;
@@ -813,22 +791,46 @@ class DialogFactory {
             const item = document.createElement('div');
             item.textContent = option.text;
             item.style.padding = '10px 15px';
-            item.style.cursor = 'pointer';
             item.style.fontSize = '14px';
             item.style.borderBottom = index < options.length - 1 ? '1px solid #eee' : 'none';
             
-            item.addEventListener('mouseenter', () => {
-                item.style.backgroundColor = '#f0f8ff';
-            });
+            // Apply custom className if provided
+            if (option.className) {
+                item.className = option.className;
+            }
             
-            item.addEventListener('mouseleave', () => {
-                item.style.backgroundColor = 'transparent';
-            });
-            
-            item.addEventListener('click', () => {
-                option.action();
-                menu.remove();
-            });
+            // Set cursor based on whether action is available
+            if (option.action) {
+                item.style.cursor = 'pointer';
+                
+                item.addEventListener('mouseenter', () => {
+                    if (!option.className || !option.className.includes('context-menu-info')) {
+                        item.style.backgroundColor = '#f0f8ff';
+                    }
+                });
+                
+                item.addEventListener('mouseleave', () => {
+                    item.style.backgroundColor = 'transparent';
+                });
+                
+                item.addEventListener('click', () => {
+                    option.action();
+                    menu.remove();
+                });
+            } else {
+                item.style.cursor = 'default';
+                
+                // For info items, allow copying on click
+                if (option.className && option.className.includes('context-menu-info')) {
+                    item.style.cursor = 'pointer';
+                    item.addEventListener('mouseenter', () => {
+                        item.style.backgroundColor = '#f3f4f6';
+                    });
+                    item.addEventListener('mouseleave', () => {
+                        item.style.backgroundColor = 'transparent';
+                    });
+                }
+            }
             
             menu.appendChild(item);
         });
@@ -867,7 +869,7 @@ class DialogFactory {
      * Create new project dialog with privacy options
      */
     static createNewProjectDialog(onConfirm, onCancel) {
-        const dialog = this.createBaseDialog('new-project-dialog', 'Create New Project', {
+        const dialog = DialogFactory.createBaseDialog('new-project-dialog', 'Create New Project', {
             maxWidth: '450px'
         });
         
@@ -882,7 +884,7 @@ class DialogFactory {
         const nameInput = document.createElement('input');
         nameInput.type = 'text';
         nameInput.placeholder = 'Enter project name...';
-        nameInput.value = this.generateDefaultProjectName();
+        nameInput.value = DialogFactory.generateDefaultProjectName();
         nameInput.maxLength = 200; // Limit project name length
         nameInput.style.width = '100%';
         nameInput.style.padding = '10px 12px';
@@ -1045,9 +1047,9 @@ class DialogFactory {
         });
         
         // Button container
-        const buttonContainer = this.createButtonContainer();
-        const cancelBtn = this.createButton('Cancel', 'secondary');
-        const createBtn = this.createButton('Create Project', 'primary');
+        const buttonContainer = DialogFactory.createButtonContainer();
+        const cancelBtn = DialogFactory.createButton('Cancel', 'secondary');
+        const createBtn = DialogFactory.createButton('Create Project', 'primary');
         
         const handleCreate = () => {
             const projectName = nameInput.value.trim();
@@ -1133,7 +1135,7 @@ class DialogFactory {
      * Create password verification dialog
      */
     static createPasswordDialog(projectName, onConfirm, onCancel) {
-        const dialog = this.createBaseDialog('password-dialog', 'Enter Password', {
+        const dialog = DialogFactory.createBaseDialog('password-dialog', 'Enter Password', {
             maxWidth: '400px'
         });
         
@@ -1177,8 +1179,8 @@ class DialogFactory {
         errorMessage.style.padding = '8px 10px';
         errorMessage.style.fontWeight = '500';
         
-        const buttonContainer = this.createButtonContainer();
-        const cancelBtn = this.createButton('Cancel', 'secondary');
+        const buttonContainer = DialogFactory.createButtonContainer();
+        const cancelBtn = DialogFactory.createButton('Cancel', 'secondary');
         const unlockBtn = this.createButton('Unlock', 'primary');
         
         const showError = (message) => {
@@ -1238,7 +1240,7 @@ class DialogFactory {
      * Create confirmation dialog
      */
     static createConfirmDialog(title, message, onConfirm, onCancel, confirmText = 'Confirm', cancelText = 'Cancel') {
-        const dialog = this.createBaseDialog('confirm-dialog', title, {
+        const dialog = DialogFactory.createBaseDialog('confirm-dialog', title, {
             maxWidth: '450px'
         });
         

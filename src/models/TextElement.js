@@ -2,11 +2,23 @@
  * Text model representing text elements
  */
 class TextElement {
+    static _idCounter = 0; // Static counter for unique IDs
+    
     constructor({x, y, label = 'Text', id = null}) {
         this.x = x;
         this.y = y;
         this.label = label;
-        this.id = id || Date.now();
+        this.id = id || this._generateUniqueId();
+    }
+
+    /**
+     * Generate truly unique ID
+     */
+    _generateUniqueId() {
+        const timestamp = Date.now();
+        const counter = ++TextElement._idCounter;
+        const random = Math.floor(Math.random() * 1000);
+        return `text_${timestamp}_${counter}_${random}`;
     }
 
     /**

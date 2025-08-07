@@ -89,7 +89,8 @@ document.addEventListener('DOMContentLoaded', async function() {
                 container.resolve('multiSelectionManager'),
                 container.resolve('breakPointService'),
                 container.resolve('gridService'),
-                container.resolve('errorHandler')
+                container.resolve('errorHandler'),
+                container.resolve('terminalService') // Add terminalService as parameter
             )
         );
         
@@ -112,6 +113,13 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         // Make container globally accessible for dialogs
         window.container = container;
+        
+        // Make app structure globally accessible for terminal commands
+        window.app = {
+            diagramController: diagramController,
+            uiController: uiController,
+            container: container
+        };
         
         // Setup sidebar toggle
         const menuToggle = document.getElementById('menu-toggle');

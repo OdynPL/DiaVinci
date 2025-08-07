@@ -2,7 +2,9 @@
  * Transition model representing connections between nodes
  */
 class Transition {
-    constructor({from, to, label = 'relation', type = 'right', fromCorner = null, style = 'straight', breakPoints = []}) {
+    static _idCounter = 0; // Static counter for unique IDs
+    
+    constructor({from, to, label = 'relation', type = 'right', fromCorner = null, style = 'straight', breakPoints = [], id = null}) {
         this.from = from; // Node instance
         this.to = to; // Node instance
         this.label = label;
@@ -10,6 +12,17 @@ class Transition {
         this.fromCorner = fromCorner; // 'top', 'bottom', 'left', 'right' for IF nodes
         this.style = style; // 'straight', 'curved'
         this.breakPoints = breakPoints; // Array of {x, y} points for line breaks
+        this.id = id || this._generateUniqueId();
+    }
+
+    /**
+     * Generate truly unique ID
+     */
+    _generateUniqueId() {
+        const timestamp = Date.now();
+        const counter = ++Transition._idCounter;
+        const random = Math.floor(Math.random() * 1000);
+        return `transition_${timestamp}_${counter}_${random}`;
     }
 
     /**

@@ -2,7 +2,7 @@
  * Main controller coordinating all application components
  */
 class DiagramController {
-    constructor(canvas, eventBus, canvasRenderer, storageService, exportService, inputService, nodeFactory, dialogFactory, multiSelectionManager, breakPointService, gridService, errorHandler = null) {
+    constructor(canvas, eventBus, canvasRenderer, storageService, exportService, inputService, nodeFactory, dialogFactory, multiSelectionManager, breakPointService, gridService, errorHandler = null, terminalService = null) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         this.eventBus = eventBus;
@@ -19,6 +19,9 @@ class DiagramController {
         
         // Initialize Data Model Editor
         this.dataModelEditor = new DataModelEditor(eventBus);
+        
+        // Get terminal service for logging and commands
+        this.terminalService = terminalService || window.terminalService;
         
         this.currentProject = new Project({name: null});
         this.autoSaveTimeout = null; // For debouncing auto-save
@@ -894,13 +897,23 @@ class DiagramController {
             return;
         }
         
+        // Check for text element
+        const text = this.currentProject.findTextAtPosition(x, y, this.ctx);
+        if (text) {
+            this.showTextElementOptions(text, e.clientX, e.clientY);
+            return;
+        }
+        
         // Check for node
         const node = this.currentProject.findNodeAtPosition(x, y);
         if (node) {
             if (node.type === 'if') {
                 this.showIFOptions(node, e.clientX, e.clientY);
+            } else if (node.type === 'datamodel') {
+                // Data models get extended options with ID
+                this.showDataModelOptions(node, e.clientX, e.clientY);
             } else {
-                this.showColorPicker(node, e.clientX, e.clientY);
+                this.showNodeOptions(node, e.clientX, e.clientY);
             }
         }
     }
@@ -1022,22 +1035,88 @@ class DiagramController {
      * Show color picker for node
      */
     showColorPicker(node, x, y) {
-        DialogFactory.createColorPicker(node, x, y, (color) => {
-            node.setColor(color);
-            this.render();
-        });
+        try {
+            console.log('showColorPicker called with:', {node, x, y});
+            
+            if (!DialogFactory || typeof DialogFactory.createColorPicker !== 'function') {
+                console.error('DialogFactory.createColorPicker is not available');
+                if (this.terminalService) {
+                    this.terminalService.addLine('❌ Color picker not available', 'error');
+                }
+                return;
+            }
+            
+            DialogFactory.createColorPicker(node, x, y, (color) => {
+                console.log('Color selected:', color, 'for node:', node);
+                
+                if (!node || typeof node.setColor !== 'function') {
+                    console.error('Node or setColor method not available:', node);
+                    return;
+                }
+                
+                node.setColor(color);
+                this.render();
+                
+                if (this.terminalService) {
+                    this.terminalService.addLine(`🎨 Changed color of ${node.label} to ${color}`, 'success');
+                }
+            });
+        } catch (error) {
+            console.error('Error in showColorPicker:', error);
+            if (this.terminalService) {
+                this.terminalService.addLine(`❌ Error changing color: ${error.message}`, 'error');
+            }
+        }
     }
 
     /**
      * Show IF node options
      */
     showIFOptions(node, x, y) {
-        DialogFactory.createIFOptionsMenu(
-            node, x, y,
-            () => this.rotateIFNode(node),
-            () => this.rotateIFNodeCounterClockwise(node),
-            () => this.showColorPicker(node, x, y)
-        );
+        const options = [
+            {
+                text: `IF Node ID: ${node.id}`,
+                action: () => this.copyToClipboard(node.id),
+                className: 'context-menu-info'
+            },
+            {
+                text: `Label: ${node.label}`,
+                action: null,
+                className: 'context-menu-info'
+            },
+            {
+                text: `Rotation: ${node.rotation}°`,
+                action: null,
+                className: 'context-menu-info'
+            },
+            {
+                text: '──────────',
+                action: null,
+                className: 'context-menu-separator'
+            },
+            {
+                text: 'Copy ID to Clipboard',
+                action: () => this.copyToClipboard(node.id)
+            },
+            {
+                text: 'Show in Terminal',
+                action: () => this.showElementInTerminal(node)
+            },
+            {
+                text: 'Rotate Clockwise',
+                action: () => this.rotateIFNode(node)
+            },
+            {
+                text: 'Rotate Counter-Clockwise',
+                action: () => this.rotateIFNodeCounterClockwise(node)
+            },
+            {
+                text: 'Change Color',
+                action: () => this.showColorPicker(node, x, y)
+            }
+        ];
+
+        DialogFactory.createIFOptionsMenu(node, x, y, options);
     }
 
     /**
@@ -1088,6 +1167,34 @@ class DiagramController {
         
         const options = [
             {
+                text: `Transition ID: ${transition.id}`,
+                action: () => this.copyToClipboard(transition.id),
+                className: 'context-menu-info'
+            },
+            {
+                text: `Label: ${transition.label}`,
+                action: null,
+                className: 'context-menu-info'
+            },
+            {
+                text: `Style: ${transition.style}`,
+                action: null,
+                className: 'context-menu-info'
+            },
+            {
+                text: '──────────',
+                action: null,
+                className: 'context-menu-separator'
+            },
+            {
+                text: 'Copy ID to Clipboard',
+                action: () => this.copyToClipboard(transition.id)
+            },
+            {
+                text: 'Show in Terminal',
+                action: () => this.showElementInTerminal(transition)
+            },
+            {
                 text: transition.style === 'straight' ? 'Convert to Curved' : 'Convert to Straight',
                 action: () => this.toggleTransitionStyle(transition)
             },
@@ -1114,6 +1221,223 @@ class DiagramController {
         }
 
         DialogFactory.createContextMenu(screenX, screenY, options);
+    }
+
+    /**
+     * Show regular node options with ID display
+     */
+    showNodeOptions(node, x, y) {
+        const options = [
+            {
+                text: `Node ID: ${node.id}`,
+                action: () => this.copyToClipboard(node.id),
+                className: 'context-menu-info'
+            },
+            {
+                text: `Type: ${node.type}`,
+                action: null,
+                className: 'context-menu-info'
+            },
+            {
+                text: `Label: ${node.label}`,
+                action: null,
+                className: 'context-menu-info'
+            },
+            {
+                text: '──────────',
+                action: null,
+                className: 'context-menu-separator'
+            },
+            {
+                text: 'Copy ID to Clipboard',
+                action: () => this.copyToClipboard(node.id)
+            },
+            {
+                text: 'Show in Terminal',
+                action: () => this.showElementInTerminal(node)
+            },
+            {
+                text: 'Change Color',
+                action: () => this.showColorPicker(node, x, y)
+            }
+        ];
+
+        DialogFactory.createContextMenu(x, y, options);
+    }
+
+    /**
+     * Show text element options with ID display
+     */
+    showTextElementOptions(text, x, y) {
+        const options = [
+            {
+                text: `Text ID: ${text.id}`,
+                action: () => this.copyToClipboard(text.id),
+                className: 'context-menu-info'
+            },
+            {
+                text: `Label: ${text.label}`,
+                action: null,
+                className: 'context-menu-info'
+            },
+            {
+                text: `Position: (${Math.round(text.x)}, ${Math.round(text.y)})`,
+                action: null,
+                className: 'context-menu-info'
+            },
+            {
+                text: '──────────',
+                action: null,
+                className: 'context-menu-separator'
+            },
+            {
+                text: 'Copy ID to Clipboard',
+                action: () => this.copyToClipboard(text.id)
+            },
+            {
+                text: 'Show in Terminal',
+                action: () => this.showElementInTerminal(text)
+            }
+        ];
+
+        DialogFactory.createContextMenu(x, y, options);
+    }
+
+    /**
+     * Show data model options with ID display and edit functionality
+     */
+    showDataModelOptions(node, x, y) {
+        const options = [
+            {
+                text: `Data Model ID: ${node.id}`,
+                action: () => this.copyToClipboard(node.id),
+                className: 'context-menu-info'
+            },
+            {
+                text: `Label: ${node.label}`,
+                action: null,
+                className: 'context-menu-info'
+            },
+            {
+                text: `Fields: ${node.fields ? node.fields.length : 0}`,
+                action: null,
+                className: 'context-menu-info'
+            },
+            {
+                text: '──────────',
+                action: null,
+                className: 'context-menu-separator'
+            },
+            {
+                text: 'Copy ID to Clipboard',
+                action: () => this.copyToClipboard(node.id)
+            },
+            {
+                text: 'Show in Terminal',
+                action: () => this.showElementInTerminal(node)
+            },
+            {
+                text: 'Edit Data Model',
+                action: () => this.openDataModelEditor(node)
+            },
+            {
+                text: 'Change Color',
+                action: () => this.showColorPicker(node, x, y)
+            }
+        ];
+
+        DialogFactory.createContextMenu(x, y, options);
+    }
+
+    /**
+     * Open data model editor
+     */
+    openDataModelEditor(node) {
+        if (this.dataModelEditor) {
+            this.dataModelEditor.open(node);
+        } else {
+            console.warn('Data model editor not available');
+            if (this.terminalService) {
+                this.terminalService.addLine('❌ Data model editor not available', 'error');
+            }
+        }
+    }
+
+    /**
+     * Copy text to clipboard
+     */
+    async copyToClipboard(text) {
+        try {
+            console.log('copyToClipboard called with:', text);
+            
+            if (!navigator.clipboard) {
+                console.warn('Clipboard API not available, using fallback');
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+            } else {
+                await navigator.clipboard.writeText(text);
+            }
+            
+            if (this.terminalService) {
+                this.terminalService.addLine(`📋 Copied to clipboard: ${text}`, 'success');
+            }
+            
+            console.log('Successfully copied to clipboard:', text);
+        } catch (error) {
+            console.error('Failed to copy to clipboard:', error);
+            if (this.terminalService) {
+                this.terminalService.addLine(`❌ Failed to copy to clipboard: ${error.message}`, 'error');
+            }
+        }
+    }
+
+    /**
+     * Show element details in terminal
+     */
+    showElementInTerminal(element) {
+        if (!this.terminalService) {
+            console.warn('Terminal service not available');
+            return;
+        }
+        
+        // Ensure terminal is visible
+        if (!this.terminalService.isVisible) {
+            this.terminalService.toggle();
+        }
+        
+        this.terminalService.addLine('═══ ELEMENT DETAILS ═══', 'info');
+        this.terminalService.addLine(`🔹 ID: ${element.id}`, 'info');
+        this.terminalService.addLine(`🔹 Type: ${element.type || element.constructor.name}`, 'info');
+        this.terminalService.addLine(`🔹 Label: ${element.label}`, 'info');
+        
+        if (element.x !== undefined && element.y !== undefined) {
+            this.terminalService.addLine(`🔹 Position: (${Math.round(element.x)}, ${Math.round(element.y)})`, 'info');
+        }
+        
+        if (element.color) {
+            this.terminalService.addLine(`🔹 Color: ${element.color}`, 'info');
+        }
+        
+        if (element.type === 'DataModel' && element.fields) {
+            this.terminalService.addLine(`🔹 Fields: ${element.fields.length}`, 'info');
+            element.fields.forEach((field, index) => {
+                this.terminalService.addLine(`  ${index + 1}. ${field.name} (${field.type})`, 'info');
+            });
+        }
+        
+        if (element.from && element.to) { // Transition
+            this.terminalService.addLine(`🔹 From: ${element.from.id}`, 'info');
+            this.terminalService.addLine(`🔹 To: ${element.to.id}`, 'info');
+            this.terminalService.addLine(`🔹 Style: ${element.style}`, 'info');
+        }
+        
+        // Auto-scroll terminal to show new content
+        this.terminalService.scrollToBottom();
     }
 
     /**
