@@ -985,35 +985,48 @@ class TerminalService {
                 const diagramController = window.container.resolve('diagramController');
                 currentProject = diagramController?.currentProject;
             } catch (e) {
-                // Ignore container resolution errors
+                this.addLine(`🔧 Container resolution error: ${e.message}`, 'debug');
             }
         }
         
         if (!currentProject) {
             this.addLine('❌ No active project found. Please ensure the application is fully loaded.', 'error');
+            this.addLine('🔧 Debugging: window.app available?', window.app ? 'Yes' : 'No', 'debug');
+            this.addLine('🔧 Debugging: window.container available?', window.container ? 'Yes' : 'No', 'debug');
             return;
         }
 
         // Debug: Show project contents
         this.addLine(`🔍 Searching in project with ${currentProject.nodes.length} nodes, ${currentProject.texts.length} texts, ${currentProject.transitions.length} transitions`, 'debug');
 
-        // Search in all element types
+        // Search in all element types with improved ID handling
         const allElements = [
             ...currentProject.nodes.map(n => ({...n, elementType: 'Node'})),
             ...currentProject.texts.map(t => ({...t, elementType: 'Text'})),
             ...currentProject.transitions.map(tr => ({...tr, elementType: 'Transition'}))
         ];
 
-        // Debug: Show all IDs
-        this.addLine(`🔍 Available IDs: ${allElements.map(el => el.id).join(', ')}`, 'debug');
-        this.addLine(`🔍 Looking for ID: "${id}"`, 'debug');
+        // Debug: Show all IDs with their types
+        this.addLine(`🔍 Available IDs (${allElements.length} total):`, 'debug');
+        allElements.forEach((el, index) => {
+            this.addLine(`   ${index + 1}. ID: "${el.id}" (type: ${typeof el.id}) - ${el.elementType}: "${el.label}"`, 'debug');
+        });
+        
+        this.addLine(`🔍 Looking for ID: "${id}" (type: ${typeof id})`, 'debug');
 
-        const found = allElements.find(el => el.id === id);
+        // Try both string and number comparison
+        const found = allElements.find(el => {
+            return el.id === id || 
+                   el.id === parseInt(id) || 
+                   el.id === id.toString() ||
+                   el.id.toString() === id ||
+                   el.id.toString() === id.toString();
+        });
         
         if (found) {
             this.addLine('✅ Element found!', 'success');
             this.addLine(`🔹 Type: ${found.elementType}`, 'info');
-            this.addLine(`🔹 ID: ${found.id}`, 'info');
+            this.addLine(`🔹 ID: ${found.id} (${typeof found.id})`, 'info');
             this.addLine(`🔹 Label: ${found.label}`, 'info');
             
             if (found.x !== undefined && found.y !== undefined) {
@@ -1023,9 +1036,26 @@ class TerminalService {
             if (found.color) {
                 this.addLine(`🔹 Color: ${found.color}`, 'info');
             }
+            
+            if (found.type) {
+                this.addLine(`🔹 Node Type: ${found.type}`, 'info');
+            }
         } else {
             this.addLine(`❌ Element with ID "${id}" not found.`, 'error');
             this.addLine('💡 Use "list elements" to see all available elements.', 'info');
+            
+            // Suggest similar IDs
+            const similarIds = allElements.filter(el => 
+                el.id.toString().includes(id.toString()) || 
+                id.toString().includes(el.id.toString())
+            );
+            
+            if (similarIds.length > 0) {
+                this.addLine('🔍 Did you mean one of these?', 'info');
+                similarIds.forEach(el => {
+                    this.addLine(`   - ID: ${el.id} (${el.elementType}: "${el.label}")`, 'info');
+                });
+            }
         }
         
         // Auto-scroll to bottom after command
@@ -1050,7 +1080,7 @@ class TerminalService {
                 const diagramController = window.container.resolve('diagramController');
                 currentProject = diagramController?.currentProject;
             } catch (e) {
-                // Ignore container resolution errors
+                this.addLine(`🔧 Container resolution error: ${e.message}`, 'debug');
             }
         }
         
@@ -1059,21 +1089,29 @@ class TerminalService {
             return;
         }
 
-        // Search in all element types
+        // Search in all element types with improved ID handling
         const allElements = [
             ...currentProject.nodes.map(n => ({...n, elementType: 'Node'})),
             ...currentProject.texts.map(t => ({...t, elementType: 'Text'})),
             ...currentProject.transitions.map(tr => ({...tr, elementType: 'Transition'}))
         ];
 
-        const found = allElements.find(el => el.id === id);
+        // Try both string and number comparison
+        const found = allElements.find(el => {
+            return el.id === id || 
+                   el.id === parseInt(id) || 
+                   el.id === id.toString() ||
+                   el.id.toString() === id ||
+                   el.id.toString() === id.toString();
+        });
         
         if (found) {
             this.addLine('╔══════════════════════════════════════════════════╗', 'info');
             this.addLine('║                ELEMENT INSPECTION               ║', 'info');
             this.addLine('╠══════════════════════════════════════════════════╣', 'info');
             this.addLine(`║ Type: ${found.elementType.padEnd(42)} ║`, 'info');
-            this.addLine(`║ ID: ${found.id.padEnd(44)} ║`, 'info');
+            this.addLine(`║ ID: ${found.id.toString().padEnd(44)} ║`, 'info');
+            this.addLine(`║ ID Type: ${(typeof found.id).padEnd(39)} ║`, 'info');
             this.addLine(`║ Label: ${found.label.padEnd(41)} ║`, 'info');
             
             if (found.x !== undefined && found.y !== undefined) {
@@ -1090,9 +1128,9 @@ class TerminalService {
             }
             
             if (found.elementType === 'Transition') {
-                this.addLine(`║ From: ${found.from?.id?.padEnd(42) || 'N/A'} ║`, 'info');
-                this.addLine(`║ To: ${found.to?.id?.padEnd(44) || 'N/A'} ║`, 'info');
-                this.addLine(`║ Style: ${found.style?.padEnd(41) || 'N/A'} ║`, 'info');
+                this.addLine(`║ From: ${(found.from?.id?.toString() || 'N/A').padEnd(42)} ║`, 'info');
+                this.addLine(`║ To: ${(found.to?.id?.toString() || 'N/A').padEnd(44)} ║`, 'info');
+                this.addLine(`║ Style: ${(found.style || 'N/A').padEnd(41)} ║`, 'info');
             }
             
             if (found.fields && found.fields.length > 0) {
@@ -1104,10 +1142,34 @@ class TerminalService {
                 });
             }
             
+            // Show raw object for debugging
+            this.addLine('╠══════════════════════════════════════════════════╣', 'info');
+            this.addLine('║                   DEBUG INFO                    ║', 'info');
+            this.addLine('╠══════════════════════════════════════════════════╣', 'info');
+            
+            // Show all properties
+            Object.keys(found).forEach(key => {
+                if (key !== 'elementType') {
+                    const value = found[key];
+                    const valueStr = typeof value === 'object' && value !== null 
+                        ? JSON.stringify(value).substring(0, 35) + '...'
+                        : String(value).substring(0, 40);
+                    this.addLine(`║ ${key}: ${valueStr.padEnd(40 - key.length)} ║`, 'info');
+                }
+            });
+            
             this.addLine('╚══════════════════════════════════════════════════╝', 'info');
         } else {
             this.addLine(`❌ Element with ID "${id}" not found.`, 'error');
             this.addLine('💡 Use "list elements" to see all available elements.', 'info');
+            
+            // Show first few available IDs for reference
+            if (allElements.length > 0) {
+                this.addLine('🔍 Available IDs (first 5):', 'info');
+                allElements.slice(0, 5).forEach((el, index) => {
+                    this.addLine(`   ${index + 1}. ${el.id} (${typeof el.id}) - ${el.elementType}`, 'info');
+                });
+            }
         }
         
         // Auto-scroll to bottom after command
