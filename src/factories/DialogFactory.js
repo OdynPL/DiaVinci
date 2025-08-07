@@ -388,8 +388,8 @@ class DialogFactory {
         menu.style.minWidth = '200px';
         
         // Project export section
-        const projectTitle = DialogFactory.createMenuTitle('Export Project');
-        const exportProjectBtn = DialogFactory.createMenuButton('💾 Export as .lcp File', '#3498db', () => {
+        const projectTitle = DialogFactory.createMenuTitle(t('exportProject'));
+        const exportProjectBtn = DialogFactory.createMenuButton(`💾 ${t('exportAsLcpFile')}`, '#3498db', () => {
             onExportProject();
             menu.remove();
         });
@@ -400,12 +400,12 @@ class DialogFactory {
         separator.style.borderTop = '1px solid #eee';
         
         // Image export section
-        const imageTitle = DialogFactory.createMenuTitle('Export Image');
-        const whiteBtn = DialogFactory.createMenuButton('🖼️ White Background', '#27ae60', () => {
+        const imageTitle = DialogFactory.createMenuTitle(t('exportImageMenu'));
+        const whiteBtn = DialogFactory.createMenuButton(`🖼️ ${t('whiteBackgroundBtn')}`, '#27ae60', () => {
             onExportWhite();
             menu.remove();
         });
-        const transparentBtn = DialogFactory.createMenuButton('🖼️ Transparent Background', '#9b59b6', () => {
+        const transparentBtn = DialogFactory.createMenuButton(`🖼️ ${t('transparentBackgroundBtn')}`, '#9b59b6', () => {
             onExportTransparent();
             menu.remove();
         });

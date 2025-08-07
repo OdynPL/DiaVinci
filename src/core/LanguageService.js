@@ -112,6 +112,13 @@ const translations = {
         importCancelled: "Import cancelled.",
         clearCurrentProjectConfirm: "Creating a new project will clear the current canvas.<br><br>Do you want to continue?",
         
+        // Export dialog
+        exportProject: "Export Project",
+        exportAsLcpFile: "Export as .lcp File",
+        exportImageMenu: "Export Image",
+        whiteBackgroundBtn: "White Background",
+        transparentBackgroundBtn: "Transparent Background",
+        
         custom: "Custom",
         private: "PRIVATE",
         public: "PUBLIC",
@@ -263,6 +270,17 @@ const translations = {
         terminalClose: "Close Terminal",
         terminalExport: "Export Logs",
         
+        // Terminal filter options
+        allMessages: "All Messages",
+        errorsOnly: "Errors Only", 
+        warningsOnly: "Warnings Only",
+        infoOnly: "Info Only",
+        debugOnly: "Debug Only",
+        canvasDrops: "Canvas Drops",
+        textControls: "Text Controls", 
+        elementMoves: "Element Moves",
+        elementModifications: "Element Modifications",
+        
         // Common
         yes: "Yes",
         no: "No",
@@ -273,6 +291,41 @@ const translations = {
         duplicate: "Duplicate",
         search: "Search",
         filterText: "Filter text...",
+        
+        // Tooltips
+        englishFlag: "English",
+        polishFlag: "Polish", 
+        basicNodeTooltip: "Basic node - drag to canvas to add process element",
+        textElementTooltip: "Text element - adds labels and descriptions to diagram",
+        startPointTooltip: "Process start point - marks the beginning of diagram",
+        endPointTooltip: "Process end point - marks the end of diagram",
+        logicalConditionTooltip: "Logical condition - enables process branching based on decision",
+        dataModelTooltip: "Data model - defines data structure with fields and types",
+        singleConnectionTooltip: "Single connection - creates arrow in one direction",
+        dualConnectionTooltip: "Dual connection - creates arrows in both directions",
+        straightLineTooltip: "Straight line - connects elements without arrow",
+        toggleGridTooltip: "Enable/disable helper grid on canvas",
+        toggleRulersTooltip: "Enable/disable measurement rulers on canvas", 
+        canvasTooltip: "Drawing canvas - drag components from left panel, click to select, double-click to edit",
+        clearAllProjectsTooltip: "Remove all saved projects from list",
+        searchProjectsTooltip: "Type project name to find it in the list",
+        toggleTerminalTooltip: "Show/hide console terminal",
+        removeSelectedTooltip: "Remove selected elements from diagram",
+        newProjectTooltip: "Create new project - clears canvas and starts from scratch",
+        saveProjectTooltip: "Save current project in browser",
+        loadProjectTooltip: "Load saved project from file",
+        clearCanvasTooltip: "Clear entire canvas - remove all elements",
+        exportImageTooltip: "Export diagram as PNG image",
+        exportFileTooltip: "Export project as JSON file",
+        importFileTooltip: "Import project from JSON file",
+        resizeTerminalTooltip: "Drag to change terminal height",
+        filterMessagesByTextTooltip: "Filter messages by text",
+        filterMessagesByTypeTooltip: "Filter messages by type",
+        exportLogsTooltip: "Export logs to file",
+        clearTerminalTooltip: "Clear terminal",
+        closeTerminalTooltip: "Close terminal",
+        enterCommandTooltip: "Type command and press Enter",
+        typeCommandPlaceholder: "Type command...",
         
         // Messages
         projectSaved: "Project saved successfully",
@@ -400,6 +453,13 @@ const translations = {
         incorrectPasswordImportCancelled: "Nieprawidłowe hasło. Import anulowany.",
         importCancelled: "Import anulowany.",
         clearCurrentProjectConfirm: "Tworzenie nowego projektu wyczyści bieżące płótno.<br><br>Czy chcesz kontynuować?",
+        
+        // Export dialog
+        exportProject: "Eksportuj Projekt",
+        exportAsLcpFile: "Eksportuj jako plik .lcp",
+        exportImageMenu: "Eksportuj Obraz",
+        whiteBackgroundBtn: "Białe Tło",
+        transparentBackgroundBtn: "Przezroczyste Tło",
         
         custom: "Niestandardowy",
         private: "PRYWATNY",
@@ -552,6 +612,17 @@ const translations = {
         terminalClose: "Zamknij Terminal",
         terminalExport: "Eksportuj Logi",
         
+        // Terminal filter options
+        allMessages: "Wszystkie Wiadomości",
+        errorsOnly: "Tylko Błędy",
+        warningsOnly: "Tylko Ostrzeżenia", 
+        infoOnly: "Tylko Informacje",
+        debugOnly: "Tylko Debug",
+        canvasDrops: "Upuszczenia na Płótno",
+        textControls: "Kontrolki Tekstu",
+        elementMoves: "Przesunięcia Elementów",
+        elementModifications: "Modyfikacje Elementów",
+        
         // Common
         yes: "Tak",
         no: "Nie",
@@ -562,6 +633,41 @@ const translations = {
         duplicate: "Duplikuj",
         search: "Szukaj",
         filterText: "Filtruj tekst...",
+        
+        // Tooltips
+        englishFlag: "Angielski",
+        polishFlag: "Polski",
+        basicNodeTooltip: "Podstawowy węzeł - przeciągnij na kanwę aby dodać element procesu",
+        textElementTooltip: "Element tekstowy - dodaje etykiety i opisy do diagramu",
+        startPointTooltip: "Punkt startowy procesu - oznacza początek diagramu",
+        endPointTooltip: "Punkt końcowy procesu - oznacza zakończenie diagramu",
+        logicalConditionTooltip: "Warunek logiczny - umożliwia rozgałęzienie procesu na podstawie decyzji",
+        dataModelTooltip: "Model danych - definiuje strukturę danych z polami i typami",
+        singleConnectionTooltip: "Połączenie jednostronne - tworzy strzałkę w jednym kierunku",
+        dualConnectionTooltip: "Połączenie dwustronne - tworzy strzałki w obu kierunkach",
+        straightLineTooltip: "Prosta linia - łączy elementy bez strzałki",
+        toggleGridTooltip: "Włącz/wyłącz siatkę pomocniczą na kanwie",
+        toggleRulersTooltip: "Włącz/wyłącz linijki pomiarowe na kanwie",
+        canvasTooltip: "Kanwa do rysowania - przeciągnij komponenty z lewego panelu, kliknij aby zaznaczyć, dwuklik aby edytować",
+        clearAllProjectsTooltip: "Usuń wszystkie zapisane projekty z listy",
+        searchProjectsTooltip: "Wpisz nazwę projektu aby go znaleźć na liście",
+        toggleTerminalTooltip: "Pokaż/ukryj terminal konsoli",
+        removeSelectedTooltip: "Usuń zaznaczone elementy z diagramu",
+        newProjectTooltip: "Utwórz nowy projekt - czyści kanwę i rozpoczyna od zera",
+        saveProjectTooltip: "Zapisz aktualny projekt w przeglądarce",
+        loadProjectTooltip: "Wczytaj zapisany projekt z pliku",
+        clearCanvasTooltip: "Wyczyść całą kanwę - usuń wszystkie elementy",
+        exportImageTooltip: "Eksportuj diagram jako obraz PNG",
+        exportFileTooltip: "Eksportuj projekt jako plik JSON",
+        importFileTooltip: "Importuj projekt z pliku JSON",
+        resizeTerminalTooltip: "Przeciągnij aby zmienić wysokość terminala",
+        filterMessagesByTextTooltip: "Filtruj wiadomości według tekstu",
+        filterMessagesByTypeTooltip: "Filtruj wiadomości według typu",
+        exportLogsTooltip: "Eksportuj logi do pliku",
+        clearTerminalTooltip: "Wyczyść terminal",
+        closeTerminalTooltip: "Zamknij terminal",
+        enterCommandTooltip: "Wpisz komendę i naciśnij Enter",
+        typeCommandPlaceholder: "Wpisz komendę...",
         
         // Messages
         projectSaved: "Projekt zapisany pomyślnie",
@@ -632,6 +738,14 @@ function updateTranslations() {
         } else {
             element.textContent = translatedText;
         }
+    });
+    
+    // Update all elements with data-translate-title attribute
+    const titleElements = document.querySelectorAll('[data-translate-title]');
+    titleElements.forEach(element => {
+        const key = element.getAttribute('data-translate-title');
+        const translatedText = t(key);
+        element.title = translatedText;
     });
     
     // Update document title
