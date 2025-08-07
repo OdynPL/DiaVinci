@@ -200,7 +200,7 @@ class UIController {
             const projectName = this.currentProject || 'Exported_Project';
             this.notificationService.success(`Project "${projectName}" exported successfully!`);
         } else {
-            this.notificationService.error('Error exporting project. Please try again.');
+            this.notificationService.error(t('errorExportingProject'));
         }
     }
 
@@ -223,22 +223,22 @@ class UIController {
             return await this.errorHandler.executeWithErrorHandling(async () => {
                 const success = await this.diagramController.exportAsImage(whiteBackground);
                 if (success) {
-                    const bgType = whiteBackground ? 'white background' : 'transparent background';
-                    this.notificationService.success(`Image exported successfully with ${bgType}!`);
+                    const bgTypeKey = whiteBackground ? 'whiteBackground' : 'transparentBackground';
+                    this.notificationService.success(`${t('imageExportedSuccessfully')} ${t(bgTypeKey)}!`);
                 }
                 return success;
-            }, 'Error exporting image. Please try again.');
+            }, t('errorExportingImage'));
         } else {
             // Fallback without error handler
             try {
                 const success = await this.diagramController.exportAsImage(whiteBackground);
                 if (success) {
-                    const bgType = whiteBackground ? 'white background' : 'transparent background';
-                    this.notificationService.success(`Image exported successfully with ${bgType}!`);
+                    const bgTypeKey = whiteBackground ? 'whiteBackground' : 'transparentBackground';
+                    this.notificationService.success(`${t('imageExportedSuccessfully')} ${t(bgTypeKey)}!`);
                 }
                 return success;
             } catch (error) {
-                this.notificationService.error('Error exporting image. Please try again.');
+                this.notificationService.error(t('errorExportingImage'));
                 Logger.error('Export image error', error);
                 return false;
             }
@@ -453,12 +453,12 @@ class UIController {
                             // Password correct, proceed with import
                             this.proceedWithImport(project);
                         } else {
-                            this.notificationService.error('Incorrect password. Import cancelled.');
+                            this.notificationService.error(t('incorrectPasswordImportCancelled'));
                         }
                     },
                     () => {
                         // User cancelled password dialog
-                        this.notificationService.info('Import cancelled.');
+                        this.notificationService.info(t('importCancelled'));
                     }
                 );
                 return;
@@ -467,7 +467,7 @@ class UIController {
             // For non-private projects, proceed normally
             this.proceedWithImport(project);
         } catch (error) {
-            this.notificationService.error('Error importing project. Please check the file format.');
+            this.notificationService.error(t('errorImportingProject'));
         }
     }
 
@@ -548,7 +548,7 @@ class UIController {
             if (hasContent) {
                 DialogFactory.createConfirmDialog(
                     'Clear Current Project',
-                    'Creating a new project will clear the current canvas.<br><br>Do you want to continue?',
+                    t('clearCurrentProjectConfirm'),
                     () => {
                         this.performCreateProject(projectName, isPrivate, password);
                     },
@@ -616,18 +616,18 @@ class UIController {
      */
     clearProject() {
         DialogFactory.createConfirmDialog(
-            'Clear Canvas',
-            'Are you sure you want to clear all elements from the canvas?<br><br><strong>This action cannot be undone.</strong>',
+            t('clearCanvas'),
+            t('clearCanvasConfirm'),
             () => {
                 this.diagramController.clearProject();
                 this.currentProject = null;
                 this.updateProjectNameDisplay();
                 this.updateRecentProjectsList();
-                this.notificationService.success('Canvas cleared successfully!');
+                this.notificationService.success(t('canvasClearedSuccessfully'));
             },
             null,
-            'Clear Canvas',
-            'Cancel'
+            t('clearCanvas'),
+            t('cancel')
         );
     }
 
@@ -646,7 +646,7 @@ class UIController {
                     this.currentPage = 1;
                     this.updateRecentProjectsList();
                     this.updateProjectNameDisplay();
-                    this.notificationService.success('All projects and canvas cleared successfully!');
+                    this.notificationService.success(t('allProjectsClearedSuccessfully'));
                 } else {
                     this.notificationService.error('Error clearing projects. Please try again.');
                 }
@@ -930,7 +930,7 @@ class UIController {
                     projectNameElement.style.cursor = 'default';
                 }
             } else {
-                projectNameElement.textContent = 'No Project Loaded';
+                projectNameElement.textContent = t('noProjectLoaded');
                 projectNameElement.title = '';
                 projectNameElement.style.color = '#999';
                 projectNameElement.style.fontWeight = '500';
@@ -971,34 +971,34 @@ class UIController {
             this.errorHandler.executeSync(() => {
                 const currentProject = this.diagramController.getCurrentProject();
                 if (!currentProject || (currentProject.nodes.length === 0 && currentProject.transitions.length === 0 && currentProject.texts.length === 0)) {
-                    this.notificationService.error('No content to export. Please create some elements first.');
+                    this.notificationService.error(t('noContentToExport'));
                     return;
                 }
 
                 const success = this.diagramController.exportAsFile();
                 if (success) {
-                    this.notificationService.success('Project exported successfully!');
+                    this.notificationService.success(t('projectExportedSuccessfully'));
                 } else {
-                    this.notificationService.error('Failed to export project. Please try again.');
+                    this.notificationService.error(t('failedToExport'));
                 }
-            }, 'Failed to export project. Please try again.');
+            }, t('failedToExport'));
         } else {
             // Fallback without error handler
             try {
                 const currentProject = this.diagramController.getCurrentProject();
                 if (!currentProject || (currentProject.nodes.length === 0 && currentProject.transitions.length === 0 && currentProject.texts.length === 0)) {
-                    this.notificationService.error('No content to export. Please create some elements first.');
+                    this.notificationService.error(t('noContentToExport'));
                     return;
                 }
 
                 const success = this.diagramController.exportAsFile();
                 if (success) {
-                    this.notificationService.success('Project exported successfully!');
+                    this.notificationService.success(t('projectExportedSuccessfully'));
                 } else {
-                    this.notificationService.error('Failed to export project. Please try again.');
+                    this.notificationService.error(t('failedToExport'));
                 }
             } catch (error) {
-                this.notificationService.error('Failed to export project. Please try again.');
+                this.notificationService.error(t('failedToExport'));
                 Logger.error('Export error', error);
             }
         }
@@ -1062,11 +1062,11 @@ class UIController {
             if (gridState.rulersVisible) {
                 rulersBtn.classList.remove('rulers-off');
                 rulersBtn.classList.add('rulers-on');
-                rulersBtn.title = 'Hide Rulers';
+                rulersBtn.title = t('hideRulers');
             } else {
                 rulersBtn.classList.remove('rulers-on');
                 rulersBtn.classList.add('rulers-off');
-                rulersBtn.title = 'Show Rulers';
+                rulersBtn.title = t('showRulers');
             }
         }
     }
@@ -1082,11 +1082,11 @@ class UIController {
             if (gridState.gridVisible) {
                 gridBtn.classList.remove('grid-off');
                 gridBtn.classList.add('grid-on');
-                gridBtn.title = 'Hide Grid';
+                gridBtn.title = t('hideGrid');
             } else {
                 gridBtn.classList.remove('grid-on');
                 gridBtn.classList.add('grid-off');
-                gridBtn.title = 'Show Grid';
+                gridBtn.title = t('showGrid');
             }
         }
     }
