@@ -287,3 +287,113 @@ input[type="text"]:focus {
     transform: translate(-50%, -50%);
     box-shadow: 0 0 0 2px white;
 }
+
+/* Terminal Panel Styles */
+.terminal-panel {
+    height: 30vh;
+    min-height: 200px;
+    max-height: 500px;
+    transition: all 0.3s ease-in-out;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    resize: vertical;
+    overflow: hidden;
+    box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.terminal-panel.hidden {
+    height: 0;
+    min-height: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.terminal-header {
+    user-select: none;
+    cursor: default;
+    background-color: #e2e8f0;
+    border-bottom: 1px solid #cbd5e1;
+}
+
+.terminal-content {
+    background-color: #f8fafc;
+    color: #1f2937;
+    padding: 16px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: calc(30vh - 48px);
+}
+
+.terminal-line {
+    margin-bottom: 6px;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    line-height: 1.5;
+    font-size: 13px;
+}
+
+.terminal-line.info {
+    color: #1f2937;
+}
+
+.terminal-line.warning {
+    color: #f59e0b;
+    font-weight: 500;
+}
+
+.terminal-line.error {
+    color: #dc2626;
+    font-weight: 500;
+}
+
+.terminal-line.debug {
+    color: #6b7280;
+    font-style: italic;
+}
+
+.terminal-line.success {
+    color: #059669;
+    font-weight: 500;
+}
+
+.terminal-line.function {
+    color: #7c3aed;
+    font-weight: 500;
+}
+
+.terminal-timestamp {
+    color: #9ca3af;
+    font-size: 11px;
+}
+
+/* Terminal scrollbar */
+.terminal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.terminal-content::-webkit-scrollbar-track {
+    background: #333;
+    border-radius: 4px;
+}
+
+.terminal-content::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 4px;
+}
+
+.terminal-content::-webkit-scrollbar-thumb:hover {
+    background: #777;
+}
+
+/* Adjust main container when terminal is open */
+.main-content.terminal-open {
+    padding-bottom: 20vh;
+    transition: padding-bottom 0.3s ease-in-out;
+}
+
+/* Animation for terminal toggle button */
+#terminal-toggle-btn.active {
+    background-color: #4b5563 !important;
+    box-shadow: 0 0 0 2px #00ff00;
+}

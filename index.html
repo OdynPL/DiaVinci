@@ -237,82 +237,128 @@
     
     <!-- Bottom Navigation -->
     <nav class="bottom-nav bg-slate-800 border-t border-slate-700 px-2 sm:px-3 py-2 flex-shrink-0">
-        <div class="flex flex-nowrap justify-center items-center gap-1 sm:gap-2 max-w-7xl mx-auto overflow-x-auto">
-            <!-- Remove Button -->
-            <button id="remove-btn" 
-                    class="bottom-nav-button hide flex items-center justify-center space-x-1 px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-all duration-200 whitespace-nowrap flex-shrink-0"
-                    style="min-width: 110px; max-width: 110px;"
-                    title="Usuń zaznaczone elementy z diagramu">
-                <svg class="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1-1H9a1 1 0 00-1 1v3M4 7h16"/>
-                </svg>
-                <span class="text-xs font-medium">Remove</span>
-            </button>
-            
-            <button id="new-project-btn" 
-                    class="bottom-nav-button flex items-center space-x-1 px-2 sm:px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all duration-200 flex-shrink-0"
-                    title="Utwórz nowy projekt - czyści kanwę i rozpoczyna od zera">
+        <div class="flex items-center justify-between max-w-7xl mx-auto w-full">
+            <!-- Terminal Button (Left Side) -->
+            <button id="terminal-toggle-btn" 
+                    class="bottom-nav-button flex items-center space-x-1 px-2 sm:px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-all duration-200 flex-shrink-0"
+                    title="Pokaż/ukryj terminal konsoli">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
-                <span class="hidden sm:inline text-xs">New</span>
+                <span class="hidden sm:inline text-xs">Terminal</span>
             </button>
-                
-                <button id="save-project-btn" 
-                        class="bottom-nav-button flex items-center space-x-1 px-2 sm:px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-all duration-200 flex-shrink-0"
-                        title="Zapisz aktualny projekt w przeglądarce">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"/>
+
+            <!-- Main Navigation Buttons (Right Side) -->
+            <div class="flex flex-nowrap items-center gap-1 sm:gap-2 overflow-x-auto">
+                <!-- Remove Button -->
+                <button id="remove-btn" 
+                        class="bottom-nav-button hide flex items-center justify-center space-x-1 px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-all duration-200 whitespace-nowrap flex-shrink-0"
+                        style="min-width: 110px; max-width: 110px;"
+                        title="Usuń zaznaczone elementy z diagramu">
+                    <svg class="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1-1H9a1 1 0 00-1 1v3M4 7h16"/>
                     </svg>
-                    <span class="hidden sm:inline text-xs">Save</span>
+                    <span class="text-xs font-medium">Remove</span>
                 </button>
                 
-                <button id="load-project-btn" 
-                        class="bottom-nav-button flex items-center space-x-1 px-2 sm:px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-all duration-200 flex-shrink-0"
-                        title="Wczytaj zapisany projekt z pliku">
+                <button id="new-project-btn" 
+                        class="bottom-nav-button flex items-center space-x-1 px-2 sm:px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all duration-200 flex-shrink-0"
+                        title="Utwórz nowy projekt - czyści kanwę i rozpoczyna od zera">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                     </svg>
-                    <span class="hidden sm:inline text-xs">Load</span>
+                    <span class="hidden sm:inline text-xs">New</span>
                 </button>
-                
-                <button id="clear-all-btn" 
-                        class="bottom-nav-button flex items-center space-x-1 px-3 py-2 bg-red-700 hover:bg-red-800 text-white rounded-lg font-medium transition-all duration-200"
-                        title="Wyczyść całą kanwę - usuń wszystkie elementy">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <span class="hidden sm:inline text-xs">Clear All</span>
-                </button>
-                
-                <button id="export-image-btn" 
-                        class="bottom-nav-button flex items-center space-x-1 px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition-all duration-200"
-                        title="Eksportuj diagram jako obraz PNG">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                    </svg>
-                    <span class="hidden sm:inline text-xs">Export Image</span>
-                </button>
-                
-                <button id="export-file-btn" 
-                        class="bottom-nav-button flex items-center space-x-1 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-all duration-200"
-                        title="Eksportuj projekt jako plik JSON">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
-                    </svg>
-                    <span class="hidden sm:inline text-xs">Export File</span>
-                </button>
-                
-                <button id="import-file-btn" 
-                        class="bottom-nav-button flex items-center space-x-1 px-3 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-medium transition-all duration-200"
-                        title="Importuj projekt z pliku JSON">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                    </svg>
-                    <span class="hidden sm:inline text-xs">Import</span>
-                </button>
+                    
+                    <button id="save-project-btn" 
+                            class="bottom-nav-button flex items-center space-x-1 px-2 sm:px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-all duration-200 flex-shrink-0"
+                            title="Zapisz aktualny projekt w przeglądarce">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"/>
+                        </svg>
+                        <span class="hidden sm:inline text-xs">Save</span>
+                    </button>
+                    
+                    <button id="load-project-btn" 
+                            class="bottom-nav-button flex items-center space-x-1 px-2 sm:px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-all duration-200 flex-shrink-0"
+                            title="Wczytaj zapisany projekt z pliku">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
+                        </svg>
+                        <span class="hidden sm:inline text-xs">Load</span>
+                    </button>
+                    
+                    <button id="clear-all-btn" 
+                            class="bottom-nav-button flex items-center space-x-1 px-3 py-2 bg-red-700 hover:bg-red-800 text-white rounded-lg font-medium transition-all duration-200"
+                            title="Wyczyść całą kanwę - usuń wszystkie elementy">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="hidden sm:inline text-xs">Clear All</span>
+                    </button>
+                    
+                    <button id="export-image-btn" 
+                            class="bottom-nav-button flex items-center space-x-1 px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition-all duration-200"
+                            title="Eksportuj diagram jako obraz PNG">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <span class="hidden sm:inline text-xs">Export Image</span>
+                    </button>
+                    
+                    <button id="export-file-btn" 
+                            class="bottom-nav-button flex items-center space-x-1 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-all duration-200"
+                            title="Eksportuj projekt jako plik JSON">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                        </svg>
+                        <span class="hidden sm:inline text-xs">Export File</span>
+                    </button>
+                    
+                    <button id="import-file-btn" 
+                            class="bottom-nav-button flex items-center space-x-1 px-3 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-medium transition-all duration-200"
+                            title="Importuj projekt z pliku JSON">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                        </svg>
+                        <span class="hidden sm:inline text-xs">Import</span>
+                    </button>
+            </div>
         </div>
     </nav>
+
+    <!-- Terminal Panel -->
+    <div id="terminal-panel" class="terminal-panel hidden fixed bottom-0 left-0 right-0 font-mono text-sm z-40">
+        <div class="terminal-header px-4 py-2 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <div class="flex items-center space-x-1">
+                    <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                    <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                    <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                </div>
+                <span class="text-gray-700 text-sm font-medium">Terminal Console</span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button id="terminal-clear-btn" 
+                        class="px-2 py-1 bg-gray-600 hover:bg-gray-500 text-white rounded text-xs transition-colors"
+                        title="Wyczyść terminal">
+                    Clear
+                </button>
+                <button id="terminal-close-btn" 
+                        class="px-2 py-1 bg-gray-600 hover:bg-gray-500 text-white rounded text-xs transition-colors"
+                        title="Zamknij terminal">
+                    ✕
+                </button>
+            </div>
+        </div>
+        <div class="terminal-content p-4 overflow-y-auto" style="height: calc(30vh - 48px);">
+            <div id="terminal-output" class="space-y-1">
+                <div class="terminal-line text-gray-600">
+                    <span class="text-green-600 font-medium">[INFO]</span> Terminal ready. Waiting for output...
+                </div>
+            </div>
+        </div>
+    </div>
     
     <!-- Core dependencies -->
     <script src="src/core/Logger.js"></script>
@@ -331,6 +377,7 @@
         <!-- Utilities -->
     <script src="src/utils/InputValidator.js"></script>
     <script src="src/utils/SecurityConfig.js"></script>
+    <script src="src/services/TerminalService.js"></script>
     <script src="src/services/StorageService.js"></script>
     <script src="src/services/NotificationService.js"></script>
     <script src="src/services/CanvasRenderer.js"></script>

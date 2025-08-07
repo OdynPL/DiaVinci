@@ -1924,6 +1924,15 @@ class DataModelEditor {
             readOnly: false,
             nullable: false // Default to non-nullable
         });
+
+        // Log to terminal if available
+        if (window.terminalService) {
+            window.terminalService.logDataModelOperation(
+                `Field "${uniqueName}" added`, 
+                this.currentNode.label || 'Unnamed Model',
+                { fieldType: 'String', fieldId: newField.id }
+            );
+        }
         
         this.renderFields();
         this.updateSaveButtonState();
@@ -1933,7 +1942,20 @@ class DataModelEditor {
      * Remove field
      */
     removeField(fieldId) {
+        const field = this.currentNode.getField(fieldId);
+        const fieldName = field ? field.name : 'Unknown Field';
+        
         this.currentNode.removeField(fieldId);
+
+        // Log to terminal if available
+        if (window.terminalService) {
+            window.terminalService.logDataModelOperation(
+                `Field "${fieldName}" removed`, 
+                this.currentNode.label || 'Unnamed Model',
+                { fieldId }
+            );
+        }
+        
         this.renderFields();
         this.updateSaveButtonState();
     }
@@ -1968,6 +1990,27 @@ class DataModelEditor {
             }
             
             alert(errorMessage);
+
+            // Log validation errors to terminal if available
+            if (window.terminalService) {
+                window.terminalService.logDataModelOperation(
+                    'Model validation failed', 
+                    this.currentNode.label || 'Unnamed Model'
+                );
+                window.terminalService.addLine(`Validation error: ${validation.error}`, 'error');
+                
+                if (validation.fieldErrors) {
+                    Object.keys(validation.fieldErrors).forEach(fieldId => {
+                        const field = this.currentNode.getField(fieldId);
+                        const fieldName = field ? field.name || 'Unnamed Field' : 'Unknown Field';
+                        const errors = validation.fieldErrors[fieldId];
+                        
+                        errors.forEach(error => {
+                            window.terminalService.addLine(`Field "${fieldName}": ${error}`, 'error');
+                        });
+                    });
+                }
+            }
             
             // Highlight all fields with errors
             if (validation.fieldErrors) {
@@ -1996,6 +2039,18 @@ class DataModelEditor {
         this.eventBus.emit('datamodel.updated', {
             node: this.currentNode
         });
+
+        // Log to terminal if available
+        if (window.terminalService) {
+            window.terminalService.logDataModelOperation(
+                'Model saved successfully', 
+                this.currentNode.label || 'Unnamed Model',
+                {
+                    fieldCount: this.currentNode.fields.length,
+                    modelId: this.currentNode.id
+                }
+            );
+        }
         
         // Force close without validation check since we've already validated
         this.forceClose();
