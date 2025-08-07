@@ -37,9 +37,9 @@ class TerminalService {
         }
 
         // Initial welcome message
-        this.addLine('Terminal Service initialized successfully.', 'info');
-        this.addLine('Canvas drop tracking enabled - all drag & drop operations will be logged here.', 'info');
-        this.addLine('Type "help" for available commands.', 'info');
+        this.addLine(t('terminalInitialized'), 'info');
+        this.addLine(t('canvasDropTracking'), 'info');
+        this.addLine(t('typeHelpForCommands'), 'info');
     }
 
     /**
@@ -323,9 +323,9 @@ class TerminalService {
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
             
-            this.addLine(`Logs exported to ${filename} (${logsToExport.length} entries)`, 'success');
+            this.addLine(`${t('logsExported')} ${filename} (${logsToExport.length} ${t('entriesCount')})`, 'success');
         } catch (error) {
-            this.addLine(`Failed to export logs: ${error.message}`, 'error');
+            this.addLine(`${t('failedToExport')} ${error.message}`, 'error');
         }
     }
 
@@ -602,11 +602,11 @@ class TerminalService {
      * @param {Error} error - Error object
      */
     logFunctionError(functionName, error) {
-        this.addLine(`Function "${functionName}" failed: ${error.message}`, 'error');
+        this.addLine(`${t('functionFailed')} "${functionName}": ${error.message}`, 'error');
         
         if (error.stack) {
             // Show stack trace for debugging
-            this.addLine(`Stack trace: ${error.stack}`, 'debug');
+            this.addLine(`${t('stackTrace')}: ${error.stack}`, 'debug');
         }
     }
 
@@ -868,18 +868,18 @@ class TerminalService {
                         this.commandInput.value = `${idPart}.${matchingFields[0]}`;
                     } else if (matchingFields.length > 1) {
                         // Multiple matches - show them
-                        this.addLine(`💡 Available fields for element ${id} (${element.elementType}):`, 'info');
+                        this.addLine(`${t('availableFields')} ${id} (${element.elementType}):`, 'info');
                         
                         // Group fields by category for better readability
                         const basicFields = matchingFields.filter(f => !f.includes('.'));
                         const nestedFields = matchingFields.filter(f => f.includes('.'));
                         
                         if (basicFields.length > 0) {
-                            this.addLine(`   Basic: ${basicFields.slice(0, 8).join(', ')}${basicFields.length > 8 ? '...' : ''}`, 'info');
+                            this.addLine(`   ${t('basicFields')} ${basicFields.slice(0, 8).join(', ')}${basicFields.length > 8 ? '...' : ''}`, 'info');
                         }
                         
                         if (nestedFields.length > 0) {
-                            this.addLine(`   Nested: ${nestedFields.slice(0, 5).join(', ')}${nestedFields.length > 5 ? '...' : ''}`, 'info');
+                            this.addLine(`   ${t('nestedFields')} ${nestedFields.slice(0, 5).join(', ')}${nestedFields.length > 5 ? '...' : ''}`, 'info');
                         }
                         
                         // Find common prefix
@@ -898,11 +898,11 @@ class TerminalService {
                         }
                     } else {
                         // No matching fields
-                        this.addLine(`❌ No fields match "${partialField}" for element ${id}`, 'warning');
-                        this.addLine(`💡 Available fields: ${availableFields.slice(0, 10).join(', ')}${availableFields.length > 10 ? '...' : ''}`, 'info');
+                        this.addLine(`${t('noFieldsMatch')} "${partialField}" for element ${id}`, 'warning');
+                        this.addLine(`${t('availableFields')}: ${availableFields.slice(0, 10).join(', ')}${availableFields.length > 10 ? '...' : ''}`, 'info');
                     }
                 } else {
-                    this.addLine(`❌ Element with ID ${id} not found.`, 'error');
+                    this.addLine(`${t('elementNotFound')} ${id}.`, 'error');
                 }
                 return;
             }
@@ -930,7 +930,7 @@ class TerminalService {
             }
         } else if (matches.length > 1) {
             // Multiple matches - show them
-            this.addLine(`💡 Available completions: ${matches.join(', ')}`, 'info');
+            this.addLine(`${t('availableCompletions')}: ${matches.join(', ')}`, 'info');
             
             // Find common prefix
             let commonPrefix = matches[0];
@@ -946,7 +946,7 @@ class TerminalService {
             }
         } else if (currentInput.length > 0) {
             // No matches
-            this.addLine(`❌ No commands match "${currentInput}"`, 'warning');
+            this.addLine(`${t('noCommandsMatch')} "${currentInput}"`, 'warning');
         }
     }
 
@@ -975,55 +975,55 @@ class TerminalService {
         switch (cmd) {
             case 'help':
                 
-                this.addLine('🎯 DIAVINCI TERMINAL - Available Commands', 'info');
+                this.addLine(t('terminalHelpTitle'), 'info');
                 this.addLine('═'.repeat(50), 'info');
                 
-                this.addLine('🔧 BASIC COMMANDS:', 'info');
-                this.addLine('   help          - Show this help message', 'info');
-                this.addLine('   clear         - Clear terminal output', 'info');
-                this.addLine('   status        - Show system status', 'info');
-                this.addLine('   export        - Export logs to file', 'info');
-                this.addLine('   version       - Show application version', 'info');
-                this.addLine('   time          - Show current time', 'info');
-                this.addLine('   history       - Show command history', 'info');
-                this.addLine('   reset         - Reset application state', 'info');
+                this.addLine(t('basicCommands'), 'info');
+                this.addLine(`   ${t('helpCommand')}`, 'info');
+                this.addLine(`   ${t('clearCommand')}`, 'info');
+                this.addLine(`   ${t('statusCommand')}`, 'info');
+                this.addLine(`   ${t('exportCommand')}`, 'info');
+                this.addLine(`   ${t('versionCommand')}`, 'info');
+                this.addLine(`   ${t('timeCommand')}`, 'info');
+                this.addLine(`   ${t('historyCommand')}`, 'info');
+                this.addLine(`   ${t('resetCommand')}`, 'info');
                 
-                this.addLine('🔍 SEARCH & INSPECT:', 'info');
-                this.addLine('   find <id>     - Find element by ID', 'info');
-                this.addLine('   search <text> - Search elements by label/name', 'info');
-                this.addLine('   inspect <id>  - Show detailed element info', 'info');
-                this.addLine('   list elements - List all elements with IDs', 'info');
-                this.addLine('   list nodes    - List only nodes', 'info');
-                this.addLine('   list texts    - List only text elements', 'info');
-                this.addLine('   list trans    - List only transitions', 'info');
-                this.addLine('   count         - Count all project elements', 'info');
+                this.addLine(t('searchInspect'), 'info');
+                this.addLine(`   ${t('findCommand')}`, 'info');
+                this.addLine(`   ${t('searchCommand')}`, 'info');
+                this.addLine(`   ${t('inspectCommand')}`, 'info');
+                this.addLine(`   ${t('listElementsCommand')}`, 'info');
+                this.addLine(`   ${t('listNodesCommand')}`, 'info');
+                this.addLine(`   ${t('listTextsCommand')}`, 'info');
+                this.addLine(`   ${t('listTransCommand')}`, 'info');
+                this.addLine(`   ${t('countCommand')}`, 'info');
                 
-                this.addLine('📊 ANALYTICS:', 'info');
-                this.addLine('   stats         - Show detailed project stats', 'info');
-                this.addLine('   memory        - Show memory usage info', 'info');
-                this.addLine('   performance   - Show performance metrics', 'info');
-                this.addLine('   validate      - Validate project integrity', 'info');
+                this.addLine(t('analyticsCommands'), 'info');
+                this.addLine(`   ${t('statsCommand')}`, 'info');
+                this.addLine(`   ${t('memoryCommand')}`, 'info');
+                this.addLine(`   ${t('performanceCommand')}`, 'info');
+                this.addLine(`   ${t('validateCommand')}`, 'info');
                 
-                this.addLine('🛠️ DEBUGGING:', 'info');
-                this.addLine('   debug on/off  - Toggle debug logging', 'info');
-                this.addLine('   debug project - Show project debug info', 'info');
-                this.addLine('   debug nodes   - Show all nodes with types', 'info');
-                this.addLine('   logs <type>   - Filter logs by type', 'info');
-                this.addLine('   trace <id>    - Trace element relationships', 'info');
-                this.addLine('   errors        - Show recent error logs', 'info');
+                this.addLine(t('debuggingCommands'), 'info');
+                this.addLine(`   ${t('debugCommand')}`, 'info');
+                this.addLine(`   ${t('debugProjectCommand')}`, 'info');
+                this.addLine(`   ${t('debugNodesCommand')}`, 'info');
+                this.addLine(`   ${t('logsCommand')}`, 'info');
+                this.addLine(`   ${t('traceCommand')}`, 'info');
+                this.addLine(`   ${t('errorsCommand')}`, 'info');
                 
-                this.addLine('📋 DATA MODEL:', 'info');
-                this.addLine('   fields <id>   - List all fields of data model', 'info');
-                this.addLine('   field <id> <name> - Get field value from model', 'info');
-                this.addLine('   models        - List all data model nodes', 'info');
-                this.addLine('   ID.field_name - Quick field access (e.g., 123.name)', 'info');
-                this.addLine('                   💡 Use TAB after dot for autocomplete', 'info');
+                this.addLine(t('dataModelCommands'), 'info');
+                this.addLine(`   ${t('fieldsCommand')}`, 'info');
+                this.addLine(`   ${t('fieldCommand')}`, 'info');
+                this.addLine(`   ${t('modelsCommand')}`, 'info');
+                this.addLine(`   ${t('quickFieldAccess')}`, 'info');
+                this.addLine(`                   ${t('tabAutocomplete')}`, 'info');
                 
-                this.addLine('⚙️ SYSTEM:', 'info');
-                this.addLine('   config        - Show system configuration', 'info');
-                this.addLine('   backup        - Create project backup', 'info');
-                this.addLine('   cleanup       - Clean temporary data', 'info');
-                this.addLine('   ping          - Test system responsiveness', 'info');
+                this.addLine(t('systemCommands'), 'info');
+                this.addLine(`   ${t('configCommand')}`, 'info');
+                this.addLine(`   ${t('backupCommand')}`, 'info');
+                this.addLine(`   ${t('cleanupCommand')}`, 'info');
+                this.addLine(`   ${t('pingCommand')}`, 'info');
                 this.addLine('═'.repeat(50), 'info');
                 break;
             case 'clear':
@@ -1650,8 +1650,8 @@ class TerminalService {
                 });
                 
                 if (found.fields.length > 5) {
-                    this.addLine(`   ... and ${found.fields.length - 5} more fields`, 'info');
-                    this.addLine(`💡 Use "fields ${found.id}" to see all fields`, 'info');
+                    this.addLine(`   ${t('andMoreFields')} ${found.fields.length - 5} ${t('moreFields')}`, 'info');
+                    this.addLine(`💡 ${t('useFieldsToSeeAll')} ${found.id}${t('toSeeAllFields')}`, 'info');
                 }
             }
             
@@ -2955,7 +2955,7 @@ class TerminalService {
                     this.addLine(`   • Fields preview: ${fieldNames.join(', ')}`, 'success');
                     
                     if (fieldsCount > 3) {
-                        this.addLine(`     └ ... and ${fieldsCount - 3} more fields`, 'success');
+                        this.addLine(`     └ ${t('andMoreFields')} ${fieldsCount - 3} ${t('moreFields')}`, 'success');
                     }
                 }
                 
@@ -3205,7 +3205,7 @@ class TerminalService {
                 });
                 
                 if (fields.length > 5) {
-                    this.addLine(`   ... and ${fields.length - 5} more fields`, 'info');
+                    this.addLine(`   ${t('andMoreFields')} ${fields.length - 5} ${t('moreFields')}`, 'info');
                 }
             }
             return;
