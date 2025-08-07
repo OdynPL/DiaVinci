@@ -849,7 +849,54 @@ class TerminalService {
     handleTabCompletion() {
         const currentInput = this.commandInput.value;
         
-        // Define all available commands
+        // Check for ID.field_name pattern
+        if (currentInput.includes('.')) {
+            const [idPart, partialField] = currentInput.split('.');
+            const id = parseInt(idPart);
+            
+            if (!isNaN(id)) {
+                // Find the element by ID using internal helper method
+                const element = this.getElementByIdInternal(id);
+                if (element) {
+                    const availableFields = Object.keys(element);
+                    const matchingFields = availableFields.filter(field => 
+                        field.toLowerCase().startsWith((partialField || '').toLowerCase())
+                    );
+                    
+                    if (matchingFields.length === 1) {
+                        // Single match - complete it
+                        this.commandInput.value = `${idPart}.${matchingFields[0]}`;
+                    } else if (matchingFields.length > 1) {
+                        // Multiple matches - show them
+                        this.addLine(`💡 Available fields for element ${id}: ${matchingFields.join(', ')}`, 'info');
+                        
+                        // Find common prefix
+                        if (matchingFields.length > 1 && partialField) {
+                            let commonPrefix = matchingFields[0];
+                            for (let i = 1; i < matchingFields.length; i++) {
+                                while (!matchingFields[i].toLowerCase().startsWith(commonPrefix.toLowerCase())) {
+                                    commonPrefix = commonPrefix.slice(0, -1);
+                                }
+                            }
+                            
+                            // Complete to common prefix if it's longer than current partial field
+                            if (commonPrefix.length > (partialField || '').length) {
+                                this.commandInput.value = `${idPart}.${commonPrefix}`;
+                            }
+                        }
+                    } else {
+                        // No matching fields
+                        this.addLine(`❌ No fields match "${partialField}" for element ${id}`, 'warning');
+                        this.addLine(`💡 Available fields: ${availableFields.join(', ')}`, 'info');
+                    }
+                } else {
+                    this.addLine(`❌ Element with ID ${id} not found.`, 'error');
+                }
+                return;
+            }
+        }
+        
+        // Original command completion logic
         const commands = [
             'help', 'clear', 'status', 'export', 'version', 'time', 'history', 'reset',
             'find', 'search', 'inspect', 'list elements', 'list nodes', 'list texts', 'list trans',
@@ -957,6 +1004,8 @@ class TerminalService {
                 this.addLine('   fields <id>   - List all fields of data model', 'info');
                 this.addLine('   field <id> <name> - Get field value from model', 'info');
                 this.addLine('   models        - List all data model nodes', 'info');
+                this.addLine('   ID.field_name - Quick field access (e.g., 123.name)', 'info');
+                this.addLine('                   💡 Use TAB after dot for autocomplete', 'info');
                 
                 this.addLine('⚙️ SYSTEM:', 'info');
                 this.addLine('   config        - Show system configuration', 'info');
@@ -1102,6 +1151,9 @@ class TerminalService {
                     } else {
                         this.addLine('❌ Invalid syntax. Usage: field <data-model-id> <field-name>', 'error');
                     }
+                } else if (cmd.includes('.') && /^\d+\.\w+/.test(cmd)) {
+                    // Handle ID.field_name syntax for quick field access
+                    this.handleQuickFieldAccess(command.trim());
                 } else {
                     console.log('ExecuteCommand - Unknown command reached else clause:', { command, cmd });
                     this.addLine(`❌ Unknown command: "${command}"`, 'error');
@@ -1124,6 +1176,77 @@ class TerminalService {
                 console.log('ExecuteCommand - refocused command input');
             }
         }, 100);
+    }
+
+    // Handle ID.field_name syntax for quick field access
+    handleQuickFieldAccess(command) {
+        const [idPart, fieldName] = command.split('.');
+        const id = parseInt(idPart);
+        
+        if (isNaN(id)) {
+            this.addLine(`❌ Invalid ID: "${idPart}". Must be a number.`, 'error');
+            return;
+        }
+
+        // Find the element by ID using internal helper method
+        const element = this.getElementByIdInternal(id);
+        if (!element) {
+            this.addLine(`❌ Element with ID ${id} not found.`, 'error');
+            return;
+        }
+
+        // Check if field exists
+        if (!(fieldName in element)) {
+            this.addLine(`❌ Field "${fieldName}" not found in element ${id}.`, 'error');
+            this.addLine(`💡 Available fields: ${Object.keys(element).join(', ')}`, 'info');
+            return;
+        }
+
+        const value = element[fieldName];
+        const displayValue = typeof value === 'object' ? JSON.stringify(value, null, 2) : value;
+        
+        this.addLine(`Field Access Result:`);
+        this.addLine(`🔸 Element ID: ${id}`);
+        this.addLine(`🔸 Field: ${fieldName}`);
+        this.addLine(`🔸 Value: ${displayValue}`);
+    }
+
+    // Internal helper method to get element by ID without displaying output
+    getElementByIdInternal(id) {
+        // Get current project from global app or fallback to window.container
+        let currentProject = window.app?.diagramController?.currentProject;
+        
+        // Fallback method if window.app is not available yet
+        if (!currentProject && window.container) {
+            try {
+                const diagramController = window.container.resolve('diagramController');
+                currentProject = diagramController?.currentProject;
+            } catch (e) {
+                // Silent fallback
+            }
+        }
+        
+        if (!currentProject) {
+            return null;
+        }
+
+        // Search in all element types
+        const allElements = [
+            ...currentProject.nodes.map(n => ({...n, elementType: 'Node'})),
+            ...currentProject.texts.map(t => ({...t, elementType: 'Text'})),
+            ...currentProject.transitions.map(tr => ({...tr, elementType: 'Transition'}))
+        ];
+
+        // Try both string and number comparison
+        const found = allElements.find(el => {
+            return el.id === id || 
+                   el.id === parseInt(id) || 
+                   el.id === id.toString() ||
+                   el.id.toString() === id ||
+                   el.id.toString() === id.toString();
+        });
+        
+        return found;
     }
 
     /**
