@@ -745,7 +745,7 @@ class CanvasRenderer {
         this.ctx.textBaseline = 'middle';
         
         // Display TRUE for Step1, FALSE for Step2
-        const displayLabel = transition.label === 'Step1' ? 'TRUE' : 'FALSE';
+        const displayLabel = transition.label === 'Step1' ? t('labelTrue') : t('labelFalse');
         
         // Add small background for better visibility
         const textWidth = this.ctx.measureText(displayLabel).width;
@@ -890,7 +890,8 @@ class CanvasRenderer {
             this.ctx.font = '18px Arial';
             this.ctx.textAlign = 'center';
             this.ctx.textBaseline = 'middle';
-            this.ctx.fillText(node.label || 'Node', node.x, node.y);
+            const translatedLabel = this.translateNodeLabel(node.label || 'Node', node.type);
+            this.ctx.fillText(translatedLabel, node.x, node.y);
         } else if (node.type === 'datamodel') {
             // Draw data model structure
             this.drawDataModelContent(node);
@@ -901,13 +902,15 @@ class CanvasRenderer {
                 this.ctx.font = '18px Arial';
                 this.ctx.textAlign = 'center';
                 this.ctx.textBaseline = 'middle';
-                this.ctx.fillText(node.label, node.x, node.y);
+                const translatedLabel = this.translateNodeLabel(node.label, node.type);
+                this.ctx.fillText(translatedLabel, node.x, node.y);
             } else {
                 this.ctx.fillStyle = '#333';
                 this.ctx.font = '18px Arial';
                 this.ctx.textAlign = 'center';
                 this.ctx.textBaseline = 'bottom';
-                this.ctx.fillText(node.label || 'Node', node.x, node.y - node.r - 8);
+                const translatedLabel = this.translateNodeLabel(node.label || 'Node', node.type);
+                this.ctx.fillText(translatedLabel, node.x, node.y - node.r - 8);
             }
         }
     }
@@ -985,7 +988,7 @@ class CanvasRenderer {
                 
                 // Calculate available width for field name
                 this.ctx.textAlign = 'right';
-                let typeText = field.type;
+                let typeText = this.translateFieldType(field.type);
                 if (field.required) typeText += '*';
                 if (field.nullable) typeText += '?';
                 if (field.readOnly) typeText += ' (RO)';
@@ -1365,5 +1368,45 @@ class CanvasRenderer {
         }
         
         return bestFit + ellipsis;
+    }
+
+    /**
+     * Translate field type for display (same as in DataModelEditor)
+     */
+    translateFieldType(type) {
+        const typeMap = {
+            'String': t('stringType'),
+            'Number': t('numberType'),
+            'Boolean': t('booleanType'),
+            'Date': t('dateType'),
+            'Email': t('emailType'),
+            'URL': t('urlType'),
+            'Phone': t('phoneType'),
+            'Currency': t('currencyType'),
+            'Country Code': t('countryCodeType'),
+            'Language Code': t('languageCodeType'),
+            'Credit Card': t('creditCardType')
+        };
+        return typeMap[type] || type;
+    }
+
+    /**
+     * Translate node labels for display
+     */
+    translateNodeLabel(label, type) {
+        // If it's a user-defined label, return as is
+        // Only translate standard/default labels
+        const labelMap = {
+            'START': t('nodeStart'),
+            'STOP': t('nodeStop'),
+            'IF': t('nodeIf'),
+            'Node': t('nodeDefault'),
+            'Step1': t('labelStep1'),
+            'Step2': t('labelStep2'),
+            'TRUE': t('labelTrue'),
+            'FALSE': t('labelFalse')
+        };
+        
+        return labelMap[label] || label;
     }
 }

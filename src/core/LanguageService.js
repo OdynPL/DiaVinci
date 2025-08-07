@@ -175,6 +175,16 @@ const translations = {
         languageCodeType: "Language Code",
         creditCardType: "Credit Card",
         
+        // Node labels
+        nodeStart: "START",
+        nodeStop: "STOP",
+        nodeIf: "IF",
+        nodeDefault: "Node",
+        labelTrue: "TRUE",
+        labelFalse: "FALSE",
+        labelStep1: "Step1",
+        labelStep2: "Step2",
+        
         // Data Model Editor placeholders
         enterModelName: "Enter model name",
         jsonSchemaWillAppear: "JSON schema will appear here...",
@@ -602,6 +612,16 @@ const translations = {
         countryCodeType: "Kod kraju",
         languageCodeType: "Kod języka",
         creditCardType: "Karta kredytowa",
+        
+        // Node labels
+        nodeStart: "START",
+        nodeStop: "STOP",
+        nodeIf: "JEŚLI",
+        nodeDefault: "Węzeł",
+        labelTrue: "PRAWDA",
+        labelFalse: "FAŁSZ",
+        labelStep1: "Krok1",
+        labelStep2: "Krok2",
         
         // Data Model Editor placeholders
         enterModelName: "Wprowadź nazwę modelu",

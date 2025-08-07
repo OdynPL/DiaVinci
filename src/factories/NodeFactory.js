@@ -22,7 +22,7 @@ class NodeFactory {
         return new Node({
             x, y, r: 30,
             id: Date.now(),
-            label: 'START',
+            label: t('nodeStart'),
             color: '#27ae60',
             type: 'start'
         });
@@ -35,7 +35,7 @@ class NodeFactory {
         return new Node({
             x, y, r: 30,
             id: Date.now(),
-            label: 'STOP',
+            label: t('nodeStop'),
             color: '#e74c3c',
             type: 'stop'
         });
