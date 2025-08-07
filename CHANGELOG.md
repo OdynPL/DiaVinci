@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2025-08-07
+
+### 🚀 Added - GitHub Pages Deployment
+
+#### Live Demo
+- **GitHub Pages**: DiaVinci is now live at [https://odynpl.github.io/DiaVinci/](https://odynpl.github.io/DiaVinci/)
+- **Instant Access**: No installation required, full functionality in browser
+- **Auto-deployment**: Automatic updates when main branch changes
+- **PWA Ready**: Progressive Web App features for offline use
+
+#### Documentation Updates
+- **Enhanced README**: Added live demo links and browser compatibility info
+- **Deployment Guide**: New comprehensive deployment documentation
+- **Links Section**: Quick access to all project resources
+- **Status Badges**: GitHub Pages, license, and technology badges
+- **Browser Support**: Detailed compatibility information
+
+#### Improvements
+- **Multi-option Quick Start**: Online demo vs local installation
+- **Better Navigation**: Enhanced documentation structure
+- **Professional Branding**: Improved project presentation
+
 ## [2.1.0] - 2025-08-07
 
 ### 🆕 Added - Developer Terminal System

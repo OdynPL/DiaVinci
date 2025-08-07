@@ -2,6 +2,12 @@
 
 Modern web-based flowchart editor built with vanilla JavaScript. Create, edit, and manage diagrams with drag-and-drop interface and real-time collaboration features.
 
+## 🌐 Live Demo
+
+**Try DiaVinci now**: [https://odynpl.github.io/DiaVinci/](https://odynpl.github.io/DiaVinci/)
+
+Experience all features directly in your browser - no installation required!
+
 ## ✨ Features
 
 - **Interactive Canvas** - HTML5 Canvas with smooth drag-and-drop
@@ -41,6 +47,13 @@ Modern web-based flowchart editor built with vanilla JavaScript. Create, edit, a
 
 ## 🚀 Quick Start
 
+### Option 1: Try Online (Recommended)
+**Visit the live demo**: [https://odynpl.github.io/DiaVinci/](https://odynpl.github.io/DiaVinci/)
+- No installation required
+- All features available instantly
+- Works on any device with a modern browser
+
+### Option 2: Run Locally
 1. **Clone and run locally**
    ```bash
    git clone https://github.com/OdynPL/DiaVinci.git
@@ -54,6 +67,15 @@ Modern web-based flowchart editor built with vanilla JavaScript. Create, edit, a
    - Drag components from left sidebar to canvas
    - Double-click elements to edit text
    - Use bottom navigation for save/load/export
+
+## 📱 Browser Compatibility
+
+DiaVinci works best with modern browsers:
+- ✅ Chrome/Chromium 80+
+- ✅ Firefox 75+
+- ✅ Safari 13+
+- ✅ Edge 80+
+- 📱 Mobile browsers supported
 
 ## 🎮 Usage
 
@@ -154,17 +176,38 @@ src/
 
 ## 📚 Documentation
 
+- **[Live Demo](https://odynpl.github.io/DiaVinci/)** - Try DiaVinci directly in your browser
 - **[Data Model System](docs/DataModel.md)** - Comprehensive guide to the Data Model editor
 - **[Developer Terminal](docs/Terminal.md)** - Complete terminal command reference and usage guide
+- **[Auto-Save System](docs/AUTO_SAVE.md)** - Automatic saving and crash recovery features
+- **[Transition Styling](docs/TRANSITION_STYLING.md)** - Advanced transition styling options
 - **[API Reference](docs/API.md)** - Detailed API documentation (coming soon)
-- **[Contributing Guide](CONTRIBUTING.md)** - How to contribute to the project (coming soon)
+- **[Contributing Guide](CONTRIBUTING.md)** - How to contribute to the project
 
 ## 🤝 Contributing
 
-1. Fork repository
-2. Create feature branch: `git checkout -b feature/new-feature`
-3. Commit changes: `git commit -m "feat: add new feature"`
-4. Push and create Pull Request
+We welcome contributions! Here's how to get started:
+
+1. **Try the live demo**: [https://odynpl.github.io/DiaVinci/](https://odynpl.github.io/DiaVinci/)
+2. Fork the repository
+3. Create feature branch: `git checkout -b feature/new-feature`
+4. Commit changes: `git commit -m "feat: add new feature"`
+5. Push and create Pull Request
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+
+## 🔗 Links
+
+- **🌐 Live Demo**: [https://odynpl.github.io/DiaVinci/](https://odynpl.github.io/DiaVinci/)
+- **📦 Repository**: [https://github.com/OdynPL/DiaVinci](https://github.com/OdynPL/DiaVinci)
+- **📋 Issues**: [Report bugs or request features](https://github.com/OdynPL/DiaVinci/issues)
+- **📖 Documentation**: [docs/](docs/)
+
+## 🏆 Project Status
+
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live-brightgreen)](https://odynpl.github.io/DiaVinci/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Vanilla JS](https://img.shields.io/badge/Made%20with-Vanilla%20JS-yellow)](https://github.com/OdynPL/DiaVinci)
 
 ## 📄 License
 
