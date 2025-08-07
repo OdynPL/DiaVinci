@@ -33,9 +33,26 @@
 <body class="bg-slate-50 min-h-screen font-sans antialiased flex flex-col">
     <!-- Top Navigation -->
     <nav class="bg-slate-800 shadow-lg h-16 flex items-center px-4 sm:px-6 lg:px-8 flex-shrink-0">
-        <div class="flex items-center space-x-4">
-            <img src="Resources/branding/logo.svg" alt="Logo" class="h-10 w-12 object-contain">
-            <h1 class="text-white text-xl sm:text-2xl font-bold tracking-wide">DiaVinci</h1>
+        <div class="flex items-center justify-between w-full">
+            <!-- Logo and Title -->
+            <div class="flex items-center space-x-4">
+                <img src="Resources/branding/logo.svg" alt="Logo" class="h-10 w-12 object-contain">
+                <h1 class="text-white text-xl sm:text-2xl font-bold tracking-wide">DiaVinci</h1>
+            </div>
+            
+            <!-- Language Switcher -->
+            <div class="flex items-center">
+                <div class="language-switcher bg-slate-700 rounded-lg p-2 flex items-center space-x-2 border border-slate-600">
+                    <button id="lang-en" class="language-btn active flex items-center space-x-1 px-3 py-1 rounded-md transition-all duration-200 text-sm font-medium">
+                        <span class="flag-icon">🇺🇸</span>
+                        <span>EN</span>
+                    </button>
+                    <button id="lang-pl" class="language-btn flex items-center space-x-1 px-3 py-1 rounded-md transition-all duration-200 text-sm font-medium">
+                        <span class="flag-icon">🇵🇱</span>
+                        <span>PL</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </nav>
     
@@ -45,7 +62,7 @@
         <div class="w-full lg:w-80 bg-white shadow-lg border-r border-gray-200 flex flex-col">
             <!-- Components Header -->
             <div class="p-3 border-b border-gray-200">
-                <h2 class="text-lg font-semibold text-gray-800 mb-3">Components</h2>
+                <h2 class="text-lg font-semibold text-gray-800 mb-3" data-translate="components">Components</h2>
                 
                 <!-- Components Grid -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 gap-2">
@@ -58,7 +75,7 @@
                                 <circle cx="12" cy="12" r="3" fill="currentColor"/>
                             </svg>
                         </div>
-                        <span class="text-xs font-medium text-blue-700">Node</span>
+                        <span class="text-xs font-medium text-blue-700" data-translate="nodes">Node</span>
                     </div>
                     
                     <!-- Text Component -->
@@ -69,7 +86,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                             </svg>
                         </div>
-                        <span class="text-xs font-medium text-emerald-700">Text</span>
+                        <span class="text-xs font-medium text-emerald-700" data-translate="texts">Text</span>
                     </div>
                     
                     <!-- Start Component -->
@@ -81,7 +98,7 @@
                                 <polygon points="10,8 16,12 10,16" fill="white"/>
                             </svg>
                         </div>
-                        <span class="text-xs font-medium text-green-700">START</span>
+                        <span class="text-xs font-medium text-green-700" data-translate="start">START</span>
                     </div>
                     
                     <!-- Stop Component -->
@@ -93,7 +110,7 @@
                                 <rect x="8" y="8" width="8" height="8" fill="white"/>
                             </svg>
                         </div>
-                        <span class="text-xs font-medium text-red-700">STOP</span>
+                        <span class="text-xs font-medium text-red-700" data-translate="stop">STOP</span>
                     </div>
                     
                     <!-- IF Component -->
@@ -105,7 +122,7 @@
                                 <text x="12" y="16" text-anchor="middle" fill="white" font-size="10" font-weight="bold">?</text>
                             </svg>
                         </div>
-                        <span class="text-xs font-medium text-purple-700">IF</span>
+                        <span class="text-xs font-medium text-purple-700" data-translate="decision">IF</span>
                     </div>
 
                     <!-- Data Model Component -->
@@ -118,7 +135,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 7v10c0 1 2 2 7 2s7-1 7-2V7"/>
                             </svg>
                         </div>
-                        <span class="text-xs font-medium text-blue-800">Data Model</span>
+                        <span class="text-xs font-medium text-blue-800" data-translate="dataModel">Data Model</span>
                     </div>
                     
                     <!-- Arrow Right -->
@@ -129,7 +146,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                             </svg>
                         </div>
-                        <span class="text-xs font-medium text-orange-700">Right</span>
+                        <span class="text-xs font-medium text-orange-700" data-translate="transitions">Right</span>
                     </div>
                     
                     <!-- Arrow Both -->
@@ -200,7 +217,7 @@
                 <!-- Recent Projects Header -->
                 <div class="p-3 border-b border-gray-200 flex-shrink-0">
                     <div class="flex items-center justify-between mb-3">
-                        <h2 class="text-lg font-semibold text-gray-800">Recent Projects</h2>
+                        <h2 class="text-lg font-semibold text-gray-800" data-translate="recentProjects">Recent Projects</h2>
                         <button id="clear-all-projects-btn" 
                                 class="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors duration-200"
                                 title="Usuń wszystkie zapisane projekty z listy">
@@ -221,6 +238,7 @@
                                id="project-search" 
                                class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
                                placeholder="Wyszukaj projekty..."
+                               data-translate="searchProjects"
                                title="Wpisz nazwę projektu aby go znaleźć na liście">
                     </div>
                 </div>
@@ -245,7 +263,7 @@
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
-                <span class="hidden sm:inline text-xs">Terminal</span>
+                <span class="hidden sm:inline text-xs" data-translate="terminal">Terminal</span>
             </button>
 
             <!-- Main Navigation Buttons (Right Side) -->
@@ -258,7 +276,7 @@
                     <svg class="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1-1H9a1 1 0 00-1 1v3M4 7h16"/>
                     </svg>
-                    <span class="text-xs font-medium">Remove</span>
+                    <span class="text-xs font-medium" data-translate="removeSelected">Remove</span>
                 </button>
                 
                 <button id="new-project-btn" 
@@ -267,7 +285,7 @@
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                     </svg>
-                    <span class="hidden sm:inline text-xs">New</span>
+                    <span class="hidden sm:inline text-xs" data-translate="newProject">New</span>
                 </button>
                     
                     <button id="save-project-btn" 
@@ -276,7 +294,7 @@
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"/>
                         </svg>
-                        <span class="hidden sm:inline text-xs">Save</span>
+                        <span class="hidden sm:inline text-xs" data-translate="save">Save</span>
                     </button>
                     
                     <button id="load-project-btn" 
@@ -285,7 +303,7 @@
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
                         </svg>
-                        <span class="hidden sm:inline text-xs">Load</span>
+                        <span class="hidden sm:inline text-xs" data-translate="load">Load</span>
                     </button>
                     
                     <button id="clear-all-btn" 
@@ -294,7 +312,7 @@
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        <span class="hidden sm:inline text-xs">Clear All</span>
+                        <span class="hidden sm:inline text-xs" data-translate="clear">Clear All</span>
                     </button>
                     
                     <button id="export-image-btn" 
@@ -303,7 +321,7 @@
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                         </svg>
-                        <span class="hidden sm:inline text-xs">Export Image</span>
+                        <span class="hidden sm:inline text-xs" data-translate="exportImage">Export Image</span>
                     </button>
                     
                     <button id="export-file-btn" 
@@ -312,7 +330,7 @@
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
                         </svg>
-                        <span class="hidden sm:inline text-xs">Export File</span>
+                        <span class="hidden sm:inline text-xs" data-translate="exportFile">Export File</span>
                     </button>
                     
                     <button id="import-file-btn" 
@@ -321,7 +339,7 @@
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
                         </svg>
-                        <span class="hidden sm:inline text-xs">Import</span>
+                        <span class="hidden sm:inline text-xs" data-translate="importFile">Import</span>
                     </button>
             </div>
         </div>
@@ -339,15 +357,16 @@
                     <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
                     <div class="w-3 h-3 bg-green-500 rounded-full"></div>
                 </div>
-                <span class="text-gray-700 text-sm font-medium">Terminal Console</span>
+                <span class="text-gray-700 text-sm font-medium" data-translate="terminal">Terminal Console</span>
             </div>
             <div class="flex items-center space-x-2">
                 <!-- Filter Controls -->
                 <div class="flex items-center space-x-2">
-                    <label for="terminal-filter-text" class="text-xs text-gray-700 font-medium">Search</label>
+                    <label for="terminal-filter-text" class="text-xs text-gray-700 font-medium" data-translate="search">Search</label>
                     <input type="text" 
                            id="terminal-filter-text" 
                            placeholder="Filter text..." 
+                           data-translate="filterText"
                            class="px-3 py-1 bg-white border border-gray-300 rounded text-xs text-gray-700"
                            style="width: 300px;"
                            title="Filtruj wiadomości według tekstu">
@@ -401,6 +420,7 @@
     </div>
     
     <!-- Core dependencies -->
+    <script src="src/core/LanguageService.js"></script>
     <script src="src/core/Logger.js"></script>
     <script src="src/core/ErrorHandler.js"></script>
     <script src="src/core/DIContainer.js"></script>

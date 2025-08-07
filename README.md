@@ -18,6 +18,7 @@ Experience all features directly in your browser - no installation required!
 - **Project Management** - Save, load, and organize multiple projects
 - **🆕 Data Model Editor** - Advanced field management with JSON Schema support
 - **🆕 Developer Terminal** - Integrated command-line interface with auto-completion
+- **🆕 Language Switcher** - Toggle between English and Polish interface (🇺🇸/🇵🇱)
 
 ### Components
 - **Nodes** - Process boxes, Start/Stop, Decision diamonds
@@ -44,6 +45,14 @@ Experience all features directly in your browser - no installation required!
 - **JSON Schema** - Bi-directional sync between visual fields and JSON Schema
 - **Real-time Validation** - Live error detection and highlighting
 - **Auto-synchronization** - Intelligent sync between field editor and JSON view
+
+### 🆕 Language Switcher Features
+- **Bilingual Interface** - Toggle between English (🇺🇸) and Polish (🇵🇱)
+- **Top Navigation** - Convenient switcher in header next to logo
+- **Persistent Preference** - Language choice saved in browser storage
+- **Real-time Updates** - Interface updates immediately when switched
+- **Comprehensive Coverage** - All UI elements, buttons, and labels translated
+- **Mobile Responsive** - Works perfectly on all device sizes
 
 ## 🚀 Quick Start
 
@@ -179,6 +188,7 @@ src/
 - **[Live Demo](https://odynpl.github.io/DiaVinci/)** - Try DiaVinci directly in your browser
 - **[Data Model System](docs/DataModel.md)** - Comprehensive guide to the Data Model editor
 - **[Developer Terminal](docs/Terminal.md)** - Complete terminal command reference and usage guide
+- **[Language Switcher](docs/LANGUAGE_SWITCHER.md)** - Bilingual interface guide (EN/PL)
 - **[Auto-Save System](docs/AUTO_SAVE.md)** - Automatic saving and crash recovery features
 - **[Transition Styling](docs/TRANSITION_STYLING.md)** - Advanced transition styling options
 - **[API Reference](docs/API.md)** - Detailed API documentation (coming soon)

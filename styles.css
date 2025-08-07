@@ -596,3 +596,53 @@ input[type="text"]:focus {
         /* Removed margin-bottom to prevent conflicts with fixed positioning */
     }
 }
+
+/* Language Switcher Styles */
+.language-switcher {
+    position: relative;
+}
+
+.language-btn {
+    color: #94a3b8; /* slate-400 */
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+}
+
+.language-btn:hover {
+    color: #e2e8f0; /* slate-200 */
+    background-color: rgba(71, 85, 105, 0.5); /* slate-600 with opacity */
+}
+
+.language-btn.active {
+    color: #ffffff;
+    background-color: #3b82f6; /* blue-500 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.language-btn.active:hover {
+    background-color: #2563eb; /* blue-600 */
+}
+
+.flag-icon {
+    font-size: 14px;
+    line-height: 1;
+}
+
+/* Responsive adjustments for language switcher */
+@media (max-width: 640px) {
+    .language-switcher {
+        padding: 6px;
+    }
+    
+    .language-btn {
+        padding: 6px 8px;
+        font-size: 12px;
+    }
+    
+    .flag-icon {
+        font-size: 12px;
+    }
+}

@@ -15,8 +15,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Auto-deployment**: Automatic updates when main branch changes
 - **PWA Ready**: Progressive Web App features for offline use
 
+### 🌐 Added - Language Switcher
+
+#### Bilingual Interface
+- **Language Toggle**: Switch between English (🇺🇸) and Polish (🇵🇱)
+- **Top Navigation**: Integrated switcher in header next to logo
+- **Persistent Storage**: Language preference saved in browser localStorage
+- **Real-time Updates**: Interface updates immediately when language is changed
+
+#### Translation System
+- **LanguageService**: Complete translation management system
+- **Comprehensive Coverage**: All UI elements, buttons, and labels translated
+- **Fallback System**: Automatic fallback to English for missing translations
+- **Event System**: Language change events for dynamic content updates
+
+#### User Experience
+- **Flag Icons**: Visual country flags for instant recognition (🇺🇸/🇵🇱)
+- **Modern UI**: Styled toggle buttons with smooth transitions
+- **Mobile Responsive**: Perfect functionality on all device sizes
+- **Professional Design**: Consistent with application's visual identity
+
+#### Technical Implementation
+- **Translation Keys**: HTML `data-translate` attributes for automatic updates
+- **Global Functions**: `t()` for translations, `switchLanguage()` for language changes
+- **Component Integration**: Works seamlessly with existing UI components
+- **Performance Optimized**: Minimal overhead, instant language switching
+
 #### Documentation Updates
 - **Enhanced README**: Added live demo links and browser compatibility info
+- **Language Guide**: Complete documentation for the language switcher system
 - **Deployment Guide**: New comprehensive deployment documentation
 - **Links Section**: Quick access to all project resources
 - **Status Badges**: GitHub Pages, license, and technology badges
