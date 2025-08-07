@@ -66,6 +66,8 @@ const translations = {
         private: "PRIVATE",
         public: "PUBLIC",
         makeProjectPrivate: "Make this project private",
+        page: "Page",
+        of: "of",
         
         // Data Model Editor
         fieldSpecificErrors: "Field-specific errors:",
@@ -305,6 +307,8 @@ const translations = {
         private: "PRYWATNY",
         public: "PUBLICZNY",
         makeProjectPrivate: "Ustaw ten projekt jako prywatny",
+        page: "Strona",
+        of: "z",
         
         // Data Model Editor
         fieldSpecificErrors: "Błędy specyficzne dla pól:",
@@ -638,3 +642,6 @@ window.LanguageService = {
     getCurrentLanguage: () => currentLanguage,
     init: initializeLanguage
 };
+
+// Make t() available globally for convenience
+window.t = t;

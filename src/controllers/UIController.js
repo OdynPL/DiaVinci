@@ -53,6 +53,11 @@ class UIController {
         this.eventBus.on('project.loaded', (project) => this.handleProjectLoaded(project));
         this.eventBus.on('project.created', () => this.handleProjectCreated());
         this.eventBus.on('project.cleared', () => this.handleProjectCleared());
+        
+        // Language change listener
+        window.addEventListener('languageChanged', () => {
+            this.updateRecentProjectsList();
+        });
     }
 
     /**
@@ -774,7 +779,7 @@ class UIController {
         // Privacy status badge
         const statusDiv = document.createElement('div');
         const isPrivate = project.isPrivate || false;
-        statusDiv.textContent = isPrivate ? 'PRIVATE' : 'PUBLIC';
+        statusDiv.textContent = isPrivate ? t('private') : t('public');
         statusDiv.className = 'text-xs px-2 py-1 rounded ml-2';
         
         if (isPrivate) {
@@ -836,7 +841,7 @@ class UIController {
         pageInfo.className = 'text-sm text-gray-600 font-medium';
         const startProject = ((currentPageNum - 1) * this.projectsPerPage) + 1;
         const endProject = Math.min(currentPageNum * this.projectsPerPage, totalProjects);
-        pageInfo.textContent = `${startProject}-${endProject} of ${totalProjects}`;
+        pageInfo.textContent = `${t('page')} ${startProject}-${endProject} ${t('of')} ${totalProjects}`;
 
         const controls = document.createElement('div');
         controls.className = 'flex items-center space-x-2';
@@ -851,7 +856,7 @@ class UIController {
 
             const pageIndicator = document.createElement('span');
             pageIndicator.className = 'px-3 py-1 text-sm font-medium text-gray-600 bg-gray-100 rounded';
-            pageIndicator.textContent = `${currentPageNum}/${totalPages}`;
+            pageIndicator.textContent = `${t('page')} ${currentPageNum} ${t('of')} ${totalPages}`;
 
             const nextBtn = this.createPaginationButton('›', 'Next page', currentPageNum === totalPages, () => {
                 if (this.currentPage < totalPages) {
@@ -866,7 +871,7 @@ class UIController {
         } else {
             const pageIndicator = document.createElement('span');
             pageIndicator.className = 'px-3 py-1 text-sm font-medium text-gray-600 bg-gray-100 rounded';
-            pageIndicator.textContent = `${currentPageNum}/${totalPages}`;
+            pageIndicator.textContent = `${t('page')} ${currentPageNum} ${t('of')} ${totalPages}`;
             controls.appendChild(pageIndicator);
         }
 
