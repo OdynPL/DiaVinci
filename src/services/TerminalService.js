@@ -858,7 +858,7 @@ class TerminalService {
                 // Find the element by ID using internal helper method
                 const element = this.getElementByIdInternal(id);
                 if (element) {
-                    const availableFields = Object.keys(element);
+                    const availableFields = this.getAvailableFieldNames(element);
                     const matchingFields = availableFields.filter(field => 
                         field.toLowerCase().startsWith((partialField || '').toLowerCase())
                     );
@@ -868,7 +868,19 @@ class TerminalService {
                         this.commandInput.value = `${idPart}.${matchingFields[0]}`;
                     } else if (matchingFields.length > 1) {
                         // Multiple matches - show them
-                        this.addLine(`💡 Available fields for element ${id}: ${matchingFields.join(', ')}`, 'info');
+                        this.addLine(`💡 Available fields for element ${id} (${element.elementType}):`, 'info');
+                        
+                        // Group fields by category for better readability
+                        const basicFields = matchingFields.filter(f => !f.includes('.'));
+                        const nestedFields = matchingFields.filter(f => f.includes('.'));
+                        
+                        if (basicFields.length > 0) {
+                            this.addLine(`   Basic: ${basicFields.slice(0, 8).join(', ')}${basicFields.length > 8 ? '...' : ''}`, 'info');
+                        }
+                        
+                        if (nestedFields.length > 0) {
+                            this.addLine(`   Nested: ${nestedFields.slice(0, 5).join(', ')}${nestedFields.length > 5 ? '...' : ''}`, 'info');
+                        }
                         
                         // Find common prefix
                         if (matchingFields.length > 1 && partialField) {
@@ -887,7 +899,7 @@ class TerminalService {
                     } else {
                         // No matching fields
                         this.addLine(`❌ No fields match "${partialField}" for element ${id}`, 'warning');
-                        this.addLine(`💡 Available fields: ${availableFields.join(', ')}`, 'info');
+                        this.addLine(`💡 Available fields: ${availableFields.slice(0, 10).join(', ')}${availableFields.length > 10 ? '...' : ''}`, 'info');
                     }
                 } else {
                     this.addLine(`❌ Element with ID ${id} not found.`, 'error');
@@ -1195,20 +1207,169 @@ class TerminalService {
             return;
         }
 
-        // Check if field exists
-        if (!(fieldName in element)) {
+        // Check if field exists (including nested field access)
+        const fieldValue = this.getNestedFieldValue(element, fieldName);
+        if (fieldValue === undefined) {
             this.addLine(`❌ Field "${fieldName}" not found in element ${id}.`, 'error');
-            this.addLine(`💡 Available fields: ${Object.keys(element).join(', ')}`, 'info');
+            
+            // Debug info for DataModel
+            if (element.elementType === 'Node' && element.type === 'datamodel' && element.fields) {
+                this.addLine(`🔧 DataModel Debug Info:`, 'debug');
+                this.addLine(`   Total fields: ${element.fields.length}`, 'debug');
+                element.fields.forEach((field, index) => {
+                    this.addLine(`   Field ${index}: name="${field.name}", type="${field.type}"`, 'debug');
+                });
+            }
+            
+            this.addLine(`💡 Available fields: ${this.getAvailableFieldNames(element).join(', ')}`, 'info');
             return;
         }
 
-        const value = element[fieldName];
-        const displayValue = typeof value === 'object' ? JSON.stringify(value, null, 2) : value;
+        const displayValue = this.formatFieldValue(fieldValue, element.elementType);
         
         this.addLine(`Field Access Result:`);
         this.addLine(`🔸 Element ID: ${id}`);
+        this.addLine(`🔸 Element Type: ${element.elementType}`);
         this.addLine(`🔸 Field: ${fieldName}`);
         this.addLine(`🔸 Value: ${displayValue}`);
+        
+        // Additional info for DataModel field access
+        if (element.elementType === 'Node' && element.type === 'datamodel') {
+            if (fieldName === 'fields') {
+                this.addLine(`💡 This DataModel has ${element.fields.length} fields defined`, 'info');
+                if (element.fields.length > 0) {
+                    this.addLine(`   Field names: ${element.fields.map(f => f.name).join(', ')}`, 'info');
+                }
+            } else {
+                // Check if this is a direct field name access
+                const matchingField = element.fields.find(field => field.name === fieldName);
+                if (matchingField) {
+                    this.addLine(`💡 Field details:`, 'info');
+                    this.addLine(`   Type: ${matchingField.type}`, 'info');
+                    this.addLine(`   Required: ${matchingField.required ? 'Yes' : 'No'}`, 'info');
+                    this.addLine(`   Read-only: ${matchingField.readOnly ? 'Yes' : 'No'}`, 'info');
+                    if (matchingField.initialValue) {
+                        this.addLine(`   Initial Value: "${matchingField.initialValue}"`, 'info');
+                    }
+                }
+            }
+        }
+    }
+
+    // Helper method to get nested field values (e.g., from.id, fields[0].name, lung)
+    getNestedFieldValue(obj, fieldPath) {
+        if (!fieldPath || !obj) return undefined;
+        
+        // Handle simple field access
+        if (fieldPath in obj) {
+            return obj[fieldPath];
+        }
+        
+        // Special handling for DataModel field names
+        if (obj.elementType === 'Node' && obj.type === 'datamodel' && obj.fields) {
+            // Check if fieldPath matches any field name directly
+            const matchingField = obj.fields.find(field => field.name === fieldPath);
+            if (matchingField) {
+                // Return the field object itself or its initial value
+                return matchingField.initialValue !== undefined ? matchingField.initialValue : matchingField;
+            }
+        }
+        
+        // Handle array-like access for fields (e.g., fields.0.name would access first field's name)
+        const parts = fieldPath.split('.');
+        let current = obj;
+        
+        for (const part of parts) {
+            if (current === null || current === undefined) return undefined;
+            
+            // Handle array index access
+            if (/^\d+$/.test(part) && Array.isArray(current)) {
+                const index = parseInt(part);
+                current = current[index];
+            } else if (current.hasOwnProperty && current.hasOwnProperty(part)) {
+                current = current[part];
+            } else {
+                return undefined;
+            }
+        }
+        
+        return current;
+    }
+
+    // Helper method to get all available field names for autocomplete
+    getAvailableFieldNames(element) {
+        const baseFields = Object.keys(element).filter(key => key !== 'elementType');
+        
+        // Add special fields for DataModel nodes
+        if (element.elementType === 'Node' && element.type === 'datamodel' && element.fields) {
+            // Add the main fields array
+            baseFields.push('fields');
+            
+            // Add individual field names from DataModel by their actual names
+            element.fields.forEach((field, index) => {
+                // Add direct field name access (e.g., "lung" for language field)
+                if (field.name) {
+                    baseFields.push(field.name);
+                }
+                
+                // Also add indexed access for detailed field properties
+                baseFields.push(`fields.${index}.name`);
+                baseFields.push(`fields.${index}.type`);
+                baseFields.push(`fields.${index}.initialValue`);
+                baseFields.push(`fields.${index}.required`);
+                baseFields.push(`fields.${index}.readOnly`);
+                baseFields.push(`fields.${index}.id`);
+            });
+        }
+        
+        // Add special fields for Transitions
+        if (element.elementType === 'Transition') {
+            if (element.from) {
+                baseFields.push('from.id', 'from.label', 'from.type', 'from.x', 'from.y');
+            }
+            if (element.to) {
+                baseFields.push('to.id', 'to.label', 'to.type', 'to.x', 'to.y');
+            }
+        }
+        
+        return baseFields.sort();
+    }
+
+    // Helper method to format field values for display
+    formatFieldValue(value, elementType) {
+        if (value === null) return 'null';
+        if (value === undefined) return 'undefined';
+        
+        if (typeof value === 'object') {
+            if (Array.isArray(value)) {
+                if (value.length === 0) return '[]';
+                if (value.length <= 3) {
+                    return `[${value.map(v => typeof v === 'object' ? JSON.stringify(v) : v).join(', ')}]`;
+                } else {
+                    return `Array(${value.length}) [${value.slice(0, 2).map(v => typeof v === 'object' ? JSON.stringify(v) : v).join(', ')}, ...]`;
+                }
+            } else {
+                // Format objects with limited depth
+                try {
+                    const jsonStr = JSON.stringify(value, null, 2);
+                    if (jsonStr.length > 200) {
+                        return jsonStr.substring(0, 197) + '...';
+                    }
+                    return jsonStr;
+                } catch (e) {
+                    return '[Object]';
+                }
+            }
+        }
+        
+        if (typeof value === 'string') {
+            if (value.length > 100) {
+                return `"${value.substring(0, 97)}..."`;
+            }
+            return `"${value}"`;
+        }
+        
+        return String(value);
     }
 
     // Internal helper method to get element by ID without displaying output
