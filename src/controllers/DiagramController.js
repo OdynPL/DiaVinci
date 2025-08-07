@@ -245,6 +245,10 @@ class DiagramController {
     createText(x, y) {
         const text = new TextElement({x, y, label: 'placeholder1'});
         this.currentProject.addText(text);
+        
+        // Log text control creation
+        Logger.textControl('created', text, { x, y });
+        
         this.render();
     }
 
@@ -680,8 +684,23 @@ class DiagramController {
             wasModified = true;
         }
 
-        // End single element dragging
-        if (this.dragState.isDragging) {
+        // End single element dragging and log movement
+        if (this.dragState.isDragging && this.dragState.element && this.dragState.initialPosition) {
+            const element = this.dragState.element;
+            const initialPos = this.dragState.initialPosition;
+            const currentPos = { x: element.x, y: element.y };
+            
+            // Check if element actually moved
+            const deltaX = Math.abs(currentPos.x - initialPos.x);
+            const deltaY = Math.abs(currentPos.y - initialPos.y);
+            const moveThreshold = 2; // pixels
+            
+            if (deltaX > moveThreshold || deltaY > moveThreshold) {
+                // Log element movement
+                const elementLabel = element.label || element.id || 'Unknown';
+                Logger.elementMove(this.dragState.type, elementLabel, initialPos, currentPos);
+            }
+            
             wasModified = true;
         }
         
@@ -695,6 +714,7 @@ class DiagramController {
         this.dragState.type = null;
         this.dragState.breakPointData = null;
         this.dragState.pendingDrag = null; // Clear pending drag state
+        this.dragState.initialPosition = null; // Clear initial position
         
         // Trigger auto-save if elements were moved
         if (wasModified) {

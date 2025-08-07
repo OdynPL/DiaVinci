@@ -181,10 +181,22 @@ class InputService {
                 if (sanitizedValue) {
                     if (type === 'node' || type === 'text') {
                         Logger.debug('Setting label', { type, newValue: sanitizedValue });
+                        const oldLabel = this.editingElement.label;
                         this.editingElement.setLabel(sanitizedValue);
+                        
+                        // Log element modification if label actually changed
+                        if (oldLabel !== sanitizedValue) {
+                            Logger.elementModify(type, sanitizedValue, 'label', oldLabel, sanitizedValue);
+                        }
                     } else if (type === 'transition') {
                         Logger.debug('Setting transition label', { newValue: sanitizedValue });
+                        const oldLabel = this.editingElement.label;
                         this.editingElement.setLabel(sanitizedValue);
+                        
+                        // Log transition modification if label actually changed
+                        if (oldLabel !== sanitizedValue) {
+                            Logger.elementModify(type, sanitizedValue, 'label', oldLabel, sanitizedValue);
+                        }
                     }
                 }
                 

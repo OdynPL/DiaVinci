@@ -118,6 +118,42 @@ class Logger {
     }
 
     /**
+     * Log text control creation
+     */
+    static textControl(action, textElement, position) {
+        const message = `Text control ${action}: "${textElement.label}" at (X: ${position.x}, Y: ${position.y})`;
+        Logger.info(message, { action, textElement: textElement.label, position });
+        
+        if (Logger.terminalService) {
+            Logger.terminalService.addLine(`📝 TEXT CONTROL: ${action.toUpperCase()} "${textElement.label}" → (X: ${position.x}, Y: ${position.y})`, 'text-control');
+        }
+    }
+
+    /**
+     * Log element movement from one position to another
+     */
+    static elementMove(elementType, elementLabel, fromPosition, toPosition) {
+        const message = `Moved ${elementType} "${elementLabel}" from (X: ${fromPosition.x}, Y: ${fromPosition.y}) to (X: ${toPosition.x}, Y: ${toPosition.y})`;
+        Logger.info(message, { elementType, elementLabel, fromPosition, toPosition });
+        
+        if (Logger.terminalService) {
+            Logger.terminalService.addLine(`🔄 ELEMENT MOVE: ${elementType.toUpperCase()} "${elementLabel}" → From (X: ${fromPosition.x}, Y: ${fromPosition.y}) to (X: ${toPosition.x}, Y: ${toPosition.y})`, 'element-move');
+        }
+    }
+
+    /**
+     * Log element modification (label change, property change, etc.)
+     */
+    static elementModify(elementType, elementLabel, modification, oldValue, newValue) {
+        const message = `Modified ${elementType} "${elementLabel}": ${modification} changed from "${oldValue}" to "${newValue}"`;
+        Logger.info(message, { elementType, elementLabel, modification, oldValue, newValue });
+        
+        if (Logger.terminalService) {
+            Logger.terminalService.addLine(`✏️ ELEMENT MODIFY: ${elementType.toUpperCase()} "${elementLabel}" → ${modification}: "${oldValue}" → "${newValue}"`, 'element-modify');
+        }
+    }
+
+    /**
      * Log performance measurement
      */
     static performance(label, startTime) {

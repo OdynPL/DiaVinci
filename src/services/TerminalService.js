@@ -345,7 +345,10 @@ class TerminalService {
             'debug': '[DEBUG] ',
             'success': '[SUCCESS] ',
             'function': '[FUNC] ',
-            'canvas-drop': '🎯 '
+            'canvas-drop': '🎯 ',
+            'text-control': '📝 ',
+            'element-move': '🔄 ',
+            'element-modify': '✏️ '
         };
         return prefixes[type] || '[INFO] ';
     }

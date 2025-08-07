@@ -371,6 +371,33 @@ input[type="text"]:focus {
     border-left: 3px solid #10b981;
 }
 
+.terminal-line.text-control {
+    color: #1d4ed8;
+    font-weight: 600;
+    background-color: #eff6ff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border-left: 3px solid #3b82f6;
+}
+
+.terminal-line.element-move {
+    color: #d97706;
+    font-weight: 600;
+    background-color: #fffbeb;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border-left: 3px solid #f59e0b;
+}
+
+.terminal-line.element-modify {
+    color: #7c3aed;
+    font-weight: 600;
+    background-color: #faf5ff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border-left: 3px solid #8b5cf6;
+}
+
 .terminal-timestamp {
     color: #9ca3af;
     font-size: 11px;
@@ -435,5 +462,5 @@ input[type="text"]:focus {
 /* Animation for terminal toggle button */
 #terminal-toggle-btn.active {
     background-color: #4b5563 !important;
-    box-shadow: 0 0 0 2px #00ff00;
+    transform: scale(0.95);
 }
