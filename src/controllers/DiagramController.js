@@ -73,6 +73,11 @@ class DiagramController {
         // Keyboard events
         window.addEventListener('keydown', (e) => this.handleKeyDown(e));
 
+        // Language change listener - re-render canvas when language changes
+        window.addEventListener('languageChanged', () => {
+            this.render();
+        });
+
         // Event bus events
         this.eventBus.on('element.edited', (data) => this.handleElementEdited(data));
         this.eventBus.on('drag.started', (data) => this.handleDragStarted(data));

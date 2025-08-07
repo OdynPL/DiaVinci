@@ -391,6 +391,27 @@ const translations = {
         andMoreFields: "... and",
         useFieldsToSeeAll: "Use \"fields",
         toSeeAllFields: "\" to see all fields",
+        field: "field",
+        fields: "fields",
+        
+        // DataModelNode validation messages
+        fieldNameRequired: "Field name is required",
+        fieldNameDangerous: "Field name contains potentially dangerous content",
+        fieldNameFormat: "Field name must start with letter or underscore, and contain only letters, numbers, and underscores",
+        fieldNameTooLong: "Field name cannot exceed 25 characters",
+        fieldNameSqlPatterns: "Field name contains potentially dangerous SQL patterns",
+        fieldNameReserved: "Field name cannot be a reserved word",
+        valueDangerousScript: "Value contains potentially dangerous script content",
+        valueDangerousSql: "Value contains potentially dangerous SQL patterns",
+        valueTooLong: "Value is too long (maximum 1000 characters)",
+        fieldNameMustBeUnique: "Field name must be unique",
+        fieldNameCannotBeEmpty: "Field name cannot be empty",
+        fieldNameAlreadyInUse: "Field name '$1' is already in use",
+        
+        // Validation error messages
+        invalidUuidFormat: "Invalid UUID format: '$1'. Use format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        passwordTooShort: "Password must be at least 6 characters long",
+        invalidColorFormat: "Invalid color format: '$1'. Use hex (#ff0000), color name, or rgb/rgba",
         
         // Messages
         projectSaved: "Project saved successfully",
@@ -798,6 +819,27 @@ const translations = {
         andMoreFields: "... i",
         useFieldsToSeeAll: "Użyj \"fields",
         toSeeAllFields: "\" aby zobaczyć wszystkie pola",
+        field: "pole",
+        fields: "pola",
+        
+        // DataModelNode validation messages
+        fieldNameRequired: "Nazwa pola jest wymagana",
+        fieldNameDangerous: "Nazwa pola zawiera potencjalnie niebezpieczną treść",
+        fieldNameFormat: "Nazwa pola musi zaczynać się od litery lub podkreślenia i zawierać tylko litery, cyfry i podkreślenia",
+        fieldNameTooLong: "Nazwa pola nie może przekraczać 25 znaków",
+        fieldNameSqlPatterns: "Nazwa pola zawiera potencjalnie niebezpieczne wzorce SQL",
+        fieldNameReserved: "Nazwa pola nie może być słowem zastrzeżonym",
+        valueDangerousScript: "Wartość zawiera potencjalnie niebezpieczną treść skryptu",
+        valueDangerousSql: "Wartość zawiera potencjalnie niebezpieczne wzorce SQL",
+        valueTooLong: "Wartość jest za długa (maksymalnie 1000 znaków)",
+        fieldNameMustBeUnique: "Nazwa pola musi być unikalna",
+        fieldNameCannotBeEmpty: "Nazwa pola nie może być pusta",
+        fieldNameAlreadyInUse: "Nazwa pola '$1' jest już używana",
+        
+        // Validation error messages
+        invalidUuidFormat: "Nieprawidłowy format UUID: '$1'. Użyj formatu: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        passwordTooShort: "Hasło musi mieć co najmniej 6 znaków",
+        invalidColorFormat: "Nieprawidłowy format koloru: '$1'. Użyj hex (#ff0000), nazwy koloru lub rgb/rgba",
         
         // Messages
         projectSaved: "Projekt zapisany pomyślnie",

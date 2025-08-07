@@ -209,6 +209,12 @@ class DataModelEditor {
             document.removeEventListener('keydown', this.escapeHandler);
             this.escapeHandler = null;
         }
+
+        // Remove language change listener
+        if (this.languageChangeHandler) {
+            window.removeEventListener('languageChanged', this.languageChangeHandler);
+            this.languageChangeHandler = null;
+        }
         
         this.currentNode = null;
         this.isOpen = false;
@@ -617,6 +623,12 @@ class DataModelEditor {
             }
         };
         document.addEventListener('keydown', this.escapeHandler);
+
+        // Language change listener - re-render fields when language changes
+        this.languageChangeHandler = () => {
+            this.renderFields();
+        };
+        window.addEventListener('languageChanged', this.languageChangeHandler);
     }
 
     /**
@@ -1529,7 +1541,7 @@ class DataModelEditor {
         if (!sanitizedName || sanitizedName.trim() === '') {
             inputElement.classList.add('border-red-500', 'bg-red-50');
             inputElement.classList.remove('border-gray-300');
-            this.showFieldValidationError(inputElement, 'Field name is required');
+            this.showFieldValidationError(inputElement, t('fieldNameRequired'));
             this.updateSaveButtonState();
             return;
         }
@@ -2046,6 +2058,12 @@ class DataModelEditor {
         if (this.escapeHandler) {
             document.removeEventListener('keydown', this.escapeHandler);
             this.escapeHandler = null;
+        }
+
+        // Remove language change listener
+        if (this.languageChangeHandler) {
+            window.removeEventListener('languageChanged', this.languageChangeHandler);
+            this.languageChangeHandler = null;
         }
         
         this.currentNode = null;

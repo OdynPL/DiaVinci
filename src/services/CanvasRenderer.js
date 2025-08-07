@@ -1017,7 +1017,8 @@ class CanvasRenderer {
                 this.ctx.font = 'italic 11px Arial';
                 this.ctx.textAlign = 'center';
                 const moreCount = node.fields.length - 10;
-                this.ctx.fillText(`... and ${moreCount} more field${moreCount > 1 ? 's' : ''}`, node.x, moreFieldsY + 7);
+                const fieldText = moreCount > 1 ? t('fields') : t('field');
+                this.ctx.fillText(`${t('andMoreFields')} ${moreCount} ${t('moreFields')}`, node.x, moreFieldsY + 7);
                 this.ctx.textAlign = 'left';
             }
         } else {

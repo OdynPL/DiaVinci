@@ -37,26 +37,26 @@ class DataModelNode extends Node {
         const errors = [];
         
         if (!fieldName || fieldName.trim() === '') {
-            errors.push('Field name is required');
+            errors.push(t('fieldNameRequired'));
         } else {
             // Security check: detect potential XSS/script injection
             if (/<script|javascript:|on\w+\s*=|<iframe|<object|<embed/i.test(fieldName)) {
-                errors.push('Field name contains potentially dangerous content');
+                errors.push(t('fieldNameDangerous'));
             }
             
             // Check field name format (alphanumeric, underscore, no spaces at start/end)
             if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(fieldName.trim())) {
-                errors.push('Field name must start with letter or underscore, and contain only letters, numbers, and underscores');
+                errors.push(t('fieldNameFormat'));
             }
             
             // Check length
             if (fieldName.trim().length > 25) {
-                errors.push('Field name cannot exceed 25 characters');
+                errors.push(t('fieldNameTooLong'));
             }
             
             // Security check: prevent SQL injection patterns
             if (/('|(\\)|;|--|\/\*|\*\/|xp_|sp_|@@|union|select|insert|update|delete|drop|alter|create)/i.test(fieldName)) {
-                errors.push('Field name contains potentially dangerous SQL patterns');
+                errors.push(t('fieldNameSqlPatterns'));
             }
             
             // Check reserved words (excluding common database field names like 'id')
@@ -66,7 +66,7 @@ class DataModelNode extends Node {
                 'script', 'iframe', 'object', 'embed', 'link', 'meta', 'style'
             ];
             if (reservedWords.includes(fieldName.toLowerCase())) {
-                errors.push('Field name cannot be a reserved word');
+                errors.push(t('fieldNameReserved'));
             }
         }
         
@@ -90,19 +90,19 @@ class DataModelNode extends Node {
         
         // Check for XSS patterns
         if (/<script|javascript:|on\w+\s*=|<iframe|<object|<embed|<link|<meta/i.test(value)) {
-            errors.push('Value contains potentially dangerous script content');
+            errors.push(t('valueDangerousScript'));
             return errors; // Return immediately for security violations
         }
         
         // Check for SQL injection patterns
         if (/('|(\\)|;|--|\/\*|\*\/|xp_|sp_|@@|union.*select|insert.*into|update.*set|delete.*from|drop.*table|alter.*table|create.*table)/i.test(value)) {
-            errors.push('Value contains potentially dangerous SQL patterns');
+            errors.push(t('valueDangerousSql'));
             return errors; // Return immediately for security violations
         }
         
         // Length security check (prevent DoS)
         if (value.length > 1000) {
-            errors.push('Value is too long (maximum 1000 characters)');
+            errors.push(t('valueTooLong'));
             return errors;
         }
         
@@ -181,13 +181,13 @@ class DataModelNode extends Node {
             case 'UUID':
                 const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
                 if (!uuidRegex.test(value)) {
-                    errors.push(`Invalid UUID format: "${value}". Use format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`);
+                    errors.push(t('invalidUuidFormat', value));
                 }
                 break;
                 
             case 'Password':
                 if (value.length < 6) {
-                    errors.push(`Password must be at least 6 characters long`);
+                    errors.push(t('passwordTooShort'));
                 }
                 break;
                 
@@ -195,7 +195,7 @@ class DataModelNode extends Node {
                 const colorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
                 const colorNames = ['red', 'green', 'blue', 'white', 'black', 'yellow', 'orange', 'purple', 'pink', 'brown', 'gray', 'grey'];
                 if (!colorRegex.test(value) && !colorNames.includes(value.toLowerCase()) && !value.startsWith('rgb') && !value.startsWith('rgba')) {
-                    errors.push(`Invalid color format: "${value}". Use hex (#ff0000), color name, or rgb/rgba`);
+                    errors.push(t('invalidColorFormat', value));
                 }
                 break;
                 
@@ -347,7 +347,7 @@ class DataModelNode extends Node {
         // Check name uniqueness only if name is not empty
         if (field.name && field.name.trim() !== '') {
             if (!this.isFieldNameUnique(field.name, field.id)) {
-                errors.push('Field name must be unique');
+                errors.push(t('fieldNameMustBeUnique'));
             }
         }
         
@@ -476,7 +476,7 @@ class DataModelNode extends Node {
             if (updates.name !== undefined) {
                 // Check if name is empty
                 if (!updates.name || updates.name.trim() === '') {
-                    throw new Error('Field name cannot be empty');
+                    throw new Error(t('fieldNameCannotBeEmpty'));
                 }
                 
                 // Check name format
@@ -487,7 +487,7 @@ class DataModelNode extends Node {
                 
                 // Check uniqueness
                 if (!this.isFieldNameUnique(updates.name, fieldId)) {
-                    throw new Error(`Field name '${updates.name}' is already in use`);
+                    throw new Error(t('fieldNameAlreadyInUse', updates.name));
                 }
             }
             
