@@ -329,6 +329,9 @@
 
     <!-- Terminal Panel -->
     <div id="terminal-panel" class="terminal-panel hidden fixed bottom-0 left-0 right-0 font-mono text-sm z-40">
+        <!-- Resize handle for dragging top edge -->
+        <div class="terminal-resize-handle absolute top-0 left-0 right-0 h-1 bg-gray-300 hover:bg-blue-500 cursor-ns-resize transition-colors z-10" 
+             title="Przeciągnij aby zmienić wysokość terminala"></div>
         <div class="terminal-header px-4 py-2 flex items-center justify-between">
             <div class="flex items-center space-x-2">
                 <div class="flex items-center space-x-1">
@@ -379,11 +382,20 @@
                 </button>
             </div>
         </div>
-        <div class="terminal-content p-4 overflow-y-auto" style="height: calc(30vh - 48px);">
+        <div class="terminal-content p-4 overflow-y-auto">
             <div id="terminal-output" class="space-y-1">
                 <div class="terminal-line text-gray-600">
                     <span class="text-green-600 font-medium">[INFO]</span> Terminal ready. Waiting for output...
                 </div>
+            </div>
+            <!-- Command Input Line -->
+            <div class="terminal-command-line flex items-center mt-3 pt-2 border-t border-gray-300">
+                <span class="text-blue-600 font-medium mr-2">>>></span>
+                <input type="text" 
+                       id="terminal-command-input" 
+                       placeholder="Type command..." 
+                       class="flex-1 bg-transparent text-gray-700 outline-none font-mono"
+                       title="Wpisz komendę i naciśnij Enter">
             </div>
         </div>
     </div>
