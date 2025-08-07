@@ -11,6 +11,7 @@ Modern web-based flowchart editor built with vanilla JavaScript. Create, edit, a
 - **Responsive Design** - Works on desktop, tablet, and mobile
 - **Project Management** - Save, load, and organize multiple projects
 - **🆕 Data Model Editor** - Advanced field management with JSON Schema support
+- **🆕 Developer Terminal** - Integrated command-line interface with auto-completion
 
 ### Components
 - **Nodes** - Process boxes, Start/Stop, Decision diamonds
@@ -18,6 +19,15 @@ Modern web-based flowchart editor built with vanilla JavaScript. Create, edit, a
 - **Text Elements** - Standalone labels and annotations  
 - **Transitions** - Arrows, lines, and curved connections
 - **Break Points** - Advanced routing for complex diagrams
+
+### 🆕 Developer Terminal Features
+- **Command Interface** - Professional terminal with 30+ commands
+- **TAB Completion** - Smart auto-completion for all commands
+- **Element Search** - Find elements by ID, search by text content
+- **Project Analytics** - Stats, memory usage, performance metrics
+- **Debug Tools** - Project validation, error logs, element tracing
+- **System Management** - Configuration, backup, cleanup utilities
+- **Professional Output** - Formatted results with Unicode boxes and detailed information
 
 ### 🆕 Data Model Features
 - **Field Management** - Create, edit, and validate data fields
@@ -64,6 +74,33 @@ Modern web-based flowchart editor built with vanilla JavaScript. Create, edit, a
 - **Real-time Sync**: Changes automatically sync between visual and JSON views
 - **Accept JSON**: Apply JSON Schema changes to visual field editor
 
+### 🆕 Developer Terminal
+- **Toggle Access**: Click terminal icon in UI or press hotkey
+- **Command Categories**: Basic, Search & Inspect, Analytics, Debugging, System
+- **Smart Search**: `find <id>`, `search <text>`, `inspect <id>` for detailed element information
+- **Project Management**: `list elements/nodes/texts/trans`, `count`, `stats` for project overview
+- **Debug Tools**: `validate`, `errors`, `trace <id>`, `debug project` for troubleshooting
+- **System Tools**: `config`, `backup`, `cleanup`, `ping` for maintenance
+- **Professional UI**: All results formatted with Unicode boxes and detailed breakdowns
+
+### Export Options
+- **Export Image**: White or transparent background PNG
+- **Export File**: JSON format for sharing/backup
+- **Import File**: Load JSON projects
+
+### Navigation
+- **New Project**: Creates auto-named project (New_YYYY-MM-DD...)
+- **Load Project**: Browse recent projects in right sidebar
+- **Search**: Filter projects by name
+
+### Developer Terminal Usage
+- **Open Terminal**: Click terminal icon in bottom navigation
+- **TAB Completion**: Press TAB to auto-complete commands
+- **Quick Start**: Type `help` to see all available commands
+- **Element Search**: Use `find 123` or `search "user data"` to locate elements
+- **Project Analysis**: Use `stats`, `count`, `validate` for project insights
+- **Debugging**: Use `errors`, `debug project`, `trace 123` for troubleshooting
+
 ### Export Options
 - **Export Image**: White or transparent background PNG
 - **Export File**: JSON format for sharing/backup
@@ -82,6 +119,7 @@ src/
 ├── models/         # Node, Transition, Project classes  
 │   └── DataModelNode.js    # Advanced data model with field validation
 ├── services/       # Canvas, Storage, Export services
+│   └── TerminalService.js  # Developer terminal with command interface
 ├── controllers/    # Diagram and UI controllers
 ├── ui/             # User interface components
 │   └── DataModelEditor.js  # Advanced modal editor for data models
@@ -89,6 +127,14 @@ src/
 ```
 
 ### Key Components
+
+#### TerminalService
+- Command-line interface with 30+ commands
+- TAB auto-completion system
+- Professional formatted output
+- Element search and inspection
+- Project analytics and debugging
+- System management utilities
 
 #### DataModelNode
 - Dynamic field management system
@@ -106,6 +152,7 @@ src/
 ## 📚 Documentation
 
 - **[Data Model System](docs/DataModel.md)** - Comprehensive guide to the Data Model editor
+- **[Developer Terminal](docs/Terminal.md)** - Complete terminal command reference and usage guide
 - **[API Reference](docs/API.md)** - Detailed API documentation (coming soon)
 - **[Contributing Guide](CONTRIBUTING.md)** - How to contribute to the project (coming soon)
 
