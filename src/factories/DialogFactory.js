@@ -985,7 +985,7 @@ class DialogFactory {
         
         const passwordInput = document.createElement('input');
         passwordInput.type = 'password';
-        passwordInput.placeholder = 'Enter password for private project...';
+        passwordInput.placeholder = t('enterPasswordPlaceholder');
         passwordInput.style.width = '100%';
         passwordInput.style.padding = '10px 12px';
         passwordInput.style.border = '2px solid #e1e8ed';
@@ -1072,7 +1072,7 @@ class DialogFactory {
             const password = isPrivate ? passwordInput.value.trim() : null;
             
             if (isPrivate && !password) {
-                passwordError.textContent = '⚠️ Password is required for private projects';
+                passwordError.textContent = `⚠️ ${t('passwordRequired')}`;
                 passwordError.style.display = 'block';
                 passwordInput.style.borderColor = '#e74c3c';
                 passwordInput.focus();

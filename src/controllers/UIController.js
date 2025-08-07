@@ -302,14 +302,14 @@ class UIController {
             this.currentProject = projectName;
             
             // Show success notification
-            const statusText = isPrivate ? 'private' : 'public';
-            this.notificationService.success(`${statusText.charAt(0).toUpperCase() + statusText.slice(1)} project saved successfully!`);
+            const statusKey = isPrivate ? 'privateProjectSaved' : 'publicProjectSaved';
+            this.notificationService.success(t(statusKey));
             
             // Update UI
             this.updateProjectNameDisplay();
             this.updateRecentProjectsList();
         } catch (error) {
-            this.notificationService.error('Error saving project: ' + error.message);
+            this.notificationService.error(`${t('errorSaving')}: ${error.message}`);
         }
     }
 
@@ -378,11 +378,11 @@ class UIController {
             this.diagramController.loadProject(project);
             setTimeout(() => this.updateRecentProjectsList(), 100);
             
-            const statusText = project.isPrivate ? 'private' : 'public';
-            this.notificationService.success(`${statusText.charAt(0).toUpperCase() + statusText.slice(1)} project "${projectName}" loaded successfully!`);
+            const statusKey = project.isPrivate ? 'privateProjectLoaded' : 'publicProjectLoaded';
+            this.notificationService.success(`${t(statusKey).replace('!', '')} "${projectName}"!`);
             return true;
         } catch (error) {
-            this.notificationService.error('Error loading project: ' + error.message);
+            this.notificationService.error(`${t('errorLoading')}: ${error.message}`);
             return false;
         }
     }
@@ -594,8 +594,8 @@ class UIController {
         this.updateProjectNameDisplay();
         this.updateRecentProjectsList();
         
-        const statusText = isPrivate ? 'private' : 'public';
-        this.notificationService.success(`New ${statusText} project "${projectName}" created and saved!`);
+        const statusKey = isPrivate ? 'newPrivateProject' : 'newPublicProject';
+        this.notificationService.success(`${t(statusKey).replace('!', '')} "${projectName}"!`);
     }
 
     /**

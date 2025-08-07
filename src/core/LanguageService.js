@@ -51,6 +51,14 @@ const translations = {
         enterPasswordPlaceholder: "Enter password for private project...",
         rememberPassword: "Remember this password - it cannot be recovered!",
         
+        // Project status messages
+        publicProjectSaved: "Public project saved successfully!",
+        privateProjectSaved: "Private project saved successfully!",
+        publicProjectLoaded: "Public project loaded successfully!",
+        privateProjectLoaded: "Private project loaded successfully!",
+        newPublicProject: "New public project created and saved!",
+        newPrivateProject: "New private project created and saved!",
+        
         // Password dialog
         enterPasswordTitle: "Enter Password",
         enterPasswordMessage: "Please enter the password for project:",
@@ -285,6 +293,20 @@ const translations = {
         save: "Zapisz",
         cancel: "Anuluj",
         enterProjectName: "Wprowadź nazwę projektu...",
+        saveAsPrivate: "Zapisz jako projekt prywatny",
+        projectNameRequired: "Nazwa projektu jest wymagana",
+        passwordRequired: "Hasło jest wymagane dla projektów prywatnych",
+        projectPassword: "Hasło Projektu",
+        enterPasswordPlaceholder: "Wprowadź hasło dla projektu prywatnego...",
+        rememberPassword: "Zapamiętaj to hasło - nie można go odzyskać!",
+        
+        // Project status messages
+        publicProjectSaved: "Projekt publiczny zapisany pomyślnie!",
+        privateProjectSaved: "Projekt prywatny zapisany pomyślnie!",
+        publicProjectLoaded: "Projekt publiczny wczytany pomyślnie!",
+        privateProjectLoaded: "Projekt prywatny wczytany pomyślnie!",
+        newPublicProject: "Nowy projekt publiczny utworzony i zapisany!",
+        newPrivateProject: "Nowy projekt prywatny utworzony i zapisany!",
         saveAsPrivate: "Zapisz jako prywatny projekt",
         projectNameRequired: "Nazwa projektu jest wymagana",
         passwordRequired: "Hasło jest wymagane dla prywatnych projektów",
