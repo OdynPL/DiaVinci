@@ -236,7 +236,8 @@ class DataModelEditor {
                             <p class="text-sm text-gray-500">Define fields and structure for your data model</p>
                         </div>
                     </div>
-                    <button class="close-btn text-gray-400 hover:text-gray-600 transition-colors p-2 hover:bg-gray-100 rounded-lg">
+                    <button class="close-btn text-gray-400 hover:text-gray-600 transition-colors p-2 hover:bg-gray-100 rounded-lg" 
+                            title="Zamknij edytor bez zapisywania zmian">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
@@ -258,7 +259,7 @@ class DataModelEditor {
                                    value="${this.currentNode.label}" 
                                    placeholder="Enter model name"
                                    maxlength="50"
-                                   title="${this.currentNode.label}">
+                                   title="Wprowadź nazwę modelu danych (maks. 50 znaków)">
                         </div>
                         <div class="flex-shrink-0">
                             <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
@@ -285,21 +286,21 @@ class DataModelEditor {
                 <div class="border-b border-gray-200 flex-shrink-0">
                     <nav class="flex px-6">
                         <button class="tab-btn px-6 py-3 text-sm font-medium border-b-2 transition-colors focus:outline-none" 
-                                data-tab="properties">
+                                data-tab="properties" title="Zarządzaj polami i właściwościami modelu danych">
                             <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                             </svg>
                             Fields
                         </button>
                         <button class="tab-btn px-6 py-3 text-sm font-medium border-b-2 transition-colors focus:outline-none" 
-                                data-tab="json">
+                                data-tab="json" title="Podgląd i edycja schematu JSON modelu danych">
                             <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
                             </svg>
                             JSON
                         </button>
                         <button class="tab-btn px-6 py-3 text-sm font-medium border-b-2 transition-colors focus:outline-none" 
-                                data-tab="settings">
+                                data-tab="settings" title="Ustawienia globalne i opcje modelu danych">
                             <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -322,7 +323,8 @@ class DataModelEditor {
                                     <h3 class="text-lg font-medium text-gray-900">Fields</h3>
                                     <span class="ml-2 px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full field-count">${this.currentNode.fields.length}</span>
                                 </div>
-                                <button class="add-field-btn bg-gradient-to-r from-violet-500 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-violet-600 hover:to-purple-700 transition-all flex items-center shadow-md hover:shadow-lg text-sm">
+                                <button class="add-field-btn bg-gradient-to-r from-violet-500 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-violet-600 hover:to-purple-700 transition-all flex items-center shadow-md hover:shadow-lg text-sm"
+                                        title="Dodaj nowe pole do modelu danych">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                                     </svg>
@@ -332,6 +334,27 @@ class DataModelEditor {
                             
                             <div class="fields-container pb-6">
                                 <!-- Fields will be rendered here -->
+                            </div>
+                            
+                            <!-- Model ID Display at the bottom -->
+                            <div class="model-id-display bg-gray-50 border border-gray-200 rounded-lg p-4 mt-4">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <svg class="w-5 h-5 text-gray-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+                                        </svg>
+                                        <span class="text-sm font-medium text-gray-700">ID#:</span>
+                                    </div>
+                                    <div class="flex items-center bg-white border border-gray-300 rounded px-3 py-1">
+                                        <span class="text-sm font-mono text-gray-800 select-all" title="Model unique identifier">${this.currentNode.id}</span>
+                                        <button class="copy-model-id-btn ml-2 p-1 text-gray-400 hover:text-gray-600 transition-colors" title="Copy Model ID">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-2">This is the unique identifier for this Data Model. It's automatically generated and cannot be changed.</p>
                             </div>
                             
                             <!-- Validation Summary -->
@@ -360,13 +383,15 @@ class DataModelEditor {
                                     <h3 class="text-lg font-medium text-gray-900">JSON Schema</h3>
                                 </div>
                                 <div class="flex gap-2">
-                                    <button class="import-json-btn bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all flex items-center shadow-md hover:shadow-lg text-sm">
+                                    <button class="import-json-btn bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all flex items-center shadow-md hover:shadow-lg text-sm"
+                                            title="Zastosuj wprowadzone zmiany w schemacie JSON">
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                         </svg>
                                         Accept JSON
                                     </button>
-                                    <button class="copy-json-btn bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-lg hover:from-green-600 hover:to-green-700 transition-all flex items-center shadow-md hover:shadow-lg text-sm">
+                                    <button class="copy-json-btn bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-lg hover:from-green-600 hover:to-green-700 transition-all flex items-center shadow-md hover:shadow-lg text-sm"
+                                            title="Skopiuj schemat JSON do schowka">
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                                         </svg>
@@ -407,7 +432,8 @@ class DataModelEditor {
                                 <textarea class="json-editor w-full h-96 pl-16 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all font-mono text-sm bg-gray-50" 
                                           placeholder="JSON schema will appear here..."
                                           spellcheck="false"
-                                          style="line-height: 20px; font-size: 13px;"></textarea>
+                                          style="line-height: 20px; font-size: 13px;"
+                                          title="Edytuj schemat JSON modelu danych - można go zaimportować lub skopiować"></textarea>
                             </div>
                             
                             <div class="json-validation-message mt-2 text-sm hidden"></div>
@@ -424,22 +450,26 @@ class DataModelEditor {
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
                                     <textarea class="model-description w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" 
                                               rows="3" 
-                                              placeholder="Describe what this model represents..."></textarea>
+                                              placeholder="Describe what this model represents..."
+                                              title="Opisz co ten model reprezentuje"></textarea>
                                 </div>
                                 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Validation Rules</label>
                                     <div class="space-y-2">
                                         <label class="flex items-center">
-                                            <input type="checkbox" class="mr-2 text-violet-500 focus:ring-violet-500 rounded">
+                                            <input type="checkbox" class="mr-2 text-violet-500 focus:ring-violet-500 rounded"
+                                                   title="Ustaw wszystkie pola jako wymagane">
                                             <span class="text-sm text-gray-700">Require all fields</span>
                                         </label>
                                         <label class="flex items-center">
-                                            <input type="checkbox" class="mr-2 text-violet-500 focus:ring-violet-500 rounded">
+                                            <input type="checkbox" class="mr-2 text-violet-500 focus:ring-violet-500 rounded"
+                                                   title="Włącz walidację wprowadzanych danych">
                                             <span class="text-sm text-gray-700">Enable validation</span>
                                         </label>
                                         <label class="flex items-center">
-                                            <input type="checkbox" class="mr-2 text-violet-500 focus:ring-violet-500 rounded">
+                                            <input type="checkbox" class="mr-2 text-violet-500 focus:ring-violet-500 rounded"
+                                                   title="Zezwól na wartości puste (null) we wszystkich polach">
                                             <span class="text-sm text-gray-700">Allow null values</span>
                                         </label>
                                     </div>
@@ -447,7 +477,8 @@ class DataModelEditor {
                                 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Model Type</label>
-                                    <select class="model-type w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all">
+                                    <select class="model-type w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all"
+                                            title="Wybierz typ modelu danych">
                                         <option value="entity">Entity</option>
                                         <option value="dto">Data Transfer Object</option>
                                         <option value="view">View Model</option>
@@ -461,10 +492,12 @@ class DataModelEditor {
                 
                 <!-- Fixed Footer -->
                 <div class="flex items-center justify-end gap-3 p-6 border-t bg-gray-50 flex-shrink-0">
-                    <button class="cancel-btn px-6 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    <button class="cancel-btn px-6 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                            title="Anuluj zmiany i zamknij edytor">
                         Cancel
                     </button>
-                    <button class="save-btn px-6 py-2 bg-gradient-to-r from-violet-500 to-purple-600 text-white rounded-lg hover:from-violet-600 hover:to-purple-700 transition-all shadow-md hover:shadow-lg">
+                    <button class="save-btn px-6 py-2 bg-gradient-to-r from-violet-500 to-purple-600 text-white rounded-lg hover:from-violet-600 hover:to-purple-700 transition-all shadow-md hover:shadow-lg"
+                            title="Zapisz wszystkie zmiany w modelu danych">
                         Save Changes
                     </button>
                 </div>
@@ -567,6 +600,28 @@ class DataModelEditor {
             }
         });
         
+        // Copy Model ID button (bottom one)
+        this.modal.querySelector('.copy-model-id-btn').addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(this.currentNode.id);
+                // Show temporary feedback
+                const button = this.modal.querySelector('.copy-model-id-btn');
+                const originalHTML = button.innerHTML;
+                button.innerHTML = `
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                `;
+                button.classList.add('text-green-500');
+                setTimeout(() => {
+                    button.innerHTML = originalHTML;
+                    button.classList.remove('text-green-500');
+                }, 1500);
+            } catch (error) {
+                console.error('Failed to copy Model ID:', error);
+            }
+        });
+
         // JSON tab event listeners
         this.modal.querySelector('.import-json-btn').addEventListener('click', () => this.importFromJSON());
         this.modal.querySelector('.copy-json-btn').addEventListener('click', () => this.copyJSONToClipboard());
@@ -778,11 +833,12 @@ class DataModelEditor {
                            value="${field.name}" 
                            placeholder="field_name"
                            maxlength="25"
-                           title="${field.name}">
+                           title="Nazwa pola (maks. 25 znaków) - używaj snake_case lub camelCase">
                 </div>
                 
                 <div class="col-span-2">
-                    <select class="field-type w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all">
+                    <select class="field-type w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all"
+                            title="Wybierz typ danych dla tego pola">
                         ${this.supportedTypes.map(type => 
                             `<option value="${type}" ${field.type === type ? 'selected' : ''}>${this.getTypeIcon(type)} ${type}</option>`
                         ).join('')}
@@ -797,7 +853,8 @@ class DataModelEditor {
                     <label class="flex items-center text-xs text-gray-700 bg-gray-50 px-2 py-1 rounded-md flex-1">
                         <input type="checkbox" 
                                class="field-required mr-2 text-violet-500 focus:ring-violet-500 rounded flex-shrink-0" 
-                               ${field.required ? 'checked' : ''}>
+                               ${field.required ? 'checked' : ''}
+                               title="Oznacz to pole jako wymagane"">
                         <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
@@ -806,7 +863,8 @@ class DataModelEditor {
                     <label class="flex items-center text-xs text-gray-700 bg-gray-50 px-2 py-1 rounded-md flex-1">
                         <input type="checkbox" 
                                class="field-nullable mr-2 text-blue-500 focus:ring-blue-500 rounded flex-shrink-0" 
-                               ${field.nullable === true ? 'checked' : ''}>
+                               ${field.nullable === true ? 'checked' : ''}
+                               title="Pozwól na wartości puste (null) w tym polu">
                         <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"/>
                         </svg>
@@ -815,13 +873,15 @@ class DataModelEditor {
                     <label class="flex items-center text-xs text-gray-700 bg-gray-50 px-2 py-1 rounded-md flex-1">
                         <input type="checkbox" 
                                class="field-readonly mr-2 text-amber-500 focus:ring-amber-500 rounded flex-shrink-0" 
-                               ${field.readOnly ? 'checked' : ''}>
+                               ${field.readOnly ? 'checked' : ''}
+                               title="Ustaw to pole jako tylko do odczytu">
                         <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                         </svg>
                         <span class="whitespace-nowrap text-xs">Read Only</span>
                     </label>
-                    <button class="remove-field-btn text-red-500 hover:text-red-700 p-2 rounded-md hover:bg-red-50 transition-all flex-shrink-0">
+                    <button class="remove-field-btn text-red-500 hover:text-red-700 p-2 rounded-md hover:bg-red-50 transition-all flex-shrink-0"
+                            title="Usuń to pole z modelu danych">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                         </svg>
@@ -882,7 +942,8 @@ class DataModelEditor {
                 const parsedValue = this.parseCurrencyValue(field.initialValue);
                 return `
                     <div class="field-value flex gap-2">
-                        <select class="currency-selector w-24 px-2 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent">
+                        <select class="currency-selector w-24 px-2 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                                title="Wybierz walutę dla wartości pieniężnej">
                             <option value="">¤</option>
                             ${currencies.map(curr => 
                                 `<option value="${curr.code}" ${parsedValue.currency === curr.code ? 'selected' : ''}>${curr.symbol} ${curr.code}</option>`
@@ -1025,7 +1086,8 @@ class DataModelEditor {
             case 'Country Code':
                 const countries = this.getCountryCodeOptions();
                 return `
-                    <select class="country-selector w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent">
+                    <select class="country-selector w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                            title="Wybierz kraj lub region">
                         <option value="">Select country...</option>
                         ${countries.map(country => 
                             `<option value="${country.code}" ${field.initialValue === country.code ? 'selected' : ''}>${country.code} - ${country.name}</option>`
@@ -1036,7 +1098,8 @@ class DataModelEditor {
             case 'Language Code':
                 const languages = this.getLanguageCodeOptions();
                 return `
-                    <select class="language-selector w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent">
+                    <select class="language-selector w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                            title="Wybierz język lub lokalizację">
                         <option value="">Select language...</option>
                         ${languages.map(lang => 
                             `<option value="${lang.code}" ${field.initialValue === lang.code ? 'selected' : ''}>${lang.code} - ${lang.name}</option>`
@@ -1047,7 +1110,8 @@ class DataModelEditor {
             case 'Timezone':
                 const timezones = this.getTimezoneOptions();
                 return `
-                    <select class="timezone-selector w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent">
+                    <select class="timezone-selector w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                            title="Wybierz strefę czasową">
                         <option value="">Select timezone...</option>
                         ${timezones.map(tz => 
                             `<option value="${tz.zone}" ${field.initialValue === tz.zone ? 'selected' : ''}>${tz.zone} - ${tz.name}</option>`
