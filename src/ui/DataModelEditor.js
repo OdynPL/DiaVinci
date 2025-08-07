@@ -232,8 +232,8 @@ class DataModelEditor {
                             </svg>
                         </div>
                         <div>
-                            <h2 class="text-xl font-semibold text-gray-900">Edit Data Model</h2>
-                            <p class="text-sm text-gray-500">Define fields and structure for your data model</p>
+                            <h2 class="text-xl font-semibold text-gray-900">${t('editDataModel')}</h2>
+                            <p class="text-sm text-gray-500">${t('defineFieldsAndStructure')}</p>
                         </div>
                     </div>
                     <button class="close-btn text-gray-400 hover:text-gray-600 transition-colors p-2 hover:bg-gray-100 rounded-lg" 
@@ -252,7 +252,7 @@ class DataModelEditor {
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                                 </svg>
-                                Model Name
+                                ${t('modelName')}
                             </label>
                             <input type="text" 
                                    class="model-name-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" 
@@ -266,7 +266,7 @@ class DataModelEditor {
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
                                 </svg>
-                                Model ID
+                                ${t('modelId')}
                             </label>
                             <div class="flex items-center bg-gray-50 border border-gray-300 rounded-lg">
                                 <div class="px-4 py-2 text-sm text-gray-600 font-mono flex-1 min-w-0">
@@ -290,14 +290,14 @@ class DataModelEditor {
                             <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                             </svg>
-                            Fields
+                            ${t('fields')}
                         </button>
                         <button class="tab-btn px-6 py-3 text-sm font-medium border-b-2 transition-colors focus:outline-none" 
                                 data-tab="json" title="Podgląd i edycja schematu JSON modelu danych">
                             <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
                             </svg>
-                            JSON
+                            ${t('json')}
                         </button>
                         <button class="tab-btn px-6 py-3 text-sm font-medium border-b-2 transition-colors focus:outline-none" 
                                 data-tab="settings" title="Ustawienia globalne i opcje modelu danych">
@@ -305,7 +305,7 @@ class DataModelEditor {
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                             </svg>
-                            Settings
+                            ${t('settings')}
                         </button>
                     </nav>
                 </div>
@@ -320,7 +320,7 @@ class DataModelEditor {
                                     <svg class="w-5 h-5 text-gray-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                     </svg>
-                                    <h3 class="text-lg font-medium text-gray-900">Fields</h3>
+                                    <h3 class="text-lg font-medium text-gray-900">${t('fields')}</h3>
                                     <span class="ml-2 px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full field-count">${this.currentNode.fields.length}</span>
                                 </div>
                                 <button class="add-field-btn bg-gradient-to-r from-violet-500 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-violet-600 hover:to-purple-700 transition-all flex items-center shadow-md hover:shadow-lg text-sm"
@@ -342,7 +342,7 @@ class DataModelEditor {
                                     <svg class="w-5 h-5 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z"/>
                                     </svg>
-                                    <h4 class="text-sm font-medium text-red-800">Validation Errors</h4>
+                                    <h4 class="text-sm font-medium text-red-800">${t('validationErrors')}</h4>
                                 </div>
                                 <div class="validation-errors text-sm text-red-700">
                                     <!-- Validation errors will be listed here -->
@@ -359,7 +359,7 @@ class DataModelEditor {
                                     <svg class="w-5 h-5 text-gray-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
                                     </svg>
-                                    <h3 class="text-lg font-medium text-gray-900">JSON Schema</h3>
+                                    <h3 class="text-lg font-medium text-gray-900">${t('jsonSchema')}</h3>
                                 </div>
                                 <div class="flex gap-2">
                                     <button class="import-json-btn bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all flex items-center shadow-md hover:shadow-lg text-sm"
@@ -367,14 +367,14 @@ class DataModelEditor {
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                         </svg>
-                                        Accept JSON
+                                        ${t('acceptJson')}
                                     </button>
                                     <button class="copy-json-btn bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-lg hover:from-green-600 hover:to-green-700 transition-all flex items-center shadow-md hover:shadow-lg text-sm"
                                             title="Skopiuj schemat JSON do schowka">
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                                         </svg>
-                                        Copy JSON
+                                        ${t('copyJson')}
                                     </button>
                                 </div>
                             </div>
@@ -384,7 +384,7 @@ class DataModelEditor {
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
-                                    You can edit the JSON below or paste your own schema and click "Accept JSON" to apply changes
+                                    ${t('jsonEditInstructions')}
                                 </div>
                             </div>
                             
@@ -422,11 +422,11 @@ class DataModelEditor {
                     <!-- Settings Tab -->
                     <div class="tab-content hidden" data-tab="settings">
                         <div class="p-6">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Model Settings</h3>
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">${t('modelSettings')}</h3>
                             
                             <div class="space-y-6 pb-6">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">${t('description')}</label>
                                     <textarea class="model-description w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" 
                                               rows="3" 
                                               placeholder="${t('describeModel')}"
@@ -434,34 +434,34 @@ class DataModelEditor {
                                 </div>
                                 
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Validation Rules</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">${t('validationRules')}</label>
                                     <div class="space-y-2">
                                         <label class="flex items-center">
                                             <input type="checkbox" class="mr-2 text-violet-500 focus:ring-violet-500 rounded"
                                                    title="Ustaw wszystkie pola jako wymagane">
-                                            <span class="text-sm text-gray-700">Require all fields</span>
+                                            <span class="text-sm text-gray-700">${t('requireAllFields')}</span>
                                         </label>
                                         <label class="flex items-center">
                                             <input type="checkbox" class="mr-2 text-violet-500 focus:ring-violet-500 rounded"
                                                    title="Włącz walidację wprowadzanych danych">
-                                            <span class="text-sm text-gray-700">Enable validation</span>
+                                            <span class="text-sm text-gray-700">${t('enableValidation')}</span>
                                         </label>
                                         <label class="flex items-center">
                                             <input type="checkbox" class="mr-2 text-violet-500 focus:ring-violet-500 rounded"
                                                    title="Zezwól na wartości puste (null) we wszystkich polach">
-                                            <span class="text-sm text-gray-700">Allow null values</span>
+                                            <span class="text-sm text-gray-700">${t('allowNullValues')}</span>
                                         </label>
                                     </div>
                                 </div>
                                 
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Model Type</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">${t('modelType')}</label>
                                     <select class="model-type w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all"
                                             title="Wybierz typ modelu danych">
-                                        <option value="entity">Entity</option>
-                                        <option value="dto">Data Transfer Object</option>
-                                        <option value="view">View Model</option>
-                                        <option value="document">Document</option>
+                                        <option value="entity">${t('entity')}</option>
+                                        <option value="dto">${t('dataTransferObject')}</option>
+                                        <option value="view">${t('viewModel')}</option>
+                                        <option value="document">${t('document')}</option>
                                     </select>
                                 </div>
                             </div>
@@ -473,11 +473,11 @@ class DataModelEditor {
                 <div class="w-full flex items-center justify-end gap-3 p-6 border-t bg-gray-50 flex-shrink-0">
                     <button class="cancel-btn px-6 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                             title="Anuluj zmiany i zamknij edytor">
-                        Cancel
+                        ${t('cancel')}
                     </button>
                     <button class="save-btn px-6 py-2 bg-gradient-to-r from-violet-500 to-purple-600 text-white rounded-lg hover:from-violet-600 hover:to-purple-700 transition-all shadow-md hover:shadow-lg"
                             title="Zapisz wszystkie zmiany w modelu danych">
-                        Save Changes
+                        ${t('saveChanges')}
                     </button>
                 </div>
             </div>
@@ -685,7 +685,7 @@ class DataModelEditor {
                     <svg class="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
-                    <p class="font-medium">No fields defined yet</p>
+                    <p class="font-medium">${t('noFieldsDefinedYet')}</p>
                     <p class="text-sm mt-2">${t('clickAddFieldToStart')}</p>
                 </div>
             `;
@@ -710,7 +710,7 @@ class DataModelEditor {
                         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                         </svg>
-                        Field Name
+                        ${t('fieldName')}
                     </label>
                 </div>
                 <div class="col-span-2">
@@ -718,7 +718,7 @@ class DataModelEditor {
                         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
                         </svg>
-                        Type
+                        ${t('type')}
                     </label>
                 </div>
                 <div class="col-span-2">
@@ -726,7 +726,7 @@ class DataModelEditor {
                         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                         </svg>
-                        Initial Value
+                        ${t('initialValue')}
                     </label>
                 </div>
                 <div class="col-span-3">
@@ -734,7 +734,7 @@ class DataModelEditor {
                         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"/>
                         </svg>
-                        Options
+                        ${t('options')}
                     </label>
                 </div>
             </div>
@@ -815,7 +815,7 @@ class DataModelEditor {
                         <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        <span class="whitespace-nowrap text-xs">Required</span>
+                        <span class="whitespace-nowrap text-xs">${t('required')}</span>
                     </label>
                     <label class="flex items-center text-xs text-gray-700 bg-gray-50 px-2 py-1 rounded-md flex-1">
                         <input type="checkbox" 
@@ -825,7 +825,7 @@ class DataModelEditor {
                         <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"/>
                         </svg>
-                        <span class="whitespace-nowrap text-xs">Nullable</span>
+                        <span class="whitespace-nowrap text-xs">${t('nullable')}</span>
                     </label>
                     <label class="flex items-center text-xs text-gray-700 bg-gray-50 px-2 py-1 rounded-md flex-1">
                         <input type="checkbox" 
@@ -835,7 +835,7 @@ class DataModelEditor {
                         <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                         </svg>
-                        <span class="whitespace-nowrap text-xs">Read Only</span>
+                        <span class="whitespace-nowrap text-xs">${t('readOnly')}</span>
                     </label>
                     <button class="remove-field-btn text-red-500 hover:text-red-700 p-2 rounded-md hover:bg-red-50 transition-all flex-shrink-0"
                             title="Usuń to pole z modelu danych">
@@ -946,7 +946,7 @@ class DataModelEditor {
             case 'Boolean':
                 return `
                     <select class="${baseClasses}">
-                        <option value="">Select...</option>
+                        <option value="">${t('selectValue')}</option>
                         <option value="true" ${field.initialValue === 'true' ? 'selected' : ''}>True</option>
                         <option value="false" ${field.initialValue === 'false' ? 'selected' : ''}>False</option>
                     </select>
