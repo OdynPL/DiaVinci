@@ -1006,14 +1006,6 @@ class TerminalService {
             ...currentProject.transitions.map(tr => ({...tr, elementType: 'Transition'}))
         ];
 
-        // Debug: Show all IDs with their types
-        this.addLine(`🔍 Available IDs (${allElements.length} total):`, 'debug');
-        allElements.forEach((el, index) => {
-            this.addLine(`   ${index + 1}. ID: "${el.id}" (type: ${typeof el.id}) - ${el.elementType}: "${el.label}"`, 'debug');
-        });
-        
-        this.addLine(`🔍 Looking for ID: "${id}" (type: ${typeof id})`, 'debug');
-
         // Try both string and number comparison
         const found = allElements.find(el => {
             return el.id === id || 
@@ -1024,37 +1016,116 @@ class TerminalService {
         });
         
         if (found) {
-            this.addLine('✅ Element found!', 'success');
-            this.addLine(`🔹 Type: ${found.elementType}`, 'info');
-            this.addLine(`🔹 ID: ${found.id} (${typeof found.id})`, 'info');
-            this.addLine(`🔹 Label: ${found.label}`, 'info');
+            this.addLine('╔══════════════════════════════════════════════════╗', 'success');
+            this.addLine('║                 ✅ ELEMENT FOUND                ║', 'success');
+            this.addLine('╠══════════════════════════════════════════════════╣', 'success');
+            this.addLine(`║ Type: ${found.elementType.padEnd(42)} ║`, 'info');
+            this.addLine(`║ ID: ${found.id.toString().padEnd(44)} ║`, 'info');
+            this.addLine(`║ ID Type: ${(typeof found.id).padEnd(39)} ║`, 'info');
+            this.addLine(`║ Label: ${(found.label || 'N/A').padEnd(41)} ║`, 'info');
             
             if (found.x !== undefined && found.y !== undefined) {
-                this.addLine(`🔹 Position: (${Math.round(found.x)}, ${Math.round(found.y)})`, 'info');
+                const pos = `(${Math.round(found.x)}, ${Math.round(found.y)})`;
+                this.addLine(`║ Position: ${pos.padEnd(38)} ║`, 'info');
+            }
+            
+            if (found.width !== undefined && found.height !== undefined) {
+                const size = `${Math.round(found.width)}×${Math.round(found.height)}`;
+                this.addLine(`║ Size: ${size.padEnd(42)} ║`, 'info');
             }
             
             if (found.color) {
-                this.addLine(`🔹 Color: ${found.color}`, 'info');
+                this.addLine(`║ Color: ${found.color.padEnd(41)} ║`, 'info');
             }
             
-            if (found.type) {
-                this.addLine(`🔹 Node Type: ${found.type}`, 'info');
+            if (found.type && found.elementType === 'Node') {
+                this.addLine(`║ Node Type: ${found.type.padEnd(37)} ║`, 'info');
             }
+            
+            if (found.elementType === 'Transition') {
+                this.addLine(`║ From: ${(found.from?.label || found.from?.id || 'N/A').toString().padEnd(42)} ║`, 'info');
+                this.addLine(`║ To: ${(found.to?.label || found.to?.id || 'N/A').toString().padEnd(44)} ║`, 'info');
+                if (found.style) {
+                    this.addLine(`║ Style: ${found.style.padEnd(41)} ║`, 'info');
+                }
+            }
+            
+            if (found.fields && found.fields.length > 0) {
+                this.addLine(`║ Fields Count: ${found.fields.length.toString().padEnd(34)} ║`, 'info');
+            }
+            
+            // Show creation/modification timestamps if available
+            if (found.createdAt) {
+                const created = new Date(found.createdAt).toLocaleString();
+                this.addLine(`║ Created: ${created.substring(0, 39).padEnd(39)} ║`, 'info');
+            }
+            
+            if (found.updatedAt) {
+                const updated = new Date(found.updatedAt).toLocaleString();
+                this.addLine(`║ Updated: ${updated.substring(0, 39).padEnd(39)} ║`, 'info');
+            }
+            
+            this.addLine('╠══════════════════════════════════════════════════╣', 'info');
+            this.addLine('║                   📋 FULL DATA                  ║', 'info');
+            this.addLine('╠══════════════════════════════════════════════════╣', 'info');
+            
+            // Display formatted JSON
+            const cleanObject = { ...found };
+            delete cleanObject.elementType; // Remove our added property
+            
+            const jsonStr = JSON.stringify(cleanObject, null, 2);
+            const jsonLines = jsonStr.split('\n');
+            
+            jsonLines.forEach(line => {
+                // Truncate long lines and add proper formatting
+                const truncatedLine = line.length > 46 ? line.substring(0, 43) + '...' : line;
+                this.addLine(`║ ${truncatedLine.padEnd(47)} ║`, 'debug');
+            });
+            
+            this.addLine('╚══════════════════════════════════════════════════╝', 'success');
+            
+            // Show usage tip
+            this.addLine('💡 Use "inspect ' + found.id + '" for detailed analysis', 'info');
         } else {
-            this.addLine(`❌ Element with ID "${id}" not found.`, 'error');
-            this.addLine('💡 Use "list elements" to see all available elements.', 'info');
+            this.addLine('╔══════════════════════════════════════════════════╗', 'error');
+            this.addLine('║                ❌ ELEMENT NOT FOUND             ║', 'error');
+            this.addLine('╠══════════════════════════════════════════════════╣', 'error');
+            this.addLine(`║ Searched ID: "${id}"                              ║`, 'error');
+            this.addLine(`║ ID Type: ${typeof id}                             ║`, 'error');
+            this.addLine(`║ Total Elements: ${allElements.length}                           ║`, 'error');
+            this.addLine('╚══════════════════════════════════════════════════╝', 'error');
             
             // Suggest similar IDs
             const similarIds = allElements.filter(el => 
                 el.id.toString().includes(id.toString()) || 
-                id.toString().includes(el.id.toString())
+                id.toString().includes(el.id.toString()) ||
+                el.label?.toLowerCase().includes(id.toLowerCase()) ||
+                id.toLowerCase().includes(el.label?.toLowerCase() || '')
             );
             
             if (similarIds.length > 0) {
-                this.addLine('🔍 Did you mean one of these?', 'info');
-                similarIds.forEach(el => {
-                    this.addLine(`   - ID: ${el.id} (${el.elementType}: "${el.label}")`, 'info');
+                this.addLine('', 'info');
+                this.addLine('🔍 SIMILAR MATCHES FOUND:', 'warning');
+                similarIds.slice(0, 5).forEach((el, index) => {
+                    this.addLine(`   ${index + 1}. ID: ${el.id} | ${el.elementType}: "${el.label}"`, 'warning');
                 });
+                
+                if (similarIds.length > 5) {
+                    this.addLine(`   ... and ${similarIds.length - 5} more similar matches`, 'warning');
+                }
+            } else {
+                this.addLine('', 'info');
+                this.addLine('💡 HELPFUL COMMANDS:', 'info');
+                this.addLine('   • "list elements" - See all available elements', 'info');
+                this.addLine('   • "debug project" - Show project structure', 'info');
+                
+                if (allElements.length > 0) {
+                    this.addLine('', 'info');
+                    this.addLine('📋 AVAILABLE ELEMENTS (first 3):', 'info');
+                    allElements.slice(0, 3).forEach((el, index) => {
+                        this.addLine(`   ${index + 1}. ID: ${el.id} | ${el.elementType}: "${el.label}"`, 'info');
+                    });
+                }
             }
         }
         
@@ -1106,69 +1177,211 @@ class TerminalService {
         });
         
         if (found) {
-            this.addLine('╔══════════════════════════════════════════════════╗', 'info');
-            this.addLine('║                ELEMENT INSPECTION               ║', 'info');
-            this.addLine('╠══════════════════════════════════════════════════╣', 'info');
-            this.addLine(`║ Type: ${found.elementType.padEnd(42)} ║`, 'info');
-            this.addLine(`║ ID: ${found.id.toString().padEnd(44)} ║`, 'info');
-            this.addLine(`║ ID Type: ${(typeof found.id).padEnd(39)} ║`, 'info');
-            this.addLine(`║ Label: ${found.label.padEnd(41)} ║`, 'info');
+            this.addLine('╔══════════════════════════════════════════════════╗', 'success');
+            this.addLine('║              🔍 DETAILED INSPECTION             ║', 'success');
+            this.addLine('╠══════════════════════════════════════════════════╣', 'success');
+            this.addLine(`║ Element Type: ${found.elementType.padEnd(34)} ║`, 'info');
+            this.addLine(`║ Unique ID: ${found.id.toString().padEnd(37)} ║`, 'info');
+            this.addLine(`║ ID Data Type: ${(typeof found.id).padEnd(34)} ║`, 'info');
+            this.addLine(`║ Display Label: ${(found.label || 'N/A').padEnd(33)} ║`, 'info');
             
+            // Position and dimensions
             if (found.x !== undefined && found.y !== undefined) {
-                const pos = `(${Math.round(found.x)}, ${Math.round(found.y)})`;
-                this.addLine(`║ Position: ${pos.padEnd(38)} ║`, 'info');
+                const pos = `X:${Math.round(found.x)}, Y:${Math.round(found.y)}`;
+                this.addLine(`║ Coordinates: ${pos.padEnd(35)} ║`, 'info');
             }
             
+            if (found.width !== undefined && found.height !== undefined) {
+                const dimensions = `${Math.round(found.width)} × ${Math.round(found.height)} pixels`;
+                this.addLine(`║ Dimensions: ${dimensions.padEnd(36)} ║`, 'info');
+            }
+            
+            // Visual properties
             if (found.color) {
                 this.addLine(`║ Color: ${found.color.padEnd(41)} ║`, 'info');
             }
             
-            if (found.type) {
-                this.addLine(`║ Node Type: ${found.type.padEnd(37)} ║`, 'info');
+            if (found.backgroundColor) {
+                this.addLine(`║ Background: ${found.backgroundColor.padEnd(36)} ║`, 'info');
+            }
+            
+            if (found.borderColor) {
+                this.addLine(`║ Border Color: ${found.borderColor.padEnd(34)} ║`, 'info');
+            }
+            
+            // Type-specific information
+            if (found.type && found.elementType === 'Node') {
+                this.addLine(`║ Node Category: ${found.type.padEnd(33)} ║`, 'info');
             }
             
             if (found.elementType === 'Transition') {
-                this.addLine(`║ From: ${(found.from?.id?.toString() || 'N/A').padEnd(42)} ║`, 'info');
-                this.addLine(`║ To: ${(found.to?.id?.toString() || 'N/A').padEnd(44)} ║`, 'info');
-                this.addLine(`║ Style: ${(found.style || 'N/A').padEnd(41)} ║`, 'info');
-            }
-            
-            if (found.fields && found.fields.length > 0) {
-                this.addLine(`║ Fields: ${found.fields.length.toString().padEnd(40)} ║`, 'info');
                 this.addLine('╠══════════════════════════════════════════════════╣', 'info');
-                found.fields.forEach((field, index) => {
-                    const fieldInfo = `${index + 1}. ${field.name} (${field.type})`;
-                    this.addLine(`║ ${fieldInfo.padEnd(47)} ║`, 'info');
-                });
+                this.addLine('║                🔗 TRANSITION DATA               ║', 'info');
+                this.addLine('╠══════════════════════════════════════════════════╣', 'info');
+                
+                const fromLabel = found.from?.label || found.from?.id || 'Unknown';
+                const toLabel = found.to?.label || found.to?.id || 'Unknown';
+                
+                this.addLine(`║ Source: ${fromLabel.toString().substring(0, 40).padEnd(40)} ║`, 'info');
+                this.addLine(`║ Target: ${toLabel.toString().substring(0, 40).padEnd(40)} ║`, 'info');
+                
+                if (found.style) {
+                    this.addLine(`║ Line Style: ${found.style.padEnd(36)} ║`, 'info');
+                }
+                
+                if (found.condition) {
+                    this.addLine(`║ Condition: ${found.condition.substring(0, 37).padEnd(37)} ║`, 'info');
+                }
             }
             
-            // Show raw object for debugging
-            this.addLine('╠══════════════════════════════════════════════════╣', 'info');
-            this.addLine('║                   DEBUG INFO                    ║', 'info');
-            this.addLine('╠══════════════════════════════════════════════════╣', 'info');
-            
-            // Show all properties
-            Object.keys(found).forEach(key => {
-                if (key !== 'elementType') {
-                    const value = found[key];
-                    const valueStr = typeof value === 'object' && value !== null 
-                        ? JSON.stringify(value).substring(0, 35) + '...'
-                        : String(value).substring(0, 40);
-                    this.addLine(`║ ${key}: ${valueStr.padEnd(40 - key.length)} ║`, 'info');
+            // Fields information
+            if (found.fields && found.fields.length > 0) {
+                this.addLine('╠══════════════════════════════════════════════════╣', 'info');
+                this.addLine(`║              📋 FIELDS (${found.fields.length.toString().padStart(2)})              ║`, 'info');
+                this.addLine('╠══════════════════════════════════════════════════╣', 'info');
+                
+                found.fields.slice(0, 10).forEach((field, index) => { // Limit to first 10 fields
+                    const fieldInfo = `${(index + 1).toString().padStart(2)}. ${field.name} (${field.type})`;
+                    this.addLine(`║ ${fieldInfo.substring(0, 47).padEnd(47)} ║`, 'info');
+                    
+                    if (field.defaultValue !== undefined) {
+                        const defaultVal = `   Default: ${field.defaultValue}`;
+                        this.addLine(`║ ${defaultVal.substring(0, 47).padEnd(47)} ║`, 'debug');
+                    }
+                });
+                
+                if (found.fields.length > 10) {
+                    this.addLine(`║ ... and ${(found.fields.length - 10)} more fields                    ║`, 'info');
                 }
+            }
+            
+            // Timestamps
+            if (found.createdAt || found.updatedAt) {
+                this.addLine('╠══════════════════════════════════════════════════╣', 'info');
+                this.addLine('║                ⏰ TIMESTAMPS                    ║', 'info');
+                this.addLine('╠══════════════════════════════════════════════════╣', 'info');
+                
+                if (found.createdAt) {
+                    const created = new Date(found.createdAt).toLocaleString();
+                    this.addLine(`║ Created: ${created.substring(0, 39).padEnd(39)} ║`, 'info');
+                }
+                
+                if (found.updatedAt) {
+                    const updated = new Date(found.updatedAt).toLocaleString();
+                    this.addLine(`║ Modified: ${updated.substring(0, 38).padEnd(38)} ║`, 'info');
+                }
+            }
+            
+            // Raw object properties
+            this.addLine('╠══════════════════════════════════════════════════╣', 'debug');
+            this.addLine('║               🔧 ALL PROPERTIES                 ║', 'debug');
+            this.addLine('╠══════════════════════════════════════════════════╣', 'debug');
+            
+            // Show all properties in a clean format
+            const cleanObject = { ...found };
+            delete cleanObject.elementType; // Remove our added property
+            
+            Object.keys(cleanObject).forEach(key => {
+                const value = cleanObject[key];
+                let valueStr;
+                
+                if (value === null) {
+                    valueStr = 'null';
+                } else if (value === undefined) {
+                    valueStr = 'undefined';
+                } else if (typeof value === 'object') {
+                    if (Array.isArray(value)) {
+                        valueStr = `Array[${value.length}]`;
+                    } else {
+                        valueStr = `Object{${Object.keys(value).length}}`;
+                    }
+                } else if (typeof value === 'string' && value.length > 30) {
+                    valueStr = value.substring(0, 27) + '...';
+                } else {
+                    valueStr = String(value);
+                }
+                
+                const propLine = `${key}: ${valueStr}`;
+                this.addLine(`║ ${propLine.substring(0, 47).padEnd(47)} ║`, 'debug');
             });
             
-            this.addLine('╚══════════════════════════════════════════════════╝', 'info');
-        } else {
-            this.addLine(`❌ Element with ID "${id}" not found.`, 'error');
-            this.addLine('💡 Use "list elements" to see all available elements.', 'info');
+            this.addLine('╠══════════════════════════════════════════════════╣', 'debug');
+            this.addLine('║                  📄 JSON DATA                   ║', 'debug');
+            this.addLine('╠══════════════════════════════════════════════════╣', 'debug');
             
-            // Show first few available IDs for reference
-            if (allElements.length > 0) {
-                this.addLine('🔍 Available IDs (first 5):', 'info');
-                allElements.slice(0, 5).forEach((el, index) => {
-                    this.addLine(`   ${index + 1}. ${el.id} (${typeof el.id}) - ${el.elementType}`, 'info');
+            // Display complete JSON without truncation
+            const jsonStr = JSON.stringify(cleanObject, null, 2);
+            const jsonLines = jsonStr.split('\n');
+            
+            // Display all JSON lines without limiting
+            jsonLines.forEach(line => {
+                const truncatedLine = line.length > 46 ? line.substring(0, 43) + '...' : line;
+                this.addLine(`║ ${truncatedLine.padEnd(47)} ║`, 'debug');
+            });
+            
+            this.addLine('╚══════════════════════════════════════════════════╝', 'success');
+            
+            // Usage tips
+            this.addLine('', 'info');
+            this.addLine('💡 QUICK ACTIONS:', 'info');
+            this.addLine(`   • Copy JSON: Use browser dev tools to copy full object`, 'info');
+            this.addLine(`   • Find similar: "list elements" to see all available`, 'info');
+            this.addLine(`   • Quick find: "find <partial-id>" for fuzzy search`, 'info');
+        } else {
+            this.addLine('╔══════════════════════════════════════════════════╗', 'error');
+            this.addLine('║              ❌ INSPECTION FAILED               ║', 'error');
+            this.addLine('╠══════════════════════════════════════════════════╣', 'error');
+            this.addLine(`║ Target ID: "${id}"                               ║`, 'error');
+            this.addLine(`║ Search Type: ${typeof id}                        ║`, 'error');
+            this.addLine(`║ Project Elements: ${allElements.length}                       ║`, 'error');
+            this.addLine('╚══════════════════════════════════════════════════╝', 'error');
+            
+            // Enhanced suggestions
+            const partialMatches = allElements.filter(el => 
+                el.id.toString().includes(id.toString()) || 
+                id.toString().includes(el.id.toString())
+            );
+            
+            const labelMatches = allElements.filter(el =>
+                el.label?.toLowerCase().includes(id.toLowerCase()) ||
+                id.toLowerCase().includes(el.label?.toLowerCase() || '')
+            );
+            
+            if (partialMatches.length > 0) {
+                this.addLine('', 'warning');
+                this.addLine('🎯 PARTIAL ID MATCHES:', 'warning');
+                partialMatches.slice(0, 3).forEach((el, index) => {
+                    this.addLine(`   ${index + 1}. ${el.id} (${typeof el.id}) - ${el.elementType}: "${el.label}"`, 'warning');
                 });
+            }
+            
+            if (labelMatches.length > 0 && labelMatches.length !== partialMatches.length) {
+                this.addLine('', 'warning');
+                this.addLine('🏷️  LABEL MATCHES:', 'warning');
+                labelMatches.slice(0, 3).forEach((el, index) => {
+                    this.addLine(`   ${index + 1}. ${el.id} - "${el.label}" (${el.elementType})`, 'warning');
+                });
+            }
+            
+            if (partialMatches.length === 0 && labelMatches.length === 0) {
+                this.addLine('', 'info');
+                this.addLine('💡 TROUBLESHOOTING TIPS:', 'info');
+                this.addLine('   • Check ID spelling and case sensitivity', 'info');
+                this.addLine('   • Use "list elements" for complete element list', 'info');
+                this.addLine('   • Try "debug project" for project overview', 'info');
+                
+                // Show first few available IDs for reference
+                if (allElements.length > 0) {
+                    this.addLine('', 'info');
+                    this.addLine('📋 SAMPLE AVAILABLE IDs:', 'info');
+                    allElements.slice(0, 3).forEach((el, index) => {
+                        this.addLine(`   ${index + 1}. ${el.id} (${typeof el.id}) - ${el.elementType}`, 'info');
+                    });
+                    
+                    if (allElements.length > 3) {
+                        this.addLine(`   ... and ${allElements.length - 3} more elements`, 'info');
+                    }
+                }
             }
         }
         
