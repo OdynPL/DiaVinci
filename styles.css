@@ -627,8 +627,41 @@ input[type="text"]:focus {
 }
 
 .flag-icon {
-    font-size: 14px;
+    font-size: 16px;
     line-height: 1;
+    display: inline-block;
+    margin-right: 4px;
+    font-family: "Segoe UI Emoji", "Noto Color Emoji", "Apple Color Emoji", sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-feature-settings: "liga" on;
+    font-feature-settings: "liga" on;
+    min-width: 20px;
+    text-align: center;
+}
+
+/* Fallback for systems that don't support emoji flags */
+@supports not (font-family: "Segoe UI Emoji") {
+    .language-btn[id="lang-en"] .flag-icon {
+        background-image: url('Resources/flags/us.svg');
+        background-size: 20px 15px;
+        background-repeat: no-repeat;
+        background-position: center;
+        width: 20px;
+        height: 15px;
+        text-indent: -9999px;
+        overflow: hidden;
+    }
+    
+    .language-btn[id="lang-pl"] .flag-icon {
+        background-image: url('Resources/flags/pl.svg');
+        background-size: 20px 15px;
+        background-repeat: no-repeat;
+        background-position: center;
+        width: 20px;
+        height: 15px;
+        text-indent: -9999px;
+        overflow: hidden;
+    }
 }
 
 /* Responsive adjustments for language switcher */

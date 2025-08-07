@@ -354,6 +354,9 @@ function initializeLanguage() {
     // Get stored language
     currentLanguage = getStoredLanguage();
     
+    // Check if emoji flags are supported, if not use SVG fallback
+    checkEmojiFlagSupport();
+    
     // Setup language switcher buttons
     const enBtn = document.getElementById('lang-en');
     const plBtn = document.getElementById('lang-pl');
@@ -371,9 +374,51 @@ function initializeLanguage() {
     updateLanguageButtons();
 }
 
+// Check if emoji flags are supported and provide fallback
+function checkEmojiFlagSupport() {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = canvas.height = 1;
+    
+    // Try to draw US flag emoji
+    ctx.textBaseline = 'top';
+    ctx.font = '32px Arial';
+    ctx.fillText('🇺🇸', 0, 0);
+    
+    // If the emoji is not supported, it will render as two separate characters
+    // In that case, we'll use SVG flags
+    const imageData = ctx.getImageData(0, 0, 1, 1).data;
+    const isMonochrome = imageData[0] === imageData[1] && imageData[1] === imageData[2];
+    
+    if (isMonochrome) {
+        // Emoji flags not supported, use SVG fallback
+        document.body.classList.add('no-emoji-flags');
+        
+        // Replace emoji with SVG images
+        const enFlag = document.querySelector('#lang-en .flag-icon');
+        const plFlag = document.querySelector('#lang-pl .flag-icon');
+        
+        if (enFlag) {
+            enFlag.innerHTML = '<img src="Resources/flags/us.svg" alt="EN" width="20" height="15" style="vertical-align: middle;">';
+        }
+        
+        if (plFlag) {
+            plFlag.innerHTML = '<img src="Resources/flags/pl.svg" alt="PL" width="20" height="15" style="vertical-align: middle;">';
+        }
+    }
+}
+
 // Initialize when DOM is loaded
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeLanguage);
 } else {
     initializeLanguage();
 }
+
+// Export LanguageService object for global access
+window.LanguageService = {
+    t: t,
+    switchLanguage: switchLanguage,
+    getCurrentLanguage: () => currentLanguage,
+    init: initializeLanguage
+};

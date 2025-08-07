@@ -111,6 +111,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Initialize terminal service
         window.terminalService = container.resolve('terminalService'); // Make globally accessible
         
+        // Language service should auto-initialize from its own DOMContentLoaded event
+        
         // Make container globally accessible for dialogs
         window.container = container;
         
