@@ -2024,13 +2024,13 @@ class TerminalService {
         const totalCount = nodeCount + textCount + transCount;
 
         this.addLine('', 'info');
-        this.addLine('📊 Element Count', 'info');
+        this.addLine('Element Count', 'info');
         this.addLine('─'.repeat(30), 'info');
-        this.addLine(`� Nodes: ${nodeCount} elements`, 'info');
-        this.addLine(`� Texts: ${textCount} elements`, 'info');
-        this.addLine(`� Transitions: ${transCount} elements`, 'info');
+        this.addLine(`Nodes: ${nodeCount} elements`, 'info');
+        this.addLine(`Texts: ${textCount} elements`, 'info');
+        this.addLine(`Transitions: ${transCount} elements`, 'info');
         this.addLine('', 'success');
-        this.addLine(`🎯 Total: ${totalCount} elements`, 'success');
+        this.addLine(`Total: ${totalCount} elements`, 'success');
         
         this.scrollToBottom();
     }
@@ -2076,7 +2076,7 @@ class TerminalService {
         });
 
         this.addLine('', 'info');
-        this.addLine('📊 Project Statistics', 'info');
+        this.addLine('Project Statistics', 'info');
         this.addLine('─'.repeat(50), 'info');
         
         this.addLine('📦 Nodes', 'info');
@@ -2120,7 +2120,7 @@ class TerminalService {
      */
     showMemoryInfo() {
         this.addLine('', 'info');
-        this.addLine('💾 Memory Usage', 'info');
+        this.addLine('Memory Usage', 'info');
         this.addLine('─'.repeat(30), 'info');
 
         if (performance.memory) {
@@ -2152,7 +2152,7 @@ class TerminalService {
      */
     showPerformanceMetrics() {
         this.addLine('', 'info');
-        this.addLine('⚡ Performance Metrics', 'info');
+        this.addLine('Performance Metrics', 'info');
         this.addLine('─'.repeat(30), 'info');
 
         // Page load performance
@@ -2200,7 +2200,7 @@ class TerminalService {
         }
 
         this.addLine('', 'info');
-        this.addLine('✅ Project Validation', 'info');
+        this.addLine('Project Validation', 'info');
         this.addLine('─'.repeat(30), 'info');
 
         let issues = 0;
@@ -2271,7 +2271,7 @@ class TerminalService {
      */
     showSystemConfig() {
         this.addLine('', 'info');
-        this.addLine('⚙️ System Configuration', 'info');
+        this.addLine('System Configuration', 'info');
         this.addLine('─'.repeat(30), 'info');
 
         // Terminal configuration
