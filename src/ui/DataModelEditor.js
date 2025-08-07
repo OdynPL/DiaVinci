@@ -222,7 +222,7 @@ class DataModelEditor {
         this.modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
         
         this.modal.innerHTML = `
-            <div class="bg-white rounded-xl shadow-2xl max-w-[90vw] w-full mx-4 max-h-[95vh] overflow-hidden border border-gray-200 flex flex-col">
+            <div class="bg-white rounded-xl shadow-2xl max-w-[95vw] min-w-[800px] w-full mx-4 max-h-[95vh] overflow-hidden border border-gray-200 flex flex-col">
                 <div class="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-violet-50 to-purple-50 flex-shrink-0">
                     <div class="flex items-center">
                         <div class="w-10 h-10 bg-violet-100 rounded-lg flex items-center justify-center mr-3">
@@ -334,27 +334,6 @@ class DataModelEditor {
                             
                             <div class="fields-container pb-6">
                                 <!-- Fields will be rendered here -->
-                            </div>
-                            
-                            <!-- Model ID Display at the bottom -->
-                            <div class="model-id-display bg-gray-50 border border-gray-200 rounded-lg p-4 mt-4">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center">
-                                        <svg class="w-5 h-5 text-gray-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
-                                        </svg>
-                                        <span class="text-sm font-medium text-gray-700">ID#:</span>
-                                    </div>
-                                    <div class="flex items-center bg-white border border-gray-300 rounded px-3 py-1">
-                                        <span class="text-sm font-mono text-gray-800 select-all" title="Model unique identifier">${this.currentNode.id}</span>
-                                        <button class="copy-model-id-btn ml-2 p-1 text-gray-400 hover:text-gray-600 transition-colors" title="Copy Model ID">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-                                <p class="text-xs text-gray-500 mt-2">This is the unique identifier for this Data Model. It's automatically generated and cannot be changed.</p>
                             </div>
                             
                             <!-- Validation Summary -->
@@ -491,7 +470,7 @@ class DataModelEditor {
                 </div>
                 
                 <!-- Fixed Footer -->
-                <div class="flex items-center justify-end gap-3 p-6 border-t bg-gray-50 flex-shrink-0">
+                <div class="w-full flex items-center justify-end gap-3 p-6 border-t bg-gray-50 flex-shrink-0">
                     <button class="cancel-btn px-6 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                             title="Anuluj zmiany i zamknij edytor">
                         Cancel
@@ -597,28 +576,6 @@ class DataModelEditor {
                 }, 1500);
             } catch (error) {
                 console.error('Failed to copy ID:', error);
-            }
-        });
-        
-        // Copy Model ID button (bottom one)
-        this.modal.querySelector('.copy-model-id-btn').addEventListener('click', async () => {
-            try {
-                await navigator.clipboard.writeText(this.currentNode.id);
-                // Show temporary feedback
-                const button = this.modal.querySelector('.copy-model-id-btn');
-                const originalHTML = button.innerHTML;
-                button.innerHTML = `
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
-                `;
-                button.classList.add('text-green-500');
-                setTimeout(() => {
-                    button.innerHTML = originalHTML;
-                    button.classList.remove('text-green-500');
-                }, 1500);
-            } catch (error) {
-                console.error('Failed to copy Model ID:', error);
             }
         });
 
