@@ -178,7 +178,17 @@ class NodeFactory {
             label: 'Data Model',
             color: '#8e44ad',
             type: 'datamodel',
-            fields: []
+            fields: [
+                {
+                    id: Date.now() + '_field_1',
+                    name: 'id',
+                    type: 'Integer',
+                    initialValue: '',
+                    required: true,
+                    readOnly: false,
+                    nullable: false
+                }
+            ]
         });
     }
 

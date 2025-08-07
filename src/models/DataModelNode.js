@@ -59,10 +59,10 @@ class DataModelNode extends Node {
                 errors.push('Field name contains potentially dangerous SQL patterns');
             }
             
-            // Check reserved words
+            // Check reserved words (excluding common database field names like 'id')
             const reservedWords = [
-                'id', 'class', 'type', 'new', 'delete', 'return', 'function', 'var', 'let', 'const',
-                'select', 'insert', 'update', 'delete', 'drop', 'alter', 'create', 'table', 'database',
+                'class', 'new', 'delete', 'return', 'function', 'var', 'let', 'const',
+                'select', 'insert', 'update', 'drop', 'alter', 'create', 'table', 'database',
                 'script', 'iframe', 'object', 'embed', 'link', 'meta', 'style'
             ];
             if (reservedWords.includes(fieldName.toLowerCase())) {
