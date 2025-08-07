@@ -1,12 +1,15 @@
 /**
  * Terminal Service for DiVinci Application
- * Provides terminal console functionality for logging and debugging
+ * Provides terminal console functionality with filtering and export capabilities
  */
 class TerminalService {
     constructor() {
         this.isVisible = false;
         this.maxLines = 1000; // Maximum number of lines to keep in terminal
         this.history = [];
+        this.filteredHistory = [];
+        this.currentTextFilter = '';
+        this.currentTypeFilter = 'all';
         
         this.initializeTerminal();
         this.setupEventListeners();
@@ -21,6 +24,9 @@ class TerminalService {
         this.toggleButton = document.getElementById('terminal-toggle-btn');
         this.clearButton = document.getElementById('terminal-clear-btn');
         this.closeButton = document.getElementById('terminal-close-btn');
+        this.exportButton = document.getElementById('terminal-export-btn');
+        this.filterTypeSelect = document.getElementById('terminal-filter-type');
+        this.filterTextInput = document.getElementById('terminal-filter-text');
         
         if (!this.terminalPanel || !this.terminalOutput) {
             console.warn('Terminal elements not found in DOM');
@@ -48,7 +54,25 @@ class TerminalService {
             this.closeButton.addEventListener('click', () => this.hide());
         }
 
-        // Handle window resize to maintain terminal proportions
+        if (this.exportButton) {
+            this.exportButton.addEventListener('click', () => this.exportLogs());
+        }
+
+        if (this.filterTypeSelect) {
+            this.filterTypeSelect.addEventListener('change', (e) => {
+                this.currentTypeFilter = e.target.value;
+                this.applyFilters();
+            });
+        }
+
+        if (this.filterTextInput) {
+            this.filterTextInput.addEventListener('input', (e) => {
+                this.currentTextFilter = e.target.value.toLowerCase();
+                this.applyFilters();
+            });
+        }
+
+        // Handle resize events for terminal adjustment
         window.addEventListener('resize', () => {
             if (this.isVisible) {
                 this.adjustTerminalHeight();
@@ -108,6 +132,110 @@ class TerminalService {
 
         this.terminalOutput.innerHTML = '';
         this.history = [];
+        this.filteredHistory = [];
+    }
+
+    /**
+     * Export logs to a file
+     */
+    exportLogs() {
+        if (this.history.length === 0) {
+            this.addLine('No logs to export', 'warning');
+            return;
+        }
+
+        try {
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            const filename = `diavinci-logs-${timestamp}.log`;
+            
+            // Create log content
+            let logContent = `DiVinci Application Logs\nExported: ${new Date().toLocaleString()}\n`;
+            logContent += '='.repeat(50) + '\n\n';
+            
+            // Use filtered history if filters are active, otherwise use full history
+            const logsToExport = this.currentTextFilter || this.currentTypeFilter !== 'all' 
+                ? this.filteredHistory 
+                : this.history;
+            
+            logsToExport.forEach(line => {
+                logContent += `${line.displayTimestamp} ${this.getTypePrefix(line.type)}${line.message}\n`;
+            });
+            
+            // Create and download file
+            const blob = new Blob([logContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            this.addLine(`Logs exported to ${filename} (${logsToExport.length} entries)`, 'success');
+        } catch (error) {
+            this.addLine(`Failed to export logs: ${error.message}`, 'error');
+        }
+    }
+
+    /**
+     * Apply current filters to terminal display
+     */
+    applyFilters() {
+        if (!this.terminalOutput) return;
+
+        // Filter history based on current filters
+        this.filteredHistory = this.history.filter(line => {
+            // Type filter
+            if (this.currentTypeFilter !== 'all' && line.type !== this.currentTypeFilter) {
+                return false;
+            }
+            
+            // Text filter
+            if (this.currentTextFilter && 
+                !line.message.toLowerCase().includes(this.currentTextFilter) &&
+                !this.getTypePrefix(line.type).toLowerCase().includes(this.currentTextFilter)) {
+                return false;
+            }
+            
+            return true;
+        });
+
+        // Rebuild display with filtered results
+        this.rebuildFilteredDisplay();
+    }
+
+    /**
+     * Rebuild terminal display with filtered results
+     */
+    rebuildFilteredDisplay() {
+        if (!this.terminalOutput) return;
+
+        this.terminalOutput.innerHTML = '';
+        
+        const logsToShow = this.currentTextFilter || this.currentTypeFilter !== 'all' 
+            ? this.filteredHistory 
+            : this.history;
+
+        if (logsToShow.length === 0) {
+            const noResultsElement = document.createElement('div');
+            noResultsElement.className = 'terminal-line text-gray-500 italic';
+            noResultsElement.innerHTML = `
+                <span class="text-yellow-600 font-medium">[FILTER]</span> No logs match current filter criteria
+            `;
+            this.terminalOutput.appendChild(noResultsElement);
+        } else {
+            logsToShow.forEach(line => {
+                const typePrefix = this.getTypePrefix(line.type);
+                const lineElement = this.createLineElement(line, typePrefix);
+                this.terminalOutput.appendChild(lineElement);
+            });
+        }
+
+        // Auto-scroll to bottom
+        if (this.isVisible) {
+            this.scrollToBottom();
+        }
     }
 
     /**
@@ -135,13 +263,30 @@ class TerminalService {
         // Trim history if too long
         if (this.history.length > this.maxLines) {
             this.history = this.history.slice(-this.maxLines);
-            this.rebuildTerminalDisplay();
+            this.applyFilters(); // Use filtered rebuild instead
             return;
         }
 
-        // Create and add new line element
-        const lineElement = this.createLineElement(line, typePrefix);
-        this.terminalOutput.appendChild(lineElement);
+        // Check if line passes current filters
+        const passesTypeFilter = this.currentTypeFilter === 'all' || line.type === this.currentTypeFilter;
+        const passesTextFilter = !this.currentTextFilter || 
+            line.message.toLowerCase().includes(this.currentTextFilter) ||
+            typePrefix.toLowerCase().includes(this.currentTextFilter);
+
+        // Only add to display if it passes filters
+        if (passesTypeFilter && passesTextFilter) {
+            // Remove "no results" message if it exists
+            const noResultsMsg = this.terminalOutput.querySelector('.text-gray-500.italic');
+            if (noResultsMsg) {
+                noResultsMsg.remove();
+            }
+            
+            const lineElement = this.createLineElement(line, typePrefix);
+            this.terminalOutput.appendChild(lineElement);
+        }
+
+        // Update filtered history
+        this.applyFilters();
 
         // Auto-scroll to bottom if terminal is visible
         if (this.isVisible) {
@@ -171,17 +316,8 @@ class TerminalService {
     rebuildTerminalDisplay() {
         if (!this.terminalOutput) return;
 
-        this.terminalOutput.innerHTML = '';
-        
-        this.history.forEach(line => {
-            const typePrefix = this.getTypePrefix(line.type);
-            const lineElement = this.createLineElement(line, typePrefix);
-            this.terminalOutput.appendChild(lineElement);
-        });
-
-        if (this.isVisible) {
-            this.scrollToBottom();
-        }
+        // Apply filters to rebuilt display
+        this.applyFilters();
     }
 
     /**

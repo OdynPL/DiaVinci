@@ -108,12 +108,12 @@ class Logger {
      * Log canvas element drop with position
      */
     static canvasDrop(elementType, position, elementData = {}) {
-        const message = `Dropped ${elementType} at position (${position.x}, ${position.y})`;
+        const message = `Dropped ${elementType} at position (X: ${position.x}, Y: ${position.y})`;
         Logger.info(message, { elementType, position, elementData });
         
         // Special canvas drop logging to terminal
         if (Logger.terminalService) {
-            Logger.terminalService.addLine(`🎯 CANVAS DROP: ${elementType} → (${position.x}, ${position.y})`, 'canvas-drop');
+            Logger.terminalService.addLine(`🎯 CANVAS DROP: ${elementType} → (X: ${position.x}, Y: ${position.y})`, 'canvas-drop');
         }
     }
 

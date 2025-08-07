@@ -339,6 +339,28 @@
                 <span class="text-gray-700 text-sm font-medium">Terminal Console</span>
             </div>
             <div class="flex items-center space-x-2">
+                <!-- Filter Controls -->
+                <div class="flex items-center space-x-2">
+                    <select id="terminal-filter-type" 
+                            class="px-2 py-1 bg-white border border-gray-300 rounded text-xs text-gray-700"
+                            title="Filtruj wiadomości według typu">
+                        <option value="all">All Messages</option>
+                        <option value="error">Errors Only</option>
+                        <option value="warning">Warnings Only</option>
+                        <option value="info">Info Only</option>
+                        <option value="canvas-drop">Canvas Drops Only</option>
+                    </select>
+                    <input type="text" 
+                           id="terminal-filter-text" 
+                           placeholder="Filter text..." 
+                           class="px-2 py-1 bg-white border border-gray-300 rounded text-xs text-gray-700 w-24"
+                           title="Filtruj wiadomości według tekstu">
+                    <button id="terminal-export-btn" 
+                            class="px-2 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs transition-colors"
+                            title="Eksportuj logi do pliku">
+                        Export
+                    </button>
+                </div>
                 <button id="terminal-clear-btn" 
                         class="px-2 py-1 bg-gray-600 hover:bg-gray-500 text-white rounded text-xs transition-colors"
                         title="Wyczyść terminal">
