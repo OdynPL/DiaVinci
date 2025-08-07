@@ -85,6 +85,14 @@ The DiAVinci Developer Terminal provides a powerful command-line interface for p
 | `cleanup` | Clean temporary data | `cleanup` |
 | `ping` | Test system responsiveness | `ping` |
 
+### 📋 Data Model Commands
+
+| Command | Description | Example |
+|---------|-------------|---------|
+| `models` | List all data model nodes | `models` |
+| `fields <id>` | List all fields of data model | `fields 123` |
+| `field <id> <name>` | Get specific field value | `field 123 username` |
+
 ## 🎯 Usage Examples
 
 ### Finding Elements
@@ -144,6 +152,21 @@ backup
 config
 ```
 
+### Data Model Management
+```bash
+# List all data model nodes
+models
+
+# Show all fields of data model with ID 123
+fields 123
+
+# Get specific field value
+field 123 username
+
+# Get field with spaces in name
+field 123 "full name"
+```
+
 ## 📖 Command Output Format
 
 ### Element Information Display
@@ -189,6 +212,50 @@ Statistical commands show comprehensive breakdowns:
 ║ Avg Fields/Node:    2.8                         ║
 ║ Total Transitions:  23                          ║
 ║ Total Text Elements: 8                          ║
+╚══════════════════════════════════════════════════╝
+```
+
+### Data Model Information
+Data model commands display comprehensive field information:
+
+```
+╔══════════════════════════════════════════════════╗
+║               📋 DATA MODEL FIELDS             ║
+╠══════════════════════════════════════════════════╣
+║ Model ID: 123                                    ║
+║ Model Label: User Registration                   ║
+║ Total Fields: 5                                  ║
+╚══════════════════════════════════════════════════╝
+
+╔══════════════════════════════════════════════════╗
+║ 1. FIELD                                         ║
+╠══════════════════════════════════════════════════╣
+║ Name: username                                   ║
+║ Type: String                                     ║
+║ Required: Yes                                    ║
+║ Nullable: No                                     ║
+║ Read Only: No                                    ║
+║ Value: john_doe                                  ║
+╚══════════════════════════════════════════════════╝
+```
+
+### Field Value Display
+Field value commands show detailed field information with the actual value:
+
+```
+╔══════════════════════════════════════════════════╗
+║               💎 FIELD VALUE FOUND              ║
+╠══════════════════════════════════════════════════╣
+║ Data Model: User Registration                    ║
+║ Model ID: 123                                    ║
+║ Field Name: username                             ║
+║ Field Type: String                               ║
+╠══════════════════════════════════════════════════╣
+║                    📄 VALUE                     ║
+╠══════════════════════════════════════════════════╣
+║ john_doe                                         ║
+╠══════════════════════════════════════════════════╣
+║ Value Type: string                               ║
 ╚══════════════════════════════════════════════════╝
 ```
 

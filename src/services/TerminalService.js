@@ -854,7 +854,8 @@ class TerminalService {
             'help', 'clear', 'status', 'export', 'version', 'time', 'history', 'reset',
             'find', 'search', 'inspect', 'list elements', 'list nodes', 'list texts', 'list trans',
             'count', 'stats', 'memory', 'performance', 'validate', 'debug on', 'debug off',
-            'debug project', 'logs', 'trace', 'errors', 'config', 'backup', 'cleanup', 'ping'
+            'debug project', 'debug nodes', 'logs', 'trace', 'errors', 'config', 'backup', 'cleanup', 'ping',
+            'fields', 'field', 'models'
         ];
         
         // Find matching commands
@@ -864,7 +865,7 @@ class TerminalService {
             // Single match - complete it
             this.commandInput.value = matches[0];
             // If command needs parameters, add space
-            const paramCommands = ['find', 'search', 'inspect', 'trace', 'logs'];
+            const paramCommands = ['find', 'search', 'inspect', 'trace', 'logs', 'fields', 'field'];
             if (paramCommands.includes(matches[0])) {
                 this.commandInput.value += ' ';
             }
@@ -909,6 +910,9 @@ class TerminalService {
         // Process the command
         const cmd = command.toLowerCase();
         
+        // Debug: Log processed command
+        console.log('ExecuteCommand - Processing command:', { original: command, processed: cmd });
+        
         switch (cmd) {
             case 'help':
                 this.addLine('╔══════════════════════════════════════════════════╗', 'info');
@@ -944,9 +948,15 @@ class TerminalService {
                 this.addLine('║                 🛠️ DEBUGGING                    ║', 'info');
                 this.addLine('║ debug on/off  - Toggle debug logging            ║', 'info');
                 this.addLine('║ debug project - Show project debug info         ║', 'info');
+                this.addLine('║ debug nodes   - Show all nodes with types       ║', 'info');
                 this.addLine('║ logs <type>   - Filter logs by type             ║', 'info');
                 this.addLine('║ trace <id>    - Trace element relationships     ║', 'info');
                 this.addLine('║ errors        - Show recent error logs          ║', 'info');
+                this.addLine('╠══════════════════════════════════════════════════╣', 'info');
+                this.addLine('║                📋 DATA MODEL                    ║', 'info');
+                this.addLine('║ fields <id>   - List all fields of data model   ║', 'info');
+                this.addLine('║ field <id> <name> - Get field value from model  ║', 'info');
+                this.addLine('║ models        - List all data model nodes       ║', 'info');
                 this.addLine('╠══════════════════════════════════════════════════╣', 'info');
                 this.addLine('║                 ⚙️ SYSTEM                      ║', 'info');
                 this.addLine('║ config        - Show system configuration       ║', 'info');
@@ -1007,6 +1017,59 @@ class TerminalService {
             case 'debug off':
                 this.addLine('🔇 Debug mode disabled - normal logging restored.', 'info');
                 break;
+            case 'models':
+                console.log('ExecuteCommand - models case matched');
+                this.listDataModels();
+                break;
+            case 'count':
+                this.countElements();
+                break;
+            case 'stats':
+                this.showProjectStats();
+                break;
+            case 'memory':
+                this.showMemoryInfo();
+                break;
+            case 'performance':
+                this.showPerformanceMetrics();
+                break;
+            case 'validate':
+                this.validateProject();
+                break;
+            case 'config':
+                this.showSystemConfig();
+                break;
+            case 'backup':
+                this.createProjectBackup();
+                break;
+            case 'cleanup':
+                this.cleanupTempData();
+                break;
+            case 'ping':
+                this.pingSystem();
+                break;
+            case 'errors':
+                this.showRecentErrors();
+                break;
+            case 'list elements':
+                this.listAllElements();
+                break;
+            case 'list nodes':
+                this.listNodes();
+                break;
+            case 'list texts':
+                this.listTexts();
+                break;
+            case 'list trans':
+            case 'list transitions':
+                this.listTransitions();
+                break;
+            case 'debug project':
+                this.debugProject();
+                break;
+            case 'debug nodes':
+                this.debugProjectNodes();
+                break;
             default:
                 // Check for commands with parameters
                 if (cmd.startsWith('find ')) {
@@ -1024,37 +1087,20 @@ class TerminalService {
                 } else if (cmd.startsWith('logs ')) {
                     const type = command.substring(5).trim();
                     this.filterLogsByType(type);
-                } else if (cmd === 'list elements') {
-                    this.listAllElements();
-                } else if (cmd === 'list nodes') {
-                    this.listNodes();
-                } else if (cmd === 'list texts') {
-                    this.listTexts();
-                } else if (cmd === 'list trans' || cmd === 'list transitions') {
-                    this.listTransitions();
-                } else if (cmd === 'count') {
-                    this.countElements();
-                } else if (cmd === 'stats') {
-                    this.showProjectStats();
-                } else if (cmd === 'memory') {
-                    this.showMemoryInfo();
-                } else if (cmd === 'performance') {
-                    this.showPerformanceMetrics();
-                } else if (cmd === 'validate') {
-                    this.validateProject();
-                } else if (cmd === 'config') {
-                    this.showSystemConfig();
-                } else if (cmd === 'backup') {
-                    this.createProjectBackup();
-                } else if (cmd === 'cleanup') {
-                    this.cleanupTempData();
-                } else if (cmd === 'ping') {
-                    this.pingSystem();
-                } else if (cmd === 'errors') {
-                    this.showRecentErrors();
-                } else if (cmd === 'debug project') {
-                    this.debugProject();
+                } else if (cmd.startsWith('fields ')) {
+                    const id = command.substring(7).trim();
+                    this.listDataModelFields(id);
+                } else if (cmd.startsWith('field ')) {
+                    const params = command.substring(6).trim().split(' ');
+                    if (params.length >= 2) {
+                        const id = params[0];
+                        const fieldName = params.slice(1).join(' '); // Support field names with spaces
+                        this.getDataModelFieldValue(id, fieldName);
+                    } else {
+                        this.addLine('❌ Invalid syntax. Usage: field <data-model-id> <field-name>', 'error');
+                    }
                 } else {
+                    console.log('ExecuteCommand - Unknown command reached else clause:', { command, cmd });
                     this.addLine(`❌ Unknown command: "${command}"`, 'error');
                     this.addLine('💡 Type "help" to see all available commands.', 'info');
                 }
@@ -2705,6 +2751,579 @@ class TerminalService {
         this.addLine(`✅ Logs filtered by type: "${type}"`, 'success');
         this.addLine(`📊 Showing ${this.filteredHistory.length} of ${this.history.length} total logs`, 'info');
         
+        this.scrollToBottom();
+    }
+
+    /**
+     * List all data model nodes in the project
+     */
+    listDataModels() {
+        console.log('listDataModels() called - starting execution');
+        
+        let currentProject = window.app?.diagramController?.currentProject;
+        
+        if (!currentProject && window.container) {
+            try {
+                const diagramController = window.container.resolve('diagramController');
+                currentProject = diagramController?.currentProject;
+            } catch (e) {
+                this.addLine(`🔧 Container resolution error: ${e.message}`, 'debug');
+            }
+        }
+        
+        if (!currentProject) {
+            this.addLine('❌ No active project found.', 'error');
+            return;
+        }
+
+        // Debug: Show all node types
+        console.log('listDataModels() - All nodes:', currentProject.nodes);
+        console.log('listDataModels() - Node types found:', currentProject.nodes.map(n => ({ id: n.id, type: n.type, label: n.label })));
+        
+        // Try multiple possible type names for DataModel
+        const dataModels = currentProject.nodes.filter(node => 
+            node.type === 'DataModel' || 
+            node.type === 'datamodel' || 
+            node.type === 'data-model' ||
+            node.type === 'Data Model' ||
+            (node.label && node.label.toLowerCase().includes('data')) ||
+            (node.category && node.category.toLowerCase().includes('data'))
+        );
+        
+        console.log('listDataModels() - Filtered dataModels:', dataModels);
+
+        this.addLine('╔══════════════════════════════════════════════════╗', 'info');
+        this.addLine('║               📋 DATA MODEL NODES               ║', 'info');
+        this.addLine('╠══════════════════════════════════════════════════╣', 'info');
+        this.addLine(`║ Project: ${(currentProject.name || 'Untitled').padEnd(37)} ║`, 'info');
+        this.addLine(`║ Total Data Models: ${dataModels.length.toString().padEnd(27)} ║`, 'info');
+        this.addLine('╚══════════════════════════════════════════════════╝', 'info');
+        
+        if (dataModels.length === 0) {
+            this.addLine('', 'info');
+            this.addLine('╔══════════════════════════════════════════════════╗', 'warning');
+            this.addLine('║            📭 NO DATA MODELS FOUND              ║', 'warning');
+            this.addLine('╚══════════════════════════════════════════════════╝', 'warning');
+        } else {
+            this.addLine('', 'info');
+            
+            dataModels.forEach((model, index) => {
+                const label = model.label || 'Unnamed Data Model';
+                const truncatedLabel = label.length > 30 ? label.substring(0, 27) + '...' : label;
+                const fieldsCount = model.fields ? model.fields.length : 0;
+                
+                this.addLine('╔══════════════════════════════════════════════════╗', 'info');
+                this.addLine(`║ ${(index + 1).toString().padStart(2)}. DATA MODEL                             ║`, 'info');
+                this.addLine('╠══════════════════════════════════════════════════╣', 'info');
+                this.addLine(`║ ID: ${model.id.toString().padEnd(44)} ║`, 'info');
+                this.addLine(`║ Label: ${truncatedLabel.padEnd(41)} ║`, 'info');
+                this.addLine(`║ Fields Count: ${fieldsCount.toString().padEnd(34)} ║`, 'info');
+                
+                if (model.x !== undefined && model.y !== undefined) {
+                    const pos = `(${Math.round(model.x)}, ${Math.round(model.y)})`;
+                    this.addLine(`║ Position: ${pos.padEnd(38)} ║`, 'info');
+                }
+                
+                if (model.color) {
+                    this.addLine(`║ Color: ${model.color.padEnd(41)} ║`, 'info');
+                }
+                
+                // Show first few field names as preview
+                if (fieldsCount > 0) {
+                    const fieldNames = model.fields.slice(0, 3).map(f => f.name).join(', ');
+                    const truncatedFields = fieldNames.length > 35 ? fieldNames.substring(0, 32) + '...' : fieldNames;
+                    this.addLine(`║ Fields: ${truncatedFields.padEnd(40)} ║`, 'success');
+                    
+                    if (fieldsCount > 3) {
+                        this.addLine(`║ ... and ${(fieldsCount - 3).toString()} more fields                   ║`, 'success');
+                    }
+                }
+                
+                this.addLine('╚══════════════════════════════════════════════════╝', 'info');
+                
+                if (index < dataModels.length - 1) {
+                    this.addLine('', 'info'); // Space between models
+                }
+            });
+        }
+        
+        this.addLine('', 'info');
+        this.addLine('💡 QUICK ACTIONS:', 'info');
+        this.addLine('   • "fields <id>" - List all fields of a data model', 'info');
+        this.addLine('   • "field <id> <name>" - Get specific field value', 'info');
+        this.addLine('   • "inspect <id>" - View complete data model details', 'info');
+        
+        this.scrollToBottom();
+    }
+
+    /**
+     * List all fields of a specific data model
+     */
+    listDataModelFields(id) {
+        if (!id) {
+            this.addLine('❌ Please provide a data model ID. Usage: fields <data-model-id>', 'error');
+            return;
+        }
+
+        let currentProject = window.app?.diagramController?.currentProject;
+        
+        if (!currentProject && window.container) {
+            try {
+                const diagramController = window.container.resolve('diagramController');
+                currentProject = diagramController?.currentProject;
+            } catch (e) {
+                this.addLine(`🔧 Container resolution error: ${e.message}`, 'debug');
+            }
+        }
+        
+        if (!currentProject) {
+            this.addLine('❌ No active project found.', 'error');
+            return;
+        }
+
+        // Find the data model by ID - try multiple type variants (listDataModelFields)
+        const dataModel = currentProject.nodes.find(node => 
+            (node.type === 'DataModel' || 
+             node.type === 'datamodel' || 
+             node.type === 'data-model' ||
+             node.type === 'Data Model' ||
+             (node.label && node.label.toLowerCase().includes('data')) ||
+             (node.category && node.category.toLowerCase().includes('data'))) &&
+            (node.id === id || 
+             node.id === parseInt(id) || 
+             node.id.toString() === id)
+        );
+        
+        console.log('listDataModelFields() - Searching for ID:', id);
+        console.log('listDataModelFields() - Found dataModel:', dataModel);
+
+        if (!dataModel) {
+            this.addLine('╔══════════════════════════════════════════════════╗', 'error');
+            this.addLine('║              ❌ DATA MODEL NOT FOUND            ║', 'error');
+            this.addLine('╠══════════════════════════════════════════════════╣', 'error');
+            this.addLine(`║ Searched ID: "${id}"                              ║`, 'error');
+            this.addLine('╚══════════════════════════════════════════════════╝', 'error');
+            
+            // Suggest available data models - use same filter as main search
+            const dataModels = currentProject.nodes.filter(node => 
+                node.type === 'DataModel' || 
+                node.type === 'datamodel' || 
+                node.type === 'data-model' ||
+                node.type === 'Data Model' ||
+                (node.label && node.label.toLowerCase().includes('data')) ||
+                (node.category && node.category.toLowerCase().includes('data'))
+            );
+            if (dataModels.length > 0) {
+                this.addLine('', 'info');
+                this.addLine('📋 AVAILABLE DATA MODELS:', 'info');
+                dataModels.slice(0, 5).forEach((model, index) => {
+                    this.addLine(`   ${index + 1}. ID: ${model.id} | "${model.label || 'Unnamed'}"`, 'info');
+                });
+            } else {
+                this.addLine('', 'warning');
+                this.addLine('⚠️ No data models found in project. Use "models" to see all data models.', 'warning');
+            }
+            return;
+        }
+
+        const fields = dataModel.fields || [];
+        const modelLabel = dataModel.label || 'Unnamed Data Model';
+
+        this.addLine('╔══════════════════════════════════════════════════╗', 'info');
+        this.addLine('║                📋 DATA MODEL FIELDS             ║', 'info');
+        this.addLine('╠══════════════════════════════════════════════════╣', 'info');
+        this.addLine(`║ Model ID: ${dataModel.id.toString().padEnd(36)} ║`, 'info');
+        this.addLine(`║ Model Label: ${modelLabel.substring(0, 33).padEnd(33)} ║`, 'info');
+        this.addLine(`║ Total Fields: ${fields.length.toString().padEnd(34)} ║`, 'info');
+        this.addLine('╚══════════════════════════════════════════════════╝', 'info');
+
+        if (fields.length === 0) {
+            this.addLine('', 'info');
+            this.addLine('╔══════════════════════════════════════════════════╗', 'warning');
+            this.addLine('║               📭 NO FIELDS FOUND                ║', 'warning');
+            this.addLine('╚══════════════════════════════════════════════════╝', 'warning');
+        } else {
+            this.addLine('', 'info');
+            
+            fields.forEach((field, index) => {
+                const name = field.name || 'Unnamed Field';
+                const type = field.type || 'Unknown';
+                const required = field.required ? 'Yes' : 'No';
+                const nullable = field.nullable ? 'Yes' : 'No';
+                const readOnly = field.readOnly ? 'Yes' : 'No';
+                
+                this.addLine('╔══════════════════════════════════════════════════╗', 'info');
+                this.addLine(`║ ${(index + 1).toString().padStart(2)}. FIELD                                   ║`, 'info');
+                this.addLine('╠══════════════════════════════════════════════════╣', 'info');
+                this.addLine(`║ Name: ${name.substring(0, 42).padEnd(42)} ║`, 'info');
+                this.addLine(`║ Type: ${type.padEnd(42)} ║`, 'info');
+                this.addLine(`║ Required: ${required.padEnd(38)} ║`, 'info');
+                this.addLine(`║ Nullable: ${nullable.padEnd(38)} ║`, 'info');
+                this.addLine(`║ Read Only: ${readOnly.padEnd(37)} ║`, 'info');
+                
+                // Show field value if it exists
+                if (field.value !== undefined && field.value !== null && field.value !== '') {
+                    const value = field.value.toString();
+                    const truncatedValue = value.length > 35 ? value.substring(0, 32) + '...' : value;
+                    this.addLine(`║ Value: ${truncatedValue.padEnd(41)} ║`, 'success');
+                }
+                
+                // Show additional properties
+                if (field.description) {
+                    const desc = field.description.substring(0, 35);
+                    this.addLine(`║ Description: ${desc.padEnd(33)} ║`, 'debug');
+                }
+                
+                if (field.format) {
+                    this.addLine(`║ Format: ${field.format.padEnd(40)} ║`, 'debug');
+                }
+                
+                this.addLine('╚══════════════════════════════════════════════════╝', 'info');
+                
+                if (index < fields.length - 1) {
+                    this.addLine('', 'info'); // Space between fields
+                }
+            });
+        }
+        
+        this.addLine('', 'info');
+        this.addLine('💡 QUICK ACTIONS:', 'info');
+        this.addLine('   • "field <id> <name>" - Get specific field value', 'info');
+        this.addLine('   • "inspect <id>" - View complete data model details', 'info');
+        this.addLine('   • "models" - List all data models', 'info');
+        
+        this.scrollToBottom();
+    }
+
+    /**
+     * Get the value of a specific field from a data model
+     */
+    getDataModelFieldValue(id, fieldName) {
+        if (!id || !fieldName) {
+            this.addLine('❌ Please provide both data model ID and field name. Usage: field <data-model-id> <field-name>', 'error');
+            return;
+        }
+
+        let currentProject = window.app?.diagramController?.currentProject;
+        
+        if (!currentProject && window.container) {
+            try {
+                const diagramController = window.container.resolve('diagramController');
+                currentProject = diagramController?.currentProject;
+            } catch (e) {
+                this.addLine(`🔧 Container resolution error: ${e.message}`, 'debug');
+            }
+        }
+        
+        if (!currentProject) {
+            this.addLine('❌ No active project found.', 'error');
+            return;
+        }
+
+        // Find the data model by ID - try multiple type variants (getDataModelFieldValue)
+        const dataModel = currentProject.nodes.find(node => 
+            (node.type === 'DataModel' || 
+             node.type === 'datamodel' || 
+             node.type === 'data-model' ||
+             node.type === 'Data Model' ||
+             (node.label && node.label.toLowerCase().includes('data')) ||
+             (node.category && node.category.toLowerCase().includes('data'))) &&
+            (node.id === id || 
+             node.id === parseInt(id) || 
+             node.id.toString() === id)
+        );
+        
+        console.log('getDataModelFieldValue() - Searching for ID:', id, 'fieldName:', fieldName);
+        console.log('getDataModelFieldValue() - Found dataModel:', dataModel);
+
+        if (!dataModel) {
+            this.addLine('╔══════════════════════════════════════════════════╗', 'error');
+            this.addLine('║              ❌ DATA MODEL NOT FOUND            ║', 'error');
+            this.addLine('╠══════════════════════════════════════════════════╣', 'error');
+            this.addLine(`║ Searched ID: "${id}"                              ║`, 'error');
+            this.addLine('╚══════════════════════════════════════════════════╝', 'error');
+            return;
+        }
+
+        const fields = dataModel.fields || [];
+        
+        console.log('getDataModelFieldValue() - fields array:', fields);
+        console.log('getDataModelFieldValue() - looking for field name:', fieldName);
+        
+        // Debug: Show all field names and their properties
+        fields.forEach((f, index) => {
+            console.log(`Field ${index}:`, {
+                name: f.name,
+                type: f.type,
+                value: f.value,
+                hasValue: f.value !== undefined,
+                valueType: typeof f.value,
+                allProperties: Object.keys(f)
+            });
+        });
+        
+        // Find the field by name (case-insensitive)
+        const field = fields.find(f => 
+            f.name && f.name.toLowerCase() === fieldName.toLowerCase()
+        );
+        
+        console.log('getDataModelFieldValue() - found field:', field);
+
+        if (!field) {
+            this.addLine('╔══════════════════════════════════════════════════╗', 'error');
+            this.addLine('║                ❌ FIELD NOT FOUND               ║', 'error');
+            this.addLine('╠══════════════════════════════════════════════════╣', 'error');
+            this.addLine(`║ Data Model: "${dataModel.label || 'Unnamed'}"      ║`, 'error');
+            this.addLine(`║ Field Name: "${fieldName}"                        ║`, 'error');
+            this.addLine('╚══════════════════════════════════════════════════╝', 'error');
+            
+            // Suggest similar field names
+            const similarFields = fields.filter(f => 
+                f.name && (
+                    f.name.toLowerCase().includes(fieldName.toLowerCase()) ||
+                    fieldName.toLowerCase().includes(f.name.toLowerCase())
+                )
+            );
+            
+            if (similarFields.length > 0) {
+                this.addLine('', 'info');
+                this.addLine('🔍 SIMILAR FIELD NAMES:', 'warning');
+                similarFields.forEach((f, index) => {
+                    this.addLine(`   ${index + 1}. "${f.name}" (${f.type})`, 'warning');
+                });
+            } else if (fields.length > 0) {
+                this.addLine('', 'info');
+                this.addLine('📋 AVAILABLE FIELDS:', 'info');
+                fields.slice(0, 5).forEach((f, index) => {
+                    this.addLine(`   ${index + 1}. "${f.name}" (${f.type})`, 'info');
+                });
+                
+                if (fields.length > 5) {
+                    this.addLine(`   ... and ${fields.length - 5} more fields`, 'info');
+                }
+            }
+            return;
+        }
+
+        // Display field information and value
+        const modelLabel = dataModel.label || 'Unnamed Data Model';
+        
+        // Check for value in multiple possible properties
+        let fieldValue = field.value;
+        let valueSource = 'value';
+        
+        if (fieldValue === undefined || fieldValue === null) {
+            // Try other possible value properties
+            if (field.defaultValue !== undefined && field.defaultValue !== null) {
+                fieldValue = field.defaultValue;
+                valueSource = 'defaultValue';
+            } else if (field.initialValue !== undefined && field.initialValue !== null) {
+                fieldValue = field.initialValue;
+                valueSource = 'initialValue';
+            } else if (field.currentValue !== undefined && field.currentValue !== null) {
+                fieldValue = field.currentValue;
+                valueSource = 'currentValue';
+            } else if (field.data !== undefined && field.data !== null) {
+                fieldValue = field.data;
+                valueSource = 'data';
+            }
+        }
+        
+        const hasValue = fieldValue !== undefined && fieldValue !== null && fieldValue !== '';
+        
+        console.log('getDataModelFieldValue() - Final value check:', {
+            fieldValue,
+            valueSource,
+            hasValue,
+            fieldAllProperties: field
+        });
+        
+        this.addLine('╔══════════════════════════════════════════════════╗', 'success');
+        this.addLine('║               💎 FIELD VALUE FOUND              ║', 'success');
+        this.addLine('╠══════════════════════════════════════════════════╣', 'success');
+        this.addLine(`║ Data Model: ${modelLabel.substring(0, 34).padEnd(34)} ║`, 'info');
+        this.addLine(`║ Model ID: ${dataModel.id.toString().padEnd(36)} ║`, 'info');
+        this.addLine(`║ Field Name: ${field.name.padEnd(34)} ║`, 'info');
+        this.addLine(`║ Field Type: ${field.type.padEnd(34)} ║`, 'info');
+        
+        if (valueSource !== 'value') {
+            this.addLine(`║ Value Source: ${valueSource.padEnd(32)} ║`, 'info');
+        }
+        
+        this.addLine('╠══════════════════════════════════════════════════╣', 'info');
+        
+        if (hasValue) {
+            this.addLine('║                    📄 VALUE                     ║', 'success');
+            this.addLine('╠══════════════════════════════════════════════════╣', 'success');
+            
+            const value = fieldValue; // Use our found value instead of field.value
+            const valueType = typeof value;
+            
+            // Handle different value types
+            if (valueType === 'object') {
+                // JSON object or array
+                try {
+                    const jsonStr = JSON.stringify(value, null, 2);
+                    const jsonLines = jsonStr.split('\n');
+                    
+                    jsonLines.forEach(line => {
+                        const truncatedLine = line.length > 46 ? line.substring(0, 43) + '...' : line;
+                        this.addLine(`║ ${truncatedLine.padEnd(47)} ║`, 'success');
+                    });
+                } catch (e) {
+                    this.addLine(`║ [Object] ${value.toString().substring(0, 38).padEnd(38)} ║`, 'success');
+                }
+            } else {
+                // Primitive values
+                const valueStr = value.toString();
+                
+                if (valueStr.length <= 46) {
+                    this.addLine(`║ ${valueStr.padEnd(47)} ║`, 'success');
+                } else {
+                    // Split long values into multiple lines
+                    const chunks = valueStr.match(/.{1,46}/g) || [];
+                    chunks.forEach(chunk => {
+                        this.addLine(`║ ${chunk.padEnd(47)} ║`, 'success');
+                    });
+                }
+            }
+            
+            this.addLine('╠══════════════════════════════════════════════════╣', 'info');
+            this.addLine(`║ Value Type: ${valueType.padEnd(34)} ║`, 'info');
+            
+            if (field.format) {
+                this.addLine(`║ Format: ${field.format.padEnd(40)} ║`, 'info');
+            }
+        } else {
+            this.addLine('║                   ⚠️ NO VALUE                   ║', 'warning');
+            this.addLine('╠══════════════════════════════════════════════════╣', 'warning');
+            this.addLine('║ This field has no value set                     ║', 'warning');
+            this.addLine(`║ Checked properties: value, defaultValue,        ║`, 'warning');
+            this.addLine(`║ initialValue, currentValue, data                ║`, 'warning');
+            
+            // Debug: Show all field properties for debugging
+            this.addLine('╠══════════════════════════════════════════════════╣', 'debug');
+            this.addLine('║ 🔧 DEBUG: All field properties:                ║', 'debug');
+            Object.keys(field).forEach(key => {
+                const value = field[key];
+                const valueStr = value === null ? 'null' : 
+                               value === undefined ? 'undefined' :
+                               typeof value === 'object' ? '[object]' : 
+                               String(value);
+                const displayStr = `${key}: ${valueStr}`;
+                const truncated = displayStr.length > 46 ? displayStr.substring(0, 43) + '...' : displayStr;
+                this.addLine(`║ ${truncated.padEnd(47)} ║`, 'debug');
+            });
+            
+            if (field.required) {
+                this.addLine('║ ⚠️ WARNING: This is a required field           ║', 'warning');
+            }
+            
+            if (field.nullable) {
+                this.addLine('║ ✅ Field accepts null values                   ║', 'info');
+            }
+        }
+        
+        // Show field properties
+        this.addLine('╠══════════════════════════════════════════════════╣', 'info');
+        this.addLine('║                 🔧 PROPERTIES                   ║', 'info');
+        this.addLine('╠══════════════════════════════════════════════════╣', 'info');
+        this.addLine(`║ Required: ${(field.required ? 'Yes' : 'No').padEnd(38)} ║`, 'info');
+        this.addLine(`║ Nullable: ${(field.nullable ? 'Yes' : 'No').padEnd(38)} ║`, 'info');
+        this.addLine(`║ Read Only: ${(field.readOnly ? 'Yes' : 'No').padEnd(37)} ║`, 'info');
+        
+        if (field.description) {
+            this.addLine('╠══════════════════════════════════════════════════╣', 'info');
+            this.addLine('║                  📝 DESCRIPTION                 ║', 'info');
+            this.addLine('╠══════════════════════════════════════════════════╣', 'info');
+            
+            const desc = field.description;
+            if (desc.length <= 46) {
+                this.addLine(`║ ${desc.padEnd(47)} ║`, 'debug');
+            } else {
+                const chunks = desc.match(/.{1,46}/g) || [];
+                chunks.forEach(chunk => {
+                    this.addLine(`║ ${chunk.padEnd(47)} ║`, 'debug');
+                });
+            }
+        }
+        
+        this.addLine('╚══════════════════════════════════════════════════╝', 'success');
+        
+        this.addLine('', 'info');
+        this.addLine('💡 QUICK ACTIONS:', 'info');
+        this.addLine(`   • "fields ${dataModel.id}" - List all fields of this model`, 'info');
+        this.addLine(`   • "inspect ${dataModel.id}" - View complete model details`, 'info');
+        this.addLine('   • "models" - List all data models', 'info');
+        
+        this.scrollToBottom();
+    }
+
+    /**
+     * Debug all project nodes and their types
+     */
+    debugProjectNodes() {
+        let currentProject = window.app?.diagramController?.currentProject;
+        
+        if (!currentProject && window.container) {
+            try {
+                const diagramController = window.container.resolve('diagramController');
+                currentProject = diagramController?.currentProject;
+            } catch (e) {
+                this.addLine(`🔧 Container resolution error: ${e.message}`, 'debug');
+            }
+        }
+        
+        if (!currentProject) {
+            this.addLine('❌ No active project found.', 'error');
+            return;
+        }
+
+        this.addLine('╔══════════════════════════════════════════════════╗', 'info');
+        this.addLine('║               🔧 DEBUG PROJECT NODES            ║', 'info');
+        this.addLine('╠══════════════════════════════════════════════════╣', 'info');
+        this.addLine(`║ Total Nodes: ${currentProject.nodes.length.toString().padEnd(33)} ║`, 'info');
+        this.addLine('╚══════════════════════════════════════════════════╝', 'info');
+
+        if (currentProject.nodes.length === 0) {
+            this.addLine('No nodes found in project.', 'warning');
+            return;
+        }
+
+        currentProject.nodes.forEach((node, index) => {
+            this.addLine('╔══════════════════════════════════════════════════╗', 'debug');
+            this.addLine(`║ NODE ${(index + 1).toString().padStart(2)}                                      ║`, 'debug');
+            this.addLine('╠══════════════════════════════════════════════════╣', 'debug');
+            this.addLine(`║ ID: ${node.id.toString().padEnd(44)} ║`, 'debug');
+            this.addLine(`║ Type: ${(node.type || 'undefined').padEnd(42)} ║`, 'debug');
+            this.addLine(`║ Label: ${(node.label || 'N/A').padEnd(41)} ║`, 'debug');
+            
+            if (node.category) {
+                this.addLine(`║ Category: ${node.category.padEnd(38)} ║`, 'debug');
+            }
+            
+            if (node.fields && node.fields.length > 0) {
+                this.addLine(`║ Fields Count: ${node.fields.length.toString().padEnd(34)} ║`, 'debug');
+            }
+            
+            // Show all properties
+            this.addLine('║ All Properties:                              ║', 'debug');
+            Object.keys(node).forEach(key => {
+                const value = node[key];
+                const valueStr = (typeof value === 'object' && value !== null) 
+                    ? `[${Object.keys(value).join(', ')}]` 
+                    : String(value);
+                const truncated = valueStr.length > 30 ? valueStr.substring(0, 27) + '...' : valueStr;
+                this.addLine(`║   ${key}: ${truncated.padEnd(40 - key.length)} ║`, 'debug');
+            });
+            
+            this.addLine('╚══════════════════════════════════════════════════╝', 'debug');
+            
+            if (index < currentProject.nodes.length - 1) {
+                this.addLine('', 'debug');
+            }
+        });
+
         this.scrollToBottom();
     }
 }

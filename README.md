@@ -24,6 +24,7 @@ Modern web-based flowchart editor built with vanilla JavaScript. Create, edit, a
 - **Command Interface** - Professional terminal with 30+ commands
 - **TAB Completion** - Smart auto-completion for all commands
 - **Element Search** - Find elements by ID, search by text content
+- **Data Model Tools** - List fields, get field values, analyze data models
 - **Project Analytics** - Stats, memory usage, performance metrics
 - **Debug Tools** - Project validation, error logs, element tracing
 - **System Management** - Configuration, backup, cleanup utilities
@@ -76,8 +77,9 @@ Modern web-based flowchart editor built with vanilla JavaScript. Create, edit, a
 
 ### 🆕 Developer Terminal
 - **Toggle Access**: Click terminal icon in UI or press hotkey
-- **Command Categories**: Basic, Search & Inspect, Analytics, Debugging, System
+- **Command Categories**: Basic, Search & Inspect, Analytics, Debugging, Data Model, System
 - **Smart Search**: `find <id>`, `search <text>`, `inspect <id>` for detailed element information
+- **Data Model Access**: `models`, `fields <id>`, `field <id> <name>` for data model management
 - **Project Management**: `list elements/nodes/texts/trans`, `count`, `stats` for project overview
 - **Debug Tools**: `validate`, `errors`, `trace <id>`, `debug project` for troubleshooting
 - **System Tools**: `config`, `backup`, `cleanup`, `ping` for maintenance
@@ -98,6 +100,7 @@ Modern web-based flowchart editor built with vanilla JavaScript. Create, edit, a
 - **TAB Completion**: Press TAB to auto-complete commands
 - **Quick Start**: Type `help` to see all available commands
 - **Element Search**: Use `find 123` or `search "user data"` to locate elements
+- **Data Model Analysis**: Use `models`, `fields 123`, `field 123 username` for data model inspection
 - **Project Analysis**: Use `stats`, `count`, `validate` for project insights
 - **Debugging**: Use `errors`, `debug project`, `trace 123` for troubleshooting
 
