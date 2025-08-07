@@ -59,6 +59,19 @@ const translations = {
         newPublicProject: "New public project created and saved!",
         newPrivateProject: "New private project created and saved!",
         
+        // Dialog titles and actions
+        loadProjectTitle: "Load Project", 
+        createNewProjectTitle: "Create New Project",
+        deleteProjectTitle: "Delete Project",
+        close: "Close",
+        load: "Load",
+        delete: "Delete",
+        createProject: "Create Project",
+        projectNameRequired: "Project name is required",
+        rememberPassword: "Remember this password - it cannot be recovered!",
+        deleteProjectConfirm: "Are you sure you want to delete project",
+        actionCannotBeUndone: "This action cannot be undone.",
+        
         // Password dialog
         enterPasswordTitle: "Enter Password",
         enterPasswordMessage: "Please enter the password for project:",
@@ -70,6 +83,9 @@ const translations = {
         
         // Load dialog
         noProjectsFound: "No saved projects found",
+        noProjectsMatchingSearch: "No projects found matching your search",
+        clearAllProjectsConfirm: "Are you sure you want to delete <strong>ALL</strong> saved projects and clear the canvas?<br><br><strong>This action cannot be undone!</strong>",
+        createFirstDiagram: "Create your first diagram to get started",
         custom: "Custom",
         private: "PRIVATE",
         public: "PUBLIC",
@@ -307,12 +323,17 @@ const translations = {
         privateProjectLoaded: "Projekt prywatny wczytany pomyślnie!",
         newPublicProject: "Nowy projekt publiczny utworzony i zapisany!",
         newPrivateProject: "Nowy projekt prywatny utworzony i zapisany!",
-        saveAsPrivate: "Zapisz jako prywatny projekt",
-        projectNameRequired: "Nazwa projektu jest wymagana",
-        passwordRequired: "Hasło jest wymagane dla prywatnych projektów",
-        projectPassword: "Hasło Projektu",
-        enterPasswordPlaceholder: "Wprowadź hasło dla prywatnego projektu...",
-        rememberPassword: "Zapamiętaj to hasło - nie można go odzyskać!",
+        
+        // Dialog titles and actions
+        loadProjectTitle: "Wczytaj Projekt",
+        createNewProjectTitle: "Utwórz Nowy Projekt", 
+        deleteProjectTitle: "Usuń Projekt",
+        close: "Zamknij",
+        load: "Wczytaj",
+        delete: "Usuń",
+        createProject: "Utwórz Projekt",
+        deleteProjectConfirm: "Czy na pewno chcesz usunąć projekt",
+        actionCannotBeUndone: "Ta akcja nie może zostać cofnięta.",
         
         // Password dialog
         enterPasswordTitle: "Wprowadź Hasło",
@@ -325,6 +346,9 @@ const translations = {
         
         // Load dialog
         noProjectsFound: "Nie znaleziono zapisanych projektów",
+        noProjectsMatchingSearch: "Nie znaleziono projektów pasujących do wyszukiwania",
+        clearAllProjectsConfirm: "Czy na pewno chcesz usunąć <strong>WSZYSTKIE</strong> zapisane projekty i wyczyścić płótno?<br><br><strong>Ta akcja nie może zostać cofnięta!</strong>",
+        createFirstDiagram: "Utwórz swój pierwszy diagram, aby rozpocząć",
         custom: "Niestandardowy",
         private: "PRYWATNY",
         public: "PUBLICZNY",

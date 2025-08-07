@@ -637,7 +637,7 @@ class UIController {
     clearAllProjects() {
         DialogFactory.createConfirmDialog(
             'Delete All Projects',
-            'Are you sure you want to delete <strong>ALL</strong> saved projects and clear the canvas?<br><br><strong>This action cannot be undone!</strong>',
+            t('clearAllProjectsConfirm'),
             () => {
                 const success = this.storageService.clearAllProjects();
                 if (success) {
@@ -687,8 +687,8 @@ class UIController {
                 <svg class="w-12 h-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                 </svg>
-                <p class="text-gray-500 font-medium">${searchTerm ? 'No projects found matching your search' : 'No saved projects'}</p>
-                <p class="text-gray-400 text-sm mt-1">Create your first diagram to get started</p>
+                <p class="text-gray-500 font-medium">${searchTerm ? t('noProjectsMatchingSearch') : t('noProjectsFound')}</p>
+                <p class="text-gray-400 text-sm mt-1">${t('createFirstDiagram')}</p>
             `;
             recentList.appendChild(noProjects);
             return;

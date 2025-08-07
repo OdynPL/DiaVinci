@@ -304,7 +304,7 @@ class DialogFactory {
      * Create load project dialog
      */
     static createLoadDialog(projects, onLoad, onDelete, onClose) {
-        const dialog = DialogFactory.createBaseDialog('load-dialog', 'Load Project', {
+        const dialog = DialogFactory.createBaseDialog('load-dialog', t('loadProjectTitle'), {
             minWidth: '400px',
             maxHeight: '500px'
         });
@@ -356,7 +356,7 @@ class DialogFactory {
             });
         }
         
-        const closeBtn = DialogFactory.createButton('Close', 'secondary');
+        const closeBtn = DialogFactory.createButton(t('close'), 'secondary');
         closeBtn.style.width = '100%';
         closeBtn.addEventListener('click', () => {
             dialog.remove();
@@ -678,7 +678,7 @@ class DialogFactory {
         buttonContainer.style.display = 'flex';
         buttonContainer.style.gap = '8px';
         
-        const loadBtn = DialogFactory.createSmallButton('Load', '#27ae60', (e) => {
+        const loadBtn = DialogFactory.createSmallButton(t('load'), '#27ae60', (e) => {
             e.stopPropagation();
             const success = onLoad(project.name);
             if (success !== false && dialog) {
@@ -686,11 +686,11 @@ class DialogFactory {
             }
         });
         
-        const deleteBtn = DialogFactory.createSmallButton('Delete', '#e74c3c', (e) => {
+        const deleteBtn = DialogFactory.createSmallButton(t('delete'), '#e74c3c', (e) => {
             e.stopPropagation();
             DialogFactory.createConfirmDialog(
-                'Delete Project',
-                `Are you sure you want to delete project <strong>"${project.name}"</strong>?<br><br>This action cannot be undone.`,
+                t('deleteProjectTitle'),
+                `${t('deleteProjectConfirm')} <strong>"${project.name}"</strong>?<br><br>${t('actionCannotBeUndone')}`,
                 () => {
                     const success = onDelete(project.name);
                     if (success !== false && refreshList) {
@@ -698,8 +698,8 @@ class DialogFactory {
                     }
                 },
                 null,
-                'Delete',
-                'Cancel'
+                t('delete'),
+                t('cancel')
             );
         });
         
@@ -869,7 +869,7 @@ class DialogFactory {
      * Create new project dialog with privacy options
      */
     static createNewProjectDialog(onConfirm, onCancel) {
-        const dialog = DialogFactory.createBaseDialog('new-project-dialog', 'Create New Project', {
+        const dialog = DialogFactory.createBaseDialog('new-project-dialog', t('createNewProjectTitle'), {
             maxWidth: '450px'
         });
         
@@ -1011,7 +1011,7 @@ class DialogFactory {
         });
         
         const passwordNote = document.createElement('div');
-        passwordNote.textContent = '⚠️ Remember this password - it cannot be recovered!';
+        passwordNote.textContent = `⚠️ ${t('rememberPassword')}`;
         passwordNote.style.fontSize = '12px';
         passwordNote.style.color = '#e67e22';
         passwordNote.style.marginTop = '6px';
@@ -1048,8 +1048,8 @@ class DialogFactory {
         
         // Button container
         const buttonContainer = DialogFactory.createButtonContainer();
-        const cancelBtn = DialogFactory.createButton('Cancel', 'secondary');
-        const createBtn = DialogFactory.createButton('Create Project', 'primary');
+        const cancelBtn = DialogFactory.createButton(t('cancel'), 'secondary');
+        const createBtn = DialogFactory.createButton(t('createProject'), 'primary');
         
         const handleCreate = () => {
             const projectName = nameInput.value.trim();
@@ -1061,7 +1061,7 @@ class DialogFactory {
             passwordInput.style.borderColor = '#e1e8ed';
             
             if (!projectName) {
-                nameError.textContent = '⚠️ Project name is required';
+                nameError.textContent = `⚠️ ${t('projectNameRequired')}`;
                 nameError.style.display = 'block';
                 nameInput.style.borderColor = '#e74c3c';
                 nameInput.focus();
