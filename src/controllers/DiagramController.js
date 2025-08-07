@@ -1075,17 +1075,17 @@ class DiagramController {
     showIFOptions(node, x, y) {
         const options = [
             {
-                text: `IF Node ID: ${node.id}`,
+                text: `${t('nodeId')}: ${node.id}`,
                 action: () => this.copyToClipboard(node.id),
                 className: 'context-menu-info'
             },
             {
-                text: `Label: ${node.label}`,
+                text: `${t('label')}: ${node.label}`,
                 action: null,
                 className: 'context-menu-info'
             },
             {
-                text: `Rotation: ${node.rotation}°`,
+                text: `${t('rotation')}: ${node.rotation}°`,
                 action: null,
                 className: 'context-menu-info'
             },
@@ -1095,23 +1095,23 @@ class DiagramController {
                 className: 'context-menu-separator'
             },
             {
-                text: 'Copy ID to Clipboard',
+                text: t('copyIdToClipboard'),
                 action: () => this.copyToClipboard(node.id)
             },
             {
-                text: 'Show in Terminal',
+                text: t('showInTerminal'),
                 action: () => this.showElementInTerminal(node)
             },
             {
-                text: 'Rotate Clockwise',
+                text: t('rotateClockwise'),
                 action: () => this.rotateIFNode(node)
             },
             {
-                text: 'Rotate Counter-Clockwise',
+                text: t('rotateCounterClockwise'),
                 action: () => this.rotateIFNodeCounterClockwise(node)
             },
             {
-                text: 'Change Color',
+                text: t('changeColor'),
                 action: () => this.showColorPicker(node, x, y)
             }
         ];
@@ -1167,17 +1167,17 @@ class DiagramController {
         
         const options = [
             {
-                text: `Transition ID: ${transition.id}`,
+                text: `${t('transitionId')}: ${transition.id}`,
                 action: () => this.copyToClipboard(transition.id),
                 className: 'context-menu-info'
             },
             {
-                text: `Label: ${transition.label}`,
+                text: `${t('label')}: ${transition.label}`,
                 action: null,
                 className: 'context-menu-info'
             },
             {
-                text: `Style: ${transition.style}`,
+                text: `${t('style')}: ${transition.style}`,
                 action: null,
                 className: 'context-menu-info'
             },
@@ -1187,15 +1187,15 @@ class DiagramController {
                 className: 'context-menu-separator'
             },
             {
-                text: 'Copy ID to Clipboard',
+                text: t('copyIdToClipboard'),
                 action: () => this.copyToClipboard(transition.id)
             },
             {
-                text: 'Show in Terminal',
+                text: t('showInTerminal'),
                 action: () => this.showElementInTerminal(transition)
             },
             {
-                text: transition.style === 'straight' ? 'Convert to Curved' : 'Convert to Straight',
+                text: transition.style === 'straight' ? t('convertToCurved') : t('convertToStraight'),
                 action: () => this.toggleTransitionStyle(transition)
             },
             {
@@ -1229,17 +1229,17 @@ class DiagramController {
     showNodeOptions(node, x, y) {
         const options = [
             {
-                text: `Node ID: ${node.id}`,
+                text: `${t('nodeId')}: ${node.id}`,
                 action: () => this.copyToClipboard(node.id),
                 className: 'context-menu-info'
             },
             {
-                text: `Type: ${node.type}`,
+                text: `${t('type')}: ${node.type}`,
                 action: null,
                 className: 'context-menu-info'
             },
             {
-                text: `Label: ${node.label}`,
+                text: `${t('label')}: ${node.label}`,
                 action: null,
                 className: 'context-menu-info'
             },
@@ -1249,15 +1249,15 @@ class DiagramController {
                 className: 'context-menu-separator'
             },
             {
-                text: 'Copy ID to Clipboard',
+                text: t('copyIdToClipboard'),
                 action: () => this.copyToClipboard(node.id)
             },
             {
-                text: 'Show in Terminal',
+                text: t('showInTerminal'),
                 action: () => this.showElementInTerminal(node)
             },
             {
-                text: 'Change Color',
+                text: t('changeColor'),
                 action: () => this.showColorPicker(node, x, y)
             }
         ];
@@ -1271,17 +1271,17 @@ class DiagramController {
     showTextElementOptions(text, x, y) {
         const options = [
             {
-                text: `Text ID: ${text.id}`,
+                text: `${t('textId')}: ${text.id}`,
                 action: () => this.copyToClipboard(text.id),
                 className: 'context-menu-info'
             },
             {
-                text: `Label: ${text.label}`,
+                text: `${t('label')}: ${text.label}`,
                 action: null,
                 className: 'context-menu-info'
             },
             {
-                text: `Position: (${Math.round(text.x)}, ${Math.round(text.y)})`,
+                text: `${t('position')}: (${Math.round(text.x)}, ${Math.round(text.y)})`,
                 action: null,
                 className: 'context-menu-info'
             },
@@ -1291,11 +1291,11 @@ class DiagramController {
                 className: 'context-menu-separator'
             },
             {
-                text: 'Copy ID to Clipboard',
+                text: t('copyIdToClipboard'),
                 action: () => this.copyToClipboard(text.id)
             },
             {
-                text: 'Show in Terminal',
+                text: t('showInTerminal'),
                 action: () => this.showElementInTerminal(text)
             }
         ];
@@ -1309,17 +1309,17 @@ class DiagramController {
     showDataModelOptions(node, x, y) {
         const options = [
             {
-                text: `Data Model ID: ${node.id}`,
+                text: `${t('dataModelId')}: ${node.id}`,
                 action: () => this.copyToClipboard(node.id),
                 className: 'context-menu-info'
             },
             {
-                text: `Label: ${node.label}`,
+                text: `${t('label')}: ${node.label}`,
                 action: null,
                 className: 'context-menu-info'
             },
             {
-                text: `Fields: ${node.fields ? node.fields.length : 0}`,
+                text: `${t('fields')}: ${node.fields ? node.fields.length : 0}`,
                 action: null,
                 className: 'context-menu-info'
             },
@@ -1329,19 +1329,19 @@ class DiagramController {
                 className: 'context-menu-separator'
             },
             {
-                text: 'Copy ID to Clipboard',
+                text: t('copyIdToClipboard'),
                 action: () => this.copyToClipboard(node.id)
             },
             {
-                text: 'Show in Terminal',
+                text: t('showInTerminal'),
                 action: () => this.showElementInTerminal(node)
             },
             {
-                text: 'Edit Data Model',
+                text: t('editDataModel'),
                 action: () => this.openDataModelEditor(node)
             },
             {
-                text: 'Change Color',
+                text: t('changeColor'),
                 action: () => this.showColorPicker(node, x, y)
             }
         ];
