@@ -102,6 +102,9 @@ class DiagramController {
             y = snapped.y;
         }
         
+        // Log canvas drop with position
+        Logger.canvasDrop(this.dragState.type, { x, y });
+        
         this.createElement(this.dragState.type, x, y);
         this.dragState.type = null;
     }

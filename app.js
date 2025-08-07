@@ -18,6 +18,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Register services
         container.registerSingleton('notificationService', () => new NotificationService());
         container.registerSingleton('terminalService', () => new TerminalService());
+        
+        // Connect Logger with TerminalService
+        const terminalService = container.resolve('terminalService');
+        Logger.setTerminalService(terminalService);
         container.registerSingleton('errorHandler', () => 
             new ErrorHandler(container.resolve('notificationService'))
         );
@@ -104,8 +108,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         uiController = container.resolve('uiController');
         
         // Initialize terminal service
-        const terminalService = container.resolve('terminalService');
-        window.terminalService = terminalService; // Make globally accessible
+        window.terminalService = container.resolve('terminalService'); // Make globally accessible
         
         // Make container globally accessible for dialogs
         window.container = container;

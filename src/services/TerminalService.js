@@ -29,7 +29,7 @@ class TerminalService {
 
         // Initial welcome message
         this.addLine('Terminal Service initialized successfully.', 'info');
-        this.addLine('Ready to display function output and debug information.', 'info');
+        this.addLine('Canvas drop tracking enabled - all drag & drop operations will be logged here.', 'info');
     }
 
     /**
@@ -83,9 +83,6 @@ class TerminalService {
 
         // Auto-scroll to bottom
         this.scrollToBottom();
-
-        // Log terminal open event
-        this.addLine('Terminal opened', 'info');
     }
 
     /**
@@ -101,9 +98,6 @@ class TerminalService {
         // Remove class from main content
         const mainContent = document.querySelector('.main-content') || document.body;
         mainContent.classList.remove('terminal-open');
-
-        // Log terminal close event (will be visible next time terminal opens)
-        this.addLine('Terminal closed', 'info');
     }
 
     /**
@@ -114,7 +108,6 @@ class TerminalService {
 
         this.terminalOutput.innerHTML = '';
         this.history = [];
-        this.addLine('Terminal cleared', 'info');
     }
 
     /**
@@ -215,7 +208,8 @@ class TerminalService {
             'error': '[ERROR] ',
             'debug': '[DEBUG] ',
             'success': '[SUCCESS] ',
-            'function': '[FUNC] '
+            'function': '[FUNC] ',
+            'canvas-drop': '🎯 '
         };
         return prefixes[type] || '[INFO] ';
     }

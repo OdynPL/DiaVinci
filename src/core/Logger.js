@@ -10,6 +10,14 @@ class Logger {
     };
 
     static currentLevel = Logger.logLevel.DEBUG;
+    static terminalService = null;
+
+    /**
+     * Set terminal service for log forwarding
+     */
+    static setTerminalService(terminalService) {
+        Logger.terminalService = terminalService;
+    }
 
     /**
      * Set logging level
@@ -23,7 +31,7 @@ class Logger {
      */
     static error(message, error = null, context = {}) {
         if (Logger.currentLevel >= Logger.logLevel.ERROR) {
-            console.error(`[DiaVinci ERROR] ${message}`, {
+            const logData = {
                 error: error ? {
                     name: error.name,
                     message: error.message,
@@ -31,7 +39,17 @@ class Logger {
                 } : null,
                 context,
                 timestamp: new Date().toISOString()
-            });
+            };
+            
+            console.error(`[DiaVinci ERROR] ${message}`, logData);
+            
+            // Forward to terminal
+            if (Logger.terminalService) {
+                Logger.terminalService.addLine(`ERROR: ${message}`, 'error');
+                if (error) {
+                    Logger.terminalService.addLine(`  └─ ${error.message}`, 'error');
+                }
+            }
         }
     }
 
@@ -44,6 +62,11 @@ class Logger {
                 context,
                 timestamp: new Date().toISOString()
             });
+            
+            // Forward to terminal
+            if (Logger.terminalService) {
+                Logger.terminalService.addLine(`WARNING: ${message}`, 'warning');
+            }
         }
     }
 
@@ -56,6 +79,11 @@ class Logger {
                 context,
                 timestamp: new Date().toISOString()
             });
+            
+            // Forward to terminal
+            if (Logger.terminalService) {
+                Logger.terminalService.addLine(`INFO: ${message}`, 'info');
+            }
         }
     }
 
@@ -68,6 +96,24 @@ class Logger {
                 context,
                 timestamp: new Date().toISOString()
             });
+            
+            // Forward to terminal
+            if (Logger.terminalService) {
+                Logger.terminalService.addLine(`DEBUG: ${message}`, 'debug');
+            }
+        }
+    }
+
+    /**
+     * Log canvas element drop with position
+     */
+    static canvasDrop(elementType, position, elementData = {}) {
+        const message = `Dropped ${elementType} at position (${position.x}, ${position.y})`;
+        Logger.info(message, { elementType, position, elementData });
+        
+        // Special canvas drop logging to terminal
+        if (Logger.terminalService) {
+            Logger.terminalService.addLine(`🎯 CANVAS DROP: ${elementType} → (${position.x}, ${position.y})`, 'canvas-drop');
         }
     }
 
