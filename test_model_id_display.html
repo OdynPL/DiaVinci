@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Model ID Display Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Core classes -->
+    <script src="src/core/Logger.js"></script>
+    <script src="src/core/ErrorHandler.js"></script>
+    <script src="src/core/EventBus.js"></script>
+    
+    <!-- Models -->
+    <script src="src/models/Node.js"></script>
+    <script src="src/models/DataModelNode.js"></script>
+    <script src="src/models/Project.js"></script>
+    
+    <!-- Services -->
+    <script src="src/services/CanvasRenderer.js"></script>
+    
+    <!-- Utilities -->
+    <script src="src/utils/InputValidator.js"></script>
+    
+    <!-- UI -->
+    <script src="src/ui/DataModelEditor.js"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-800 mb-8">🆔 Data Model ID Display Test</h1>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Canvas -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4">Canvas Preview</h2>
+                <canvas id="testCanvas" width="400" height="300" class="border border-gray-300 rounded"></canvas>
+            </div>
+            
+            <!-- Controls -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4">Test Controls</h2>
+                
+                <button id="createDataModel" class="bg-blue-500 text-white px-4 py-2 rounded mr-2 mb-2">
+                    Create Data Model
+                </button>
+                
+                <button id="addFields" class="bg-green-500 text-white px-4 py-2 rounded mr-2 mb-2">
+                    Add Sample Fields
+                </button>
+                
+                <button id="openEditor" class="bg-purple-500 text-white px-4 py-2 rounded mr-2 mb-2">
+                    Open Editor
+                </button>
+                
+                <button id="clearCanvas" class="bg-gray-500 text-white px-4 py-2 rounded mr-2 mb-2">
+                    Clear Canvas
+                </button>
+                
+                <div class="mt-4 p-4 bg-gray-50 rounded">
+                    <h3 class="font-semibold mb-2">Model Info:</h3>
+                    <div id="modelInfo" class="text-sm text-gray-600">
+                        No model created yet
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize components
+        const eventBus = new EventBus();
+        const canvas = document.getElementById('testCanvas');
+        const ctx = canvas.getContext('2d');
+        const renderer = new CanvasRenderer(canvas);
+        const dataModelEditor = new DataModelEditor(eventBus);
+        
+        let currentNode = null;
+        let project = new Project();
+        
+        function updateModelInfo() {
+            const infoDiv = document.getElementById('modelInfo');
+            if (currentNode) {
+                infoDiv.innerHTML = `
+                    <strong>Model ID:</strong> ${currentNode.id}<br>
+                    <strong>Label:</strong> ${currentNode.label}<br>
+                    <strong>Fields Count:</strong> ${currentNode.fields.length}<br>
+                    <strong>Position:</strong> x: ${currentNode.x}, y: ${currentNode.y}
+                `;
+            } else {
+                infoDiv.innerHTML = 'No model created yet';
+            }
+        }
+        
+        function renderCanvas() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Set white background
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            if (currentNode) {
+                project.nodes = [currentNode];
+                renderer.render(project);
+            }
+        }
+        
+        // Create Data Model
+        document.getElementById('createDataModel').addEventListener('click', () => {
+            currentNode = new DataModelNode({
+                x: 200, y: 150,
+                label: 'User Profile',
+                color: '#8e44ad'
+            });
+            
+            updateModelInfo();
+            renderCanvas();
+        });
+        
+        // Add Sample Fields
+        document.getElementById('addFields').addEventListener('click', () => {
+            if (!currentNode) {
+                alert('Create a Data Model first!');
+                return;
+            }
+            
+            // Clear existing fields and add new ones
+            currentNode.fields = [
+                {
+                    id: 'field_1',
+                    name: 'firstName',
+                    type: 'String',
+                    required: true,
+                    nullable: false,
+                    readOnly: false,
+                    initialValue: 'John'
+                },
+                {
+                    id: 'field_2',
+                    name: 'lastName',
+                    type: 'String',
+                    required: true,
+                    nullable: false,
+                    readOnly: false,
+                    initialValue: 'Doe'
+                },
+                {
+                    id: 'field_3',
+                    name: 'email',
+                    type: 'Email',
+                    required: true,
+                    nullable: false,
+                    readOnly: false,
+                    initialValue: 'john@example.com'
+                },
+                {
+                    id: 'field_4',
+                    name: 'age',
+                    type: 'Number',
+                    required: false,
+                    nullable: true,
+                    readOnly: false,
+                    initialValue: '25'
+                },
+                {
+                    id: 'field_5',
+                    name: 'isActive',
+                    type: 'Boolean',
+                    required: false,
+                    nullable: false,
+                    readOnly: false,
+                    initialValue: 'true'
+                }
+            ];
+            
+            updateModelInfo();
+            renderCanvas();
+        });
+        
+        // Open Editor
+        document.getElementById('openEditor').addEventListener('click', () => {
+            if (!currentNode) {
+                alert('Create a Data Model first!');
+                return;
+            }
+            
+            dataModelEditor.open(currentNode);
+        });
+        
+        // Clear Canvas
+        document.getElementById('clearCanvas').addEventListener('click', () => {
+            currentNode = null;
+            project.nodes = [];
+            updateModelInfo();
+            renderCanvas();
+        });
+        
+        // Listen for editor updates
+        eventBus.on('datamodel:updated', (data) => {
+            if (data.node === currentNode) {
+                updateModelInfo();
+                renderCanvas();
+            }
+        });
+        
+        // Initial render
+        renderCanvas();
+    </script>
+</body>
+</html>

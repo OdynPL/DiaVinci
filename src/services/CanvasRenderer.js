@@ -1031,6 +1031,13 @@ class CanvasRenderer {
             this.ctx.fillStyle = '#6b7280';
             this.ctx.fillText('Double-click to add fields', node.x, emptyY + 18);
         }
+
+        // Draw Model ID# below the component
+        const idY = startY + height + 15;
+        this.ctx.fillStyle = '#6b7280'; // Gray color
+        this.ctx.font = '11px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText(`ID#: ${node.id}`, node.x, idY);
     }
 
     /**
