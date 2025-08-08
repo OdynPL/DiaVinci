@@ -412,7 +412,14 @@ class DiagramController {
         if (node) {
             Logger.debug(t('singleClickOnNodeStartDragging'));
             this.multiSelectionManager.clearSelection();
-            this.startDragging(node, 'node', x, y);
+            this.setSelection(node, 'node');
+            // Don't start dragging immediately - wait for mouse move to allow double-click detection
+            this.dragState.pendingDrag = {
+                element: node,
+                type: 'node',
+                startX: x,
+                startY: y
+            };
             return;
         }
 
@@ -420,7 +427,14 @@ class DiagramController {
         if (text) {
             Logger.debug(t('singleClickOnTextStartDragging'));
             this.multiSelectionManager.clearSelection();
-            this.startDragging(text, 'text', x, y);
+            this.setSelection(text, 'text');
+            // Don't start dragging immediately - wait for mouse move to allow double-click detection
+            this.dragState.pendingDrag = {
+                element: text,
+                type: 'text',
+                startX: x,
+                startY: y
+            };
             return;
         }
 
@@ -561,6 +575,8 @@ class DiagramController {
                 const { element, type } = this.dragState.pendingDrag;
                 if (type === 'transition') {
                     this.startDraggingTransition(element, this.dragState.pendingDrag.startX, this.dragState.pendingDrag.startY);
+                } else if (type === 'node' || type === 'text') {
+                    this.startDragging(element, type, this.dragState.pendingDrag.startX, this.dragState.pendingDrag.startY);
                 }
                 this.dragState.pendingDrag = null;
             }
@@ -1046,7 +1062,7 @@ class DiagramController {
             if (!DialogFactory || typeof DialogFactory.createColorPicker !== 'function') {
                 console.error('DialogFactory.createColorPicker is not available');
                 if (this.terminalService) {
-                    this.terminalService.addLine('❌ Color picker not available', 'error');
+                    this.terminalService.addLine(`❌ ${t('colorPickerNotAvailable')}`, 'error');
                 }
                 return;
             }
@@ -1063,13 +1079,13 @@ class DiagramController {
                 this.render();
                 
                 if (this.terminalService) {
-                    this.terminalService.addLine(`🎨 Changed color of ${node.label} to ${color}`, 'success');
+                    this.terminalService.addLine(`🎨 ${t('changedColorTo', node.label, color)}`, 'success');
                 }
             });
         } catch (error) {
             console.error('Error in showColorPicker:', error);
             if (this.terminalService) {
-                this.terminalService.addLine(`❌ Error changing color: ${error.message}`, 'error');
+                this.terminalService.addLine(`❌ ${t('errorChangingColor', error.message)}`, 'error');
             }
         }
     }
@@ -1363,7 +1379,7 @@ class DiagramController {
         } else {
             console.warn('Data model editor not available');
             if (this.terminalService) {
-                this.terminalService.addLine('❌ Data model editor not available', 'error');
+                this.terminalService.addLine(`❌ ${t('dataModelEditorNotAvailable')}`, 'error');
             }
         }
     }
@@ -1389,14 +1405,14 @@ class DiagramController {
             }
             
             if (this.terminalService) {
-                this.terminalService.addLine(`📋 Copied to clipboard: ${text}`, 'success');
+                this.terminalService.addLine(`📋 ${t('copiedToClipboard', text)}`, 'success');
             }
             
             console.log('Successfully copied to clipboard:', text);
         } catch (error) {
             console.error('Failed to copy to clipboard:', error);
             if (this.terminalService) {
-                this.terminalService.addLine(`❌ Failed to copy to clipboard: ${error.message}`, 'error');
+                this.terminalService.addLine(`❌ ${t('failedToCopyToClipboard', error.message)}`, 'error');
             }
         }
     }
@@ -1415,30 +1431,30 @@ class DiagramController {
             this.terminalService.toggle();
         }
         
-        this.terminalService.addLine('═══ ELEMENT DETAILS ═══', 'info');
-        this.terminalService.addLine(`🔹 ID: ${element.id}`, 'info');
-        this.terminalService.addLine(`🔹 Type: ${element.type || element.constructor.name}`, 'info');
-        this.terminalService.addLine(`🔹 Label: ${element.label}`, 'info');
+        this.terminalService.addLine(`═══ ${t('elementDetails')} ═══`, 'info');
+        this.terminalService.addLine(`🔹 ${t('elementId', element.id)}`, 'info');
+        this.terminalService.addLine(`🔹 ${t('elementType', element.type || element.constructor.name)}`, 'info');
+        this.terminalService.addLine(`🔹 ${t('elementLabel', element.label)}`, 'info');
         
         if (element.x !== undefined && element.y !== undefined) {
-            this.terminalService.addLine(`🔹 Position: (${Math.round(element.x)}, ${Math.round(element.y)})`, 'info');
+            this.terminalService.addLine(`🔹 ${t('elementPosition', Math.round(element.x), Math.round(element.y))}`, 'info');
         }
         
         if (element.color) {
-            this.terminalService.addLine(`🔹 Color: ${element.color}`, 'info');
+            this.terminalService.addLine(`🔹 ${t('elementColor', element.color)}`, 'info');
         }
         
         if (element.type === 'DataModel' && element.fields) {
-            this.terminalService.addLine(`🔹 Fields: ${element.fields.length}`, 'info');
+            this.terminalService.addLine(`🔹 ${t('elementFields', element.fields.length)}`, 'info');
             element.fields.forEach((field, index) => {
                 this.terminalService.addLine(`  ${index + 1}. ${field.name} (${field.type})`, 'info');
             });
         }
         
         if (element.from && element.to) { // Transition
-            this.terminalService.addLine(`🔹 From: ${element.from.id}`, 'info');
-            this.terminalService.addLine(`🔹 To: ${element.to.id}`, 'info');
-            this.terminalService.addLine(`🔹 Style: ${element.style}`, 'info');
+            this.terminalService.addLine(`🔹 ${t('elementFrom', element.from.id)}`, 'info');
+            this.terminalService.addLine(`🔹 ${t('elementTo', element.to.id)}`, 'info');
+            this.terminalService.addLine(`🔹 ${t('elementStyle', element.style)}`, 'info');
         }
         
         // Auto-scroll terminal to show new content

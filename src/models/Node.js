@@ -26,23 +26,57 @@ class Node {
     }
 
     /**
-     * Check if point is inside this node
+     * Check if point is inside this node (including label area)
      */
     containsPoint(x, y) {
+        let nodeHit = false;
+        
         if (this.type === 'start' || this.type === 'stop') {
             // Check ellipse collision for start/stop nodes
             const dx = (x - this.x) / (this.r * 1.5);
             const dy = (y - this.y) / (this.r * 0.8);
-            return (dx * dx + dy * dy) <= 1;
+            nodeHit = (dx * dx + dy * dy) <= 1;
         } else if (this.type === 'if') {
             // Check diamond collision for if nodes
             const dx = Math.abs(x - this.x);
             const dy = Math.abs(y - this.y);
-            return (dx / this.r + dy / this.r) <= 1;
+            nodeHit = (dx / this.r + dy / this.r) <= 1;
         } else {
             // Check circle collision for regular nodes
-            return Math.hypot(this.x - x, this.y - y) < this.r;
+            nodeHit = Math.hypot(this.x - x, this.y - y) < this.r;
         }
+        
+        // If hit the node shape, return true
+        if (nodeHit) {
+            return true;
+        }
+        
+        // For regular nodes (not step1/step2), also check label area above the node
+        if (this.type !== 'start' && this.type !== 'stop' && this.type !== 'if' && 
+            this.label !== 'Step1' && this.label !== 'Step2') {
+            
+            // Estimate label dimensions (18px Arial font)
+            const labelWidth = this.label ? this.label.length * 11 : 50; // ~11px per character
+            const labelHeight = 20; // 18px font + some margin
+            
+            // Label is positioned at node.x, node.y - node.r - 8
+            const labelX = this.x;
+            const labelY = this.y - this.r - 8;
+            
+            // Check if click is within label rectangle
+            const labelHit = (
+                x >= labelX - labelWidth / 2 &&
+                x <= labelX + labelWidth / 2 &&
+                y >= labelY - labelHeight / 2 &&
+                y <= labelY + labelHeight / 2
+            );
+            
+            if (labelHit) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     /**

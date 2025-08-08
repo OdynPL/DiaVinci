@@ -282,6 +282,24 @@ const translations = {
         terminal: "Terminal",
         terminalToggle: "Toggle Terminal",
         
+        // Terminal messages
+        colorPickerNotAvailable: "Color picker not available",
+        changedColorTo: "Changed color of {0} to {1}",
+        errorChangingColor: "Error changing color: {0}",
+        dataModelEditorNotAvailable: "Data model editor not available",
+        copiedToClipboard: "Copied to clipboard: {0}",
+        failedToCopyToClipboard: "Failed to copy to clipboard: {0}",
+        elementDetails: "ELEMENT DETAILS",
+        elementId: "ID: {0}",
+        elementType: "Type: {0}",
+        elementLabel: "Label: {0}",
+        elementPosition: "Position: ({0}, {1})",
+        elementColor: "Color: {0}",
+        elementFields: "Fields: {0}",
+        elementFrom: "From: {0}",
+        elementTo: "To: {0}",
+        elementStyle: "Style: {0}",
+        
         // InputService translations
         inputServiceInitialized: "InputService initialized",
         errorShowingNodeInput: "Error showing node input",
@@ -1262,6 +1280,24 @@ const translations = {
         terminalClose: "Zamknij Terminal",
         terminalExport: "Eksportuj Logi",
         
+        // Terminal messages
+        colorPickerNotAvailable: "Selektor kolorow niedostepny",
+        changedColorTo: "Zmieniono kolor {0} na {1}",
+        errorChangingColor: "Blad podczas zmiany koloru: {0}",
+        dataModelEditorNotAvailable: "Edytor modelu danych niedostepny",
+        copiedToClipboard: "Skopiowano do schowka: {0}",
+        failedToCopyToClipboard: "Nie udalo sie skopiowac do schowka: {0}",
+        elementDetails: "SZCZEGOLY ELEMENTU",
+        elementId: "ID: {0}",
+        elementType: "Typ: {0}",
+        elementLabel: "Etykieta: {0}",
+        elementPosition: "Pozycja: ({0}, {1})",
+        elementColor: "Kolor: {0}",
+        elementFields: "Pola: {0}",
+        elementFrom: "Z: {0}",
+        elementTo: "Do: {0}",
+        elementStyle: "Styl: {0}",
+        
         // InputService translations
         inputServiceInitialized: "InputService zainicjalizowany",
         errorShowingNodeInput: "Blad podczas pokazywania wejscia wezla",
@@ -1966,7 +2002,7 @@ const translations = {
         transitions: "Übergänge",
         
         // Default labels
-        defaultTransitionLabel: "Beziehung",
+        defaultTransitionLabel: "beziehung",
         
         // Node types
         process: "Prozess",
@@ -2262,6 +2298,24 @@ const translations = {
         elementModifications: "Element-Änderungen",
         terminalExport: "Exportieren",
         terminalClear: "Löschen",
+        
+        // Terminal messages
+        colorPickerNotAvailable: "Farbwähler nicht verfügbar",
+        changedColorTo: "Farbe von {0} zu {1} geändert",
+        errorChangingColor: "Fehler beim Ändern der Farbe: {0}",
+        dataModelEditorNotAvailable: "Datenmodell-Editor nicht verfügbar",
+        copiedToClipboard: "In die Zwischenablage kopiert: {0}",
+        failedToCopyToClipboard: "Kopieren in die Zwischenablage fehlgeschlagen: {0}",
+        elementDetails: "ELEMENT-DETAILS",
+        elementId: "ID: {0}",
+        elementType: "Typ: {0}",
+        elementLabel: "Bezeichnung: {0}",
+        elementPosition: "Position: ({0}, {1})",
+        elementColor: "Farbe: {0}",
+        elementFields: "Felder: {0}",
+        elementFrom: "Von: {0}",
+        elementTo: "Zu: {0}",
+        elementStyle: "Stil: {0}",
         
         // Export options
         exportOptions: "Export-Optionen",
@@ -3195,7 +3249,7 @@ const translations = {
 let currentLanguage = 'en';
 
 // Translation function
-function t(key) {
+function t(key, ...args) {
     const keys = key.split('.');
     let value = translations[currentLanguage];
     
@@ -3216,7 +3270,16 @@ function t(key) {
         }
     }
     
-    return value || key;
+    let result = value || key;
+    
+    // Replace placeholders {0}, {1}, etc. with provided arguments
+    if (args.length > 0 && typeof result === 'string') {
+        for (let i = 0; i < args.length; i++) {
+            result = result.replace(new RegExp(`\\{${i}\\}`, 'g'), args[i]);
+        }
+    }
+    
+    return result;
 }
 
 // Get language from localStorage or default to English
