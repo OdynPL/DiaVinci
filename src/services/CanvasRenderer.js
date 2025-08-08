@@ -73,7 +73,7 @@ class CanvasRenderer {
                 textsCount: project.texts.length
             });
             if (this.errorHandler) {
-                this.errorHandler.handleError(error, 'Failed to render diagram');
+                this.errorHandler.handleError(error, t('failedToRenderDiagram'));
             }
         }
     }

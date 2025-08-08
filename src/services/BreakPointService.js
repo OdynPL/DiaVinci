@@ -7,7 +7,7 @@ class BreakPointService {
         this.eventBus = eventBus;
         this.errorHandler = errorHandler;
         
-        Logger.info('BreakPointService initialized');
+        Logger.info(t('breakPointServiceInitialized'));
     }
 
     /**
@@ -41,9 +41,9 @@ class BreakPointService {
             
             return null;
         } catch (error) {
-            Logger.error('Error finding break point at position', error);
+            Logger.error(t('errorFindingBreakPointAtPosition'), error);
             if (this.errorHandler) {
-                this.errorHandler.handleError(error, 'Failed to find break point');
+                this.errorHandler.handleError(error, t('failedToFindBreakPoint'));
             }
             return null;
         }
@@ -66,7 +66,7 @@ class BreakPointService {
             transition.breakPoints[breakPointIndex].x = newX;
             transition.breakPoints[breakPointIndex].y = newY;
 
-            Logger.debug('Break point moved', {
+            Logger.debug(t('breakPointMoved'), {
                 transition: transition.label,
                 index: breakPointIndex,
                 from: oldPosition,
@@ -82,9 +82,9 @@ class BreakPointService {
             });
 
         } catch (error) {
-            Logger.error('Error moving break point', error);
+            Logger.error(t('errorMovingBreakPoint'), error);
             if (this.errorHandler) {
-                this.errorHandler.handleError(error, 'Failed to move break point');
+                this.errorHandler.handleError(error, t('failedToMoveBreakPoint'));
             }
         }
     }
@@ -121,7 +121,7 @@ class BreakPointService {
             }
 
             if (movedBreakPoints.length > 0) {
-                Logger.debug('Multiple break points moved', {
+                Logger.debug(t('multipleBreakPointsMoved'), {
                     count: movedBreakPoints.length,
                     delta: { deltaX, deltaY }
                 });
@@ -134,9 +134,9 @@ class BreakPointService {
             }
 
         } catch (error) {
-            Logger.error('Error moving multiple break points', error);
+            Logger.error(t('errorMovingMultipleBreakPoints'), error);
             if (this.errorHandler) {
-                this.errorHandler.handleError(error, 'Failed to move break points');
+                this.errorHandler.handleError(error, t('failedToMoveBreakPoints'));
             }
         }
     }
@@ -166,7 +166,7 @@ class BreakPointService {
 
             return selectedBreakPoints;
         } catch (error) {
-            Logger.error('Error getting selected break points', error);
+            Logger.error(t('errorGettingSelectedBreakPoints'), error);
             return [];
         }
     }
@@ -208,7 +208,7 @@ class BreakPointService {
                         point.y += deltaY;
                     });
 
-                    Logger.debug('Break points updated for node movement', {
+                    Logger.debug(t('breakPointsUpdatedForNodeMovement'), {
                         nodeId: movedNode.id,
                         transitionLabel: transition.label,
                         breakPointsCount: transition.breakPoints.length,
@@ -226,9 +226,9 @@ class BreakPointService {
             }
 
         } catch (error) {
-            Logger.error('Error updating break points for moved node', error);
+            Logger.error(t('errorUpdatingBreakPointsForMovedNode'), error);
             if (this.errorHandler) {
-                this.errorHandler.handleError(error, 'Failed to update break points');
+                this.errorHandler.handleError(error, t('failedToUpdateBreakPoints'));
             }
         }
     }
@@ -262,7 +262,7 @@ class BreakPointService {
             });
 
             if (affectedTransitions.size > 0) {
-                Logger.debug('Break points updated for group node movement', {
+                Logger.debug(t('breakPointsUpdatedForGroupNodeMovement'), {
                     movedNodesCount: movedNodes.length,
                     affectedTransitionsCount: affectedTransitions.size,
                     delta: { deltaX, deltaY }
@@ -276,9 +276,9 @@ class BreakPointService {
             }
 
         } catch (error) {
-            Logger.error('Error updating break points for moved nodes', error);
+            Logger.error(t('errorUpdatingBreakPointsForMovedNodes'), error);
             if (this.errorHandler) {
-                this.errorHandler.handleError(error, 'Failed to update break points');
+                this.errorHandler.handleError(error, t('failedToUpdateBreakPoints'));
             }
         }
     }

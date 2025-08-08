@@ -37,7 +37,7 @@ class GridService {
         
         this.setupGridCanvas();
         this.setupRulersCanvas();
-        Logger.info('GridService initialized');
+        Logger.info(t('gridServiceInitialized'));
     }
 
     /**
@@ -156,7 +156,7 @@ class GridService {
             visible: this.rulersVisible
         });
         
-        Logger.userAction('Rulers toggled', { 
+        Logger.userAction(t('rulersToggled'), { 
             visible: this.rulersVisible
         });
     }
@@ -315,7 +315,7 @@ class GridService {
             snapEnabled: this.snapEnabled
         });
         
-        Logger.userAction('Grid toggled', { 
+        Logger.userAction(t('gridToggled'), { 
             visible: this.gridVisible, 
             snapEnabled: this.snapEnabled 
         });
@@ -539,7 +539,7 @@ class GridService {
             this.drawGrid();
         }
         
-        Logger.debug('Grid size changed', { size });
+        Logger.debug(t('gridSizeChanged'), { size });
     }
 
     /**
@@ -550,7 +550,7 @@ class GridService {
         this.snapEnabled = enabled;
         
         this.eventBus.emit('grid.snap.changed', { enabled });
-        Logger.debug('Grid snap changed', { enabled });
+        Logger.debug(t('gridSnapChanged'), { enabled });
     }
 
     /**
@@ -563,7 +563,7 @@ class GridService {
             this.clearSmartGuides();
         }
         
-        Logger.debug('Smart guides changed', { enabled });
+        Logger.debug(t('smartGuidesChanged'), { enabled });
     }
 
     /**
@@ -595,6 +595,6 @@ class GridService {
             this.verticalRulerCanvas.parentElement.removeChild(this.verticalRulerCanvas);
         }
         
-        Logger.info('GridService destroyed');
+        Logger.info(t('gridServiceDestroyed'));
     }
 }

@@ -9,7 +9,7 @@ class InputService {
         this.activeInput = null;
         this.editingElement = null;
         
-        Logger.info('InputService initialized');
+        Logger.info(t('inputServiceInitialized'));
     }
 
     /**
@@ -29,9 +29,9 @@ class InputService {
             
             this.setupInput(input, node, 'node');
         } catch (error) {
-            Logger.error('Error showing node input', error);
+            Logger.error(t('errorShowingNodeInput'), error);
             if (this.errorHandler) {
-                this.errorHandler.handleError(error, 'Failed to show node editor');
+                this.errorHandler.handleError(error, t('failedToShowNodeEditor'));
             }
         }
     }
@@ -41,7 +41,7 @@ class InputService {
      */
     showTextInput(text) {
         try {
-            Logger.debug('showTextInput called', { text: text.label, x: text.x, y: text.y });
+            Logger.debug(t('showTextInputCalled'), { text: text.label, x: text.x, y: text.y });
             this.hideInput();
             
             const input = this.createInput('text-label-input', '18px');
@@ -51,7 +51,7 @@ class InputService {
             const leftPos = canvasRect.left + text.x - 60;
             const topPos = canvasRect.top + text.y - 22;
             
-            Logger.debug('Input positioning', { 
+            Logger.debug(t('inputPositioning'), { 
                 canvasLeft: canvasRect.left, 
                 canvasTop: canvasRect.top,
                 textX: text.x, 
@@ -65,9 +65,9 @@ class InputService {
             input.style.width = '120px';
             
             this.setupInput(input, text, 'text');
-            Logger.debug('Input setup completed');
+            Logger.debug(t('inputSetupCompleted'));
         } catch (error) {
-            Logger.error('Error showing text input', error);
+            Logger.error(t('errorShowingTextInput'), error);
             if (this.errorHandler) {
                 this.errorHandler.handleError(error, 'Failed to show text editor');
             }

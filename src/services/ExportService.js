@@ -6,7 +6,7 @@ class ExportService {
         this.canvas = canvas;
         this.canvasRenderer = canvasRenderer;
         this.errorHandler = errorHandler;
-        Logger.info('ExportService initialized');
+        Logger.info(t('exportServiceInitialized'));
     }
 
     /**
@@ -14,11 +14,11 @@ class ExportService {
      */
     async exportAsImage(project, whiteBackground = true) {
         const startTime = performance.now();
-        Logger.userAction('Export Image Started', { whiteBackground });
+        Logger.userAction(t('exportImageStarted'), { whiteBackground });
         
         try {
             if (!project) {
-                throw new Error('No project provided for export');
+                throw new Error(t('noProjectProvidedForExport'));
             }
 
             const exportCanvas = document.createElement('canvas');
@@ -27,10 +27,10 @@ class ExportService {
             const exportCtx = exportCanvas.getContext('2d');
             
             if (!exportCtx) {
-                throw new Error('Failed to get 2D context for export canvas');
+                throw new Error(t('failedToGet2DContextForExportCanvas'));
             }
             
-            Logger.debug('Export canvas created', { 
+            Logger.debug(t('exportCanvasCreated'), { 
                 width: exportCanvas.width, 
                 height: exportCanvas.height 
             });
@@ -47,24 +47,24 @@ class ExportService {
                     success = true;
                 } catch (err) {
                     if (err.name !== 'AbortError') {
-                        Logger.warn('File System Access API failed, falling back', err);
+                        Logger.warn(t('fileSystemAccessApiFailed'), err);
                         success = this.fallbackSave(exportCanvas);
                     } else {
-                        Logger.info('Export cancelled by user');
+                        Logger.info(t('exportCancelledByUser'));
                         success = false;
                     }
                 }
             } else {
-                Logger.info('Using fallback save method');
+                Logger.info(t('usingFallbackSaveMethod'));
                 success = this.fallbackSave(exportCanvas);
             }
             
-            Logger.performance('Export Image', startTime);
-            Logger.info('Image export completed', { success, whiteBackground });
+            Logger.performance(t('exportImage'), startTime);
+            Logger.info(t('imageExportCompleted'), { success, whiteBackground });
             return success;
             
         } catch (error) {
-            Logger.error('Failed to export image', error, { whiteBackground });
+            Logger.error(t('failedToExportImage'), error, { whiteBackground });
             if (this.errorHandler) {
                 this.errorHandler.handleError(error, 'Failed to export image');
             }

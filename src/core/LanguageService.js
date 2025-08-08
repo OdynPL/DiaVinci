@@ -278,6 +278,66 @@ const translations = {
         // Terminal
         terminal: "Terminal",
         terminalToggle: "Toggle Terminal",
+        
+        // InputService translations
+        inputServiceInitialized: "InputService initialized",
+        errorShowingNodeInput: "Error showing node input",
+        failedToShowNodeEditor: "Failed to show node editor",
+        showTextInputCalled: "showTextInput called",
+        inputPositioning: "Input positioning",
+        inputSetupCompleted: "Input setup completed",
+        errorShowingTextInput: "Error showing text input",
+        
+        // GridService translations
+        gridServiceInitialized: "GridService initialized",
+        rulersToggled: "Rulers toggled",
+        gridToggled: "Grid toggled",
+        gridSizeChanged: "Grid size changed",
+        gridSnapChanged: "Grid snap changed",
+        smartGuidesChanged: "Smart guides changed",
+        gridServiceDestroyed: "GridService destroyed",
+        
+        // MultiSelectionManager translations
+        multiSelectionManagerInitialized: "MultiSelectionManager initialized",
+        selectionRectangleStarted: "Selection rectangle started",
+        errorStartingSelection: "Error starting selection",
+        failedToStartSelection: "Failed to start selection",
+        endSelectionCalled: "endSelection called",
+        selectionRect: "Selection rect",
+        nodeSelected: "Node selected",
+        textSelected: "Text selected",
+        transitionSelected: "Transition selected",
+        selectionRectangleDeactivated: "Selection rectangle deactivated",
+        multiSelectionCompleted: "Multi-selection completed",
+        errorEndingSelection: "Error ending selection",
+        failedToCompleteSelection: "Failed to complete selection",
+        errorCheckingElementInRect: "Error checking element in rect",
+        errorCheckingTextInRect: "Error checking text in rect",
+        errorCheckingTransitionInRect: "Error checking transition in rect",
+        groupDragStarted: "Group drag started",
+        errorStartingGroupDrag: "Error starting group drag",
+        failedToStartGroupDrag: "Failed to start group drag",
+        groupDragCompleted: "Group drag completed",
+        elementDeselected: "Element deselected",
+        elementSelected: "Element selected",
+        selectionCleared: "Selection cleared",
+        
+        // BreakPointService translations
+        breakPointServiceInitialized: "BreakPointService initialized",
+        errorFindingBreakPointAtPosition: "Error finding break point at position",
+        failedToFindBreakPoint: "Failed to find break point",
+        breakPointMoved: "Break point moved",
+        errorMovingBreakPoint: "Error moving break point",
+        failedToMoveBreakPoint: "Failed to move break point",
+        multipleBreakPointsMoved: "Multiple break points moved",
+        errorMovingMultipleBreakPoints: "Error moving multiple break points",
+        failedToMoveBreakPoints: "Failed to move break points",
+        errorGettingSelectedBreakPoints: "Error getting selected break points",
+        breakPointsUpdatedForNodeMovement: "Break points updated for node movement",
+        errorUpdatingBreakPointsForMovedNode: "Error updating break points for moved node",
+        failedToUpdateBreakPoints: "Failed to update break points",
+        breakPointsUpdatedForGroupNodeMovement: "Break points updated for group node movement",
+        errorUpdatingBreakPointsForMovedNodes: "Error updating break points for moved nodes",
         terminalClear: "Clear Terminal",
         terminalClose: "Close Terminal",
         terminalExport: "Export Logs",
@@ -500,7 +560,36 @@ const translations = {
         errorRenderingTransition: "Error rendering transition",
         errorRenderingNode: "Error rendering node", 
         invalidTextElementDetected: "Invalid text element detected",
-        errorRenderingText: "Error rendering text"
+        errorRenderingText: "Error rendering text",
+        failedToRenderDiagram: "Failed to render diagram",
+        
+        // Terminal Service messages
+        terminalElementsNotFoundInDOM: "Terminal elements not found in DOM",
+        scrollToBottomTerminalContentNotFound: "ScrollToBottom: Terminal content element not found",
+        unknownCommand: "Unknown command",
+        invalidSyntax: "Invalid syntax",
+        elementNotFound: "Element not found",
+        invalidId: "Invalid ID",
+        fieldNotFound: "Field not found",
+        noElementsFound: "No elements found in this project",
+        invalidLogType: "Invalid log type",
+        
+        // Export Service messages
+        exportServiceInitialized: "ExportService initialized",
+        exportImageStarted: "Export Image Started",
+        noProjectProvidedForExport: "No project provided for export",
+        failedToGet2DContextForExportCanvas: "Failed to get 2D context for export canvas",
+        exportCanvasCreated: "Export canvas created",
+        fileSystemAccessApiFailed: "File System Access API failed, falling back",
+        exportCancelledByUser: "Export cancelled by user",
+        usingFallbackSaveMethod: "Using fallback save method",
+        exportImage: "Export Image",
+        imageExportCompleted: "Image export completed",
+        failedToExportImage: "Failed to export image",
+        
+        // UI Controller messages
+        exportImageError: "Export image error",
+        exportError: "Export error"
     },
     
     pl: {
@@ -783,6 +872,66 @@ const translations = {
         terminalClose: "Zamknij Terminal",
         terminalExport: "Eksportuj Logi",
         
+        // InputService translations
+        inputServiceInitialized: "InputService zainicjalizowany",
+        errorShowingNodeInput: "Błąd podczas pokazywania wejścia węzła",
+        failedToShowNodeEditor: "Nie udało się pokazać edytora węzła",
+        showTextInputCalled: "showTextInput wywołane",
+        inputPositioning: "Pozycjonowanie wejścia",
+        inputSetupCompleted: "Konfiguracja wejścia zakończona",
+        errorShowingTextInput: "Błąd podczas pokazywania wejścia tekstowego",
+        
+        // GridService translations
+        gridServiceInitialized: "GridService zainicjalizowany",
+        rulersToggled: "Linijki przełączone",
+        gridToggled: "Siatka przełączona",
+        gridSizeChanged: "Rozmiar siatki zmieniony",
+        gridSnapChanged: "Przyciąganie siatki zmienione",
+        smartGuidesChanged: "Inteligentne prowadnice zmienione",
+        gridServiceDestroyed: "GridService zniszczony",
+        
+        // MultiSelectionManager translations
+        multiSelectionManagerInitialized: "MultiSelectionManager zainicjalizowany",
+        selectionRectangleStarted: "Prostokąt zaznaczenia rozpoczęty",
+        errorStartingSelection: "Błąd podczas rozpoczynania zaznaczenia",
+        failedToStartSelection: "Nie udało się rozpocząć zaznaczenia",
+        endSelectionCalled: "endSelection wywołane",
+        selectionRect: "Prostokąt zaznaczenia",
+        nodeSelected: "Węzeł zaznaczony",
+        textSelected: "Tekst zaznaczony",
+        transitionSelected: "Przejście zaznaczone",
+        selectionRectangleDeactivated: "Prostokąt zaznaczenia deaktywowany",
+        multiSelectionCompleted: "Wieloselekçja zakończona",
+        errorEndingSelection: "Błąd podczas kończenia zaznaczenia",
+        failedToCompleteSelection: "Nie udało się zakończyć zaznaczenia",
+        errorCheckingElementInRect: "Błąd podczas sprawdzania elementu w prostokącie",
+        errorCheckingTextInRect: "Błąd podczas sprawdzania tekstu w prostokącie",
+        errorCheckingTransitionInRect: "Błąd podczas sprawdzania przejścia w prostokącie",
+        groupDragStarted: "Grupowe przeciąganie rozpoczęte",
+        errorStartingGroupDrag: "Błąd podczas rozpoczynania grupowego przeciągania",
+        failedToStartGroupDrag: "Nie udało się rozpocząć grupowego przeciągania",
+        groupDragCompleted: "Grupowe przeciąganie zakończone",
+        elementDeselected: "Element odznaczony",
+        elementSelected: "Element zaznaczony",
+        selectionCleared: "Zaznaczenie wyczyszczone",
+        
+        // BreakPointService translations
+        breakPointServiceInitialized: "BreakPointService zainicjalizowany",
+        errorFindingBreakPointAtPosition: "Błąd podczas wyszukiwania punktu przerwania na pozycji",
+        failedToFindBreakPoint: "Nie udało się znaleźć punktu przerwania",
+        breakPointMoved: "Punkt przerwania przeniesiony",
+        errorMovingBreakPoint: "Błąd podczas przenoszenia punktu przerwania",
+        failedToMoveBreakPoint: "Nie udało się przenieść punktu przerwania",
+        multipleBreakPointsMoved: "Wiele punktów przerwania przeniesionych",
+        errorMovingMultipleBreakPoints: "Błąd podczas przenoszenia wielu punktów przerwania",
+        failedToMoveBreakPoints: "Nie udało się przenieść punktów przerwania",
+        errorGettingSelectedBreakPoints: "Błąd podczas pobierania zaznaczonych punktów przerwania",
+        breakPointsUpdatedForNodeMovement: "Punkty przerwania zaktualizowane dla ruchu węzła",
+        errorUpdatingBreakPointsForMovedNode: "Błąd podczas aktualizacji punktów przerwania dla przeniesionego węzła",
+        failedToUpdateBreakPoints: "Nie udało się zaktualizować punktów przerwania",
+        breakPointsUpdatedForGroupNodeMovement: "Punkty przerwania zaktualizowane dla grupowego ruchu węzłów",
+        errorUpdatingBreakPointsForMovedNodes: "Błąd podczas aktualizacji punktów przerwania dla przeniesionych węzłów",
+        
         // Terminal filter options
         allMessages: "Wszystkie Wiadomości",
         errorsOnly: "Tylko Błędy",
@@ -1001,7 +1150,36 @@ const translations = {
         errorRenderingTransition: "Błąd podczas renderowania przejścia",
         errorRenderingNode: "Błąd podczas renderowania węzła",
         invalidTextElementDetected: "Wykryto nieprawidłowy element tekstowy",
-        errorRenderingText: "Błąd podczas renderowania tekstu"
+        errorRenderingText: "Błąd podczas renderowania tekstu",
+        failedToRenderDiagram: "Nie udało się renderować diagramu",
+        
+        // Terminal Service messages
+        terminalElementsNotFoundInDOM: "Elementy terminala nie zostały znalezione w DOM",
+        scrollToBottomTerminalContentNotFound: "ScrollToBottom: Element zawartości terminala nie został znaleziony",
+        unknownCommand: "Nieznana komenda",
+        invalidSyntax: "Nieprawidłowa składnia",
+        elementNotFound: "Element nie został znaleziony",
+        invalidId: "Nieprawidłowe ID",
+        fieldNotFound: "Pole nie zostało znalezione",
+        noElementsFound: "Nie znaleziono elementów w tym projekcie",
+        invalidLogType: "Nieprawidłowy typ logu",
+        
+        // Export Service messages
+        exportServiceInitialized: "ExportService zainicjalizowany",
+        exportImageStarted: "Rozpoczęto eksport obrazu",
+        noProjectProvidedForExport: "Nie podano projektu do eksportu",
+        failedToGet2DContextForExportCanvas: "Nie udało się uzyskać kontekstu 2D dla kanwy eksportu",
+        exportCanvasCreated: "Kanwa eksportu utworzona",
+        fileSystemAccessApiFailed: "API dostępu do systemu plików nie powiodło się, przełączanie na zapasową metodę",
+        exportCancelledByUser: "Eksport anulowany przez użytkownika",
+        usingFallbackSaveMethod: "Używanie zapasowej metody zapisu",
+        exportImage: "Eksport Obrazu",
+        imageExportCompleted: "Eksport obrazu zakończony",
+        failedToExportImage: "Nie udało się wyeksportować obrazu",
+        
+        // UI Controller messages
+        exportImageError: "Błąd eksportu obrazu",
+        exportError: "Błąd eksportu"
     }
 };
 

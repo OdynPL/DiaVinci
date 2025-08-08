@@ -32,7 +32,7 @@ class TerminalService {
         this.commandInput = document.getElementById('terminal-command-input');
         
         if (!this.terminalPanel || !this.terminalOutput) {
-            console.warn('Terminal elements not found in DOM');
+            console.warn(t('terminalElementsNotFoundInDOM'));
             return;
         }
 
@@ -549,7 +549,7 @@ class TerminalService {
                 });
             });
         } else {
-            console.warn('ScrollToBottom: Terminal content element not found');
+            console.warn(t('scrollToBottomTerminalContentNotFound'));
         }
     }
 

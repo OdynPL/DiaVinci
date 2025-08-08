@@ -29,7 +29,7 @@ class MultiSelectionManager {
             initialBreakPointPositions: new Map() // Track initial break point positions
         };
         
-        Logger.info('MultiSelectionManager initialized');
+        Logger.info(t('multiSelectionManagerInitialized'));
     }
 
     /**
@@ -43,11 +43,11 @@ class MultiSelectionManager {
             this.selectionRect.endX = x;
             this.selectionRect.endY = y;
             
-            Logger.debug('Selection rectangle started', { x, y });
+            Logger.debug(t('selectionRectangleStarted'), { x, y });
         } catch (error) {
-            Logger.error('Error starting selection', error);
+            Logger.error(t('errorStartingSelection'), error);
             if (this.errorHandler) {
-                this.errorHandler.handleError(error, 'Failed to start selection');
+                this.errorHandler.handleError(error, t('failedToStartSelection'));
             }
         }
     }
@@ -67,12 +67,12 @@ class MultiSelectionManager {
      */
     endSelection(project) {
         try {
-            Logger.debug('endSelection called', { active: this.selectionRect.active, project: !!project });
+            Logger.debug(t('endSelectionCalled'), { active: this.selectionRect.active, project: !!project });
             
             if (!this.selectionRect.active) return;
 
             const rect = this.getNormalizedRect();
-            Logger.debug('Selection rect', rect);
+            Logger.debug(t('selectionRect'), rect);
             
             this.selectedElements.clear();
 
@@ -81,7 +81,7 @@ class MultiSelectionManager {
                 project.nodes.forEach(node => {
                     if (this.isElementInRect(node, rect)) {
                         this.selectedElements.add(node);
-                        Logger.debug('Node selected', { x: node.x, y: node.y });
+                        Logger.debug(t('nodeSelected'), { x: node.x, y: node.y });
                     }
                 });
             }
@@ -91,7 +91,7 @@ class MultiSelectionManager {
                 project.texts.forEach(text => {
                     if (this.isTextInRect(text, rect)) {
                         this.selectedElements.add(text);
-                        Logger.debug('Text selected', { x: text.x, y: text.y });
+                        Logger.debug(t('textSelected'), { x: text.x, y: text.y });
                     }
                 });
             }
@@ -101,16 +101,16 @@ class MultiSelectionManager {
                 project.transitions.forEach(transition => {
                     if (this.isTransitionInRect(transition, rect)) {
                         this.selectedElements.add(transition);
-                        Logger.debug('Transition selected');
+                        Logger.debug(t('transitionSelected'));
                     }
                 });
             }
 
             // Very important - set this BEFORE other operations
             this.selectionRect.active = false;
-            Logger.debug('Selection rectangle deactivated');
+            Logger.debug(t('selectionRectangleDeactivated'));
             
-            Logger.userAction('Multi-selection completed', { 
+            Logger.userAction(t('multiSelectionCompleted'), { 
                 count: this.selectedElements.size,
                 rect: rect
             });
@@ -125,9 +125,9 @@ class MultiSelectionManager {
         } catch (error) {
             // Ensure selection rectangle is always deactivated even on error
             this.selectionRect.active = false;
-            Logger.error('Error ending selection', error);
+            Logger.error(t('errorEndingSelection'), error);
             if (this.errorHandler) {
-                this.errorHandler.handleError(error, 'Failed to complete selection');
+                this.errorHandler.handleError(error, t('failedToCompleteSelection'));
             }
         }
     }
@@ -162,7 +162,7 @@ class MultiSelectionManager {
             return elementLeft < rect.maxX && elementRight > rect.minX &&
                    elementTop < rect.maxY && elementBottom > rect.minY;
         } catch (error) {
-            Logger.error('Error checking element in rect', error);
+            Logger.error(t('errorCheckingElementInRect'), error);
             return false;
         }
     }
@@ -186,7 +186,7 @@ class MultiSelectionManager {
             return elementLeft < rect.maxX && elementRight > rect.minX &&
                    elementTop < rect.maxY && elementBottom > rect.minY;
         } catch (error) {
-            Logger.error('Error checking text in rect', error);
+            Logger.error(t('errorCheckingTextInRect'), error);
             return false;
         }
     }
@@ -211,7 +211,7 @@ class MultiSelectionManager {
             
             return startInRect || endInRect;
         } catch (error) {
-            Logger.error('Error checking transition in rect', error);
+            Logger.error(t('errorCheckingTransitionInRect'), error);
             return false;
         }
     }
@@ -259,16 +259,16 @@ class MultiSelectionManager {
                 });
             }
 
-            Logger.userAction('Group drag started', { 
+            Logger.userAction(t('groupDragStarted'), { 
                 elementsCount: this.selectedElements.size,
                 breakPointsCount: this.groupDrag.selectedBreakPoints.length
             });
             
             return true;
         } catch (error) {
-            Logger.error('Error starting group drag', error);
+            Logger.error(t('errorStartingGroupDrag'), error);
             if (this.errorHandler) {
-                this.errorHandler.handleError(error, 'Failed to start group drag');
+                this.errorHandler.handleError(error, t('failedToStartGroupDrag'));
             }
             return false;
         }
@@ -320,7 +320,7 @@ class MultiSelectionManager {
         this.groupDrag.selectedBreakPoints = [];
         this.groupDrag.initialBreakPointPositions.clear();
         
-        Logger.userAction('Group drag completed', { 
+        Logger.userAction(t('groupDragCompleted'), { 
             elementsCount: this.selectedElements.size 
         });
         
@@ -463,10 +463,10 @@ class MultiSelectionManager {
     toggleElementSelection(element, type) {
         if (this.selectedElements.has(element)) {
             this.selectedElements.delete(element);
-            Logger.userAction('Element deselected', { type, element: element.id || element.label });
+            Logger.userAction(t('elementDeselected'), { type, element: element.id || element.label });
         } else {
             this.selectedElements.add(element);
-            Logger.userAction('Element selected', { type, element: element.id || element.label });
+            Logger.userAction(t('elementSelected'), { type, element: element.id || element.label });
         }
         
         if (this.eventBus) {
@@ -485,7 +485,7 @@ class MultiSelectionManager {
         this.selectedElements.clear();
         
         if (hadSelection) {
-            Logger.userAction('Selection cleared');
+            Logger.userAction(t('selectionCleared'));
             if (this.eventBus) {
                 this.eventBus.emit('multiselection.changed', {
                     elements: [],

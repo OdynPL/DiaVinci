@@ -239,7 +239,7 @@ class UIController {
                 return success;
             } catch (error) {
                 this.notificationService.error(t('errorExportingImage'));
-                Logger.error('Export image error', error);
+                Logger.error(t('exportImageError'), error);
                 return false;
             }
         }
@@ -999,7 +999,7 @@ class UIController {
                 }
             } catch (error) {
                 this.notificationService.error(t('failedToExport'));
-                Logger.error('Export error', error);
+                Logger.error(t('exportError'), error);
             }
         }
     }
