@@ -652,7 +652,7 @@ const translations = {
         totalNodes: "🔸 Total Nodes:",
         totalTexts: "🔸 Total Texts:",
         totalTransitions: "🔸 Total Transitions:",
-        nodes: "🔷 Nodes ($1):",
+        nodes: "Nodes",
         textElements: "📝 Text Elements ($1):",
         transitions: "🔗 Transitions ($1):",
         positionDebug: "      └ Position: ($1, $2)",
@@ -796,7 +796,105 @@ const translations = {
         
         // UI Controller messages
         exportImageError: "Export image error",
-        exportError: "Export error"
+        exportError: "Export error",
+        
+        // System configuration messages
+        systemConfiguration: "System Configuration",
+        terminalSettings: "🖥️ Terminal Settings:",
+        maxLines: "Max Lines:",
+        visible: "Visible:",
+        currentFilter: "Current Filter:",
+        textFilter: "Text Filter:",
+        none: "None",
+        windowSettings: "🪟 Window Settings:",
+        width: "Width:",
+        height: "Height:",
+        devicePixelRatio: "Device Pixel Ratio:",
+        screen: "Screen:",
+        applicationState: "📱 Application State:",
+        appAvailable: "App Available:",
+        containerAvailable: "Container Available:",
+        localStorage: "Local Storage:",
+        sessionStorage: "Session Storage:",
+        available: "Available",
+        notAvailable: "Not Available",
+        
+        // Backup messages
+        projectBackupCreated: "✅ Project backup created successfully!",
+        filename: "📄 Filename:",
+        elementsBackedUp: "📊 Elements backed up:",
+        failedToCreateBackup: "❌ Failed to create backup:",
+        
+        // Cleanup messages
+        cleanupOperation: "🧹 Cleanup Operation",
+        cleanedOldCommands: "🗑️ Cleaned $1 old command entries",
+        cleanedOldLogs: "🗑️ Cleaned $1 old log entries",
+        removedTempElements: "🗑️ Removed $1 temporary DOM elements",
+        systemAlreadyClean: "✨ System is already clean. No cleanup needed.",
+        cleanupCompleted: "✅ Cleanup completed. $1 operations performed.",
+        
+        // Ping messages
+        testingResponsiveness: "📡 Testing system responsiveness...",
+        pingResults: "📡 Ping Results",
+        responseTime: "🔹 Response Time:",
+        domAccess: "🔹 DOM Access:",
+        projectAccess: "🔹 Project Access:",
+        terminalState: "🔹 Terminal State:",
+        browserStatus: "🔹 Browser:",
+        ok: "✅ OK",
+        failed: "❌ Failed",
+        active: "✅ Active",
+        hidden: "⚠️ Hidden",
+        online: "✅ Online",
+        offline: "❌ Offline",
+        performanceExcellent: "🚀 System performance: Excellent",
+        performanceGood: "⚡ System performance: Good",
+        performanceSlow: "⚠️ System performance: Slow",
+        
+        // Error logs messages
+        recentErrors: "🚨 Recent Errors",
+        noRecentErrors: "✅ No recent errors found. System is running smoothly!",
+        foundErrors: "📊 Found $1 error(s) in terminal history:",
+        andMoreErrors: "... and $1 more errors (showing last 10)",
+        
+        // Memory info messages
+        memoryUsage: "Memory Usage",
+        usedMemory: "🔹 Used Memory:",
+        totalMemory: "🔹 Total Memory:",
+        memoryLimit: "🔹 Memory Limit:",
+        usage: "🔹 Usage:",
+        memoryNotAvailable: "⚠️ Memory information not available in this browser.",
+        terminalMemory: "📊 Terminal Memory:",
+        historyLines: "🔹 History Lines:",
+        commandHistory: "🔹 Command History:",
+        maxLinesLimit: "🔹 Max Lines Limit:",
+        
+        // Performance metrics messages
+        performanceMetrics: "Performance Metrics",
+        pageLoadTime: "🔹 Page Load Time:",
+        domReadyTime: "🔹 DOM Ready Time:",
+        currentTime: "🔹 Current Time:",
+        performanceNow: "🔹 Performance Now:",
+        browserInfo: "🌐 Browser Info:",
+        userAgent: "🔹 User Agent:",
+        platform: "🔹 Platform:",
+        language: "🔹 Language:",
+        cores: "🔹 Cores:",
+        unknown: "Unknown",
+        
+        // Project validation messages
+        projectValidation: "Project Validation",
+        projectValidationSuccess: "✅ Project validation completed successfully!",
+        noIssuesFound: "🎉 No issues found. Project integrity is good.",
+        errorsFound: "❌ ERRORS FOUND:",
+        warnings: "⚠️ WARNINGS:",
+        validationSummary: "📊 Validation Summary:",
+        errors: "Errors:",
+        totalElementsChecked: "Total Elements Checked:",
+        duplicateIds: "Duplicate IDs found:",
+        orphanedTransition: "Transition $1 references non-existent source node $2",
+        orphanedTransitionTarget: "Transition $1 references non-existent target node $2",
+        emptyLabelsWarning: "$1 elements have empty labels"
     },
     
     pl: {
@@ -1448,7 +1546,7 @@ const translations = {
         totalNodes: "🔸 Calkowite Wezly:",
         totalTexts: "🔸 Calkowite Teksty:",
         totalTransitions: "🔸 Calkowite Przejscia:",
-        nodes: "🔷 Wezly ($1):",
+        nodes: "Wezly",
         textElements: "📝 Elementy Tekstowe ($1):",
         transitions: "🔗 Przejscia ($1):",
         positionDebug: "      └ Pozycja: ($1, $2)",
@@ -1592,7 +1690,105 @@ const translations = {
         
         // UI Controller messages
         exportImageError: "Blad eksportu obrazu",
-        exportError: "Blad eksportu"
+        exportError: "Blad eksportu",
+        
+        // System configuration messages
+        systemConfiguration: "Konfiguracja Systemu",
+        terminalSettings: "🖥️ Ustawienia Terminala:",
+        maxLines: "Maksymalne Linie:",
+        visible: "Widoczny:",
+        currentFilter: "Aktualny Filtr:",
+        textFilter: "Filtr Tekstowy:",
+        none: "Brak",
+        windowSettings: "🪟 Ustawienia Okna:",
+        width: "Szerokosc:",
+        height: "Wysokosc:",
+        devicePixelRatio: "Stosunek Pikseli Urzadzenia:",
+        screen: "Ekran:",
+        applicationState: "📱 Stan Aplikacji:",
+        appAvailable: "Aplikacja Dostepna:",
+        containerAvailable: "Kontener Dostepny:",
+        localStorage: "Pamiec Lokalna:",
+        sessionStorage: "Pamiec Sesji:",
+        available: "Dostepne",
+        notAvailable: "Niedostepne",
+        
+        // Backup messages
+        projectBackupCreated: "✅ Kopia zapasowa projektu utworzona pomyslnie!",
+        filename: "📄 Nazwa pliku:",
+        elementsBackedUp: "📊 Elementy w kopii zapasowej:",
+        failedToCreateBackup: "❌ Nie udalo sie utworzyc kopii zapasowej:",
+        
+        // Cleanup messages
+        cleanupOperation: "🧹 Operacja Czyszczenia",
+        cleanedOldCommands: "🗑️ Wyczyszczono $1 starych wpisow komend",
+        cleanedOldLogs: "🗑️ Wyczyszczono $1 starych wpisow logow",
+        removedTempElements: "🗑️ Usunieto $1 tymczasowych elementow DOM",
+        systemAlreadyClean: "✨ System jest juz czysty. Czyszczenie nie jest potrzebne.",
+        cleanupCompleted: "✅ Czyszczenie zakonczone. Wykonano $1 operacji.",
+        
+        // Ping messages
+        testingResponsiveness: "📡 Testowanie responsywnosci systemu...",
+        pingResults: "📡 Wyniki Ping",
+        responseTime: "🔹 Czas Odpowiedzi:",
+        domAccess: "🔹 Dostep DOM:",
+        projectAccess: "🔹 Dostep Projekt:",
+        terminalState: "🔹 Stan Terminal:",
+        browserStatus: "🔹 Przegladarka:",
+        ok: "✅ OK",
+        failed: "❌ Nieudane",
+        active: "✅ Aktywny",
+        hidden: "⚠️ Ukryty",
+        online: "✅ Online",
+        offline: "❌ Offline",
+        performanceExcellent: "🚀 Wydajnosc systemu: Doskonala",
+        performanceGood: "⚡ Wydajnosc systemu: Dobra",
+        performanceSlow: "⚠️ Wydajnosc systemu: Wolna",
+        
+        // Error logs messages
+        recentErrors: "🚨 Ostatnie Bledy",
+        noRecentErrors: "✅ Nie znaleziono ostatnich bledow. System dziala sprawnie!",
+        foundErrors: "📊 Znaleziono $1 blad(ow) w historii terminala:",
+        andMoreErrors: "... i $1 wiecej bledow (pokazano ostatnie 10)",
+        
+        // Memory info messages
+        memoryUsage: "Zuzycie Pamieci",
+        usedMemory: "🔹 Uzywana Pamiec:",
+        totalMemory: "🔹 Calkowita Pamiec:",
+        memoryLimit: "🔹 Limit Pamieci:",
+        usage: "🔹 Zuzycie:",
+        memoryNotAvailable: "⚠️ Informacje o pamieci niedostepne w tej przegladarce.",
+        terminalMemory: "📊 Pamiec Terminala:",
+        historyLines: "🔹 Linie Historii:",
+        commandHistory: "🔹 Historia Polecen:",
+        maxLinesLimit: "🔹 Limit Maksymalnych Linii:",
+        
+        // Performance metrics messages
+        performanceMetrics: "Metryki Wydajnosci",
+        pageLoadTime: "🔹 Czas Ladowania Strony:",
+        domReadyTime: "🔹 Czas Gotowosci DOM:",
+        currentTime: "🔹 Aktualny Czas:",
+        performanceNow: "🔹 Wydajnosc Teraz:",
+        browserInfo: "🌐 Informacje o Przegladarce:",
+        userAgent: "🔹 User Agent:",
+        platform: "🔹 Platforma:",
+        language: "🔹 Jezyk:",
+        cores: "🔹 Rdzenie:",
+        unknown: "Nieznane",
+        
+        // Project validation messages
+        projectValidation: "Walidacja Projektu",
+        projectValidationSuccess: "✅ Walidacja projektu zakonczona pomyslnie!",
+        noIssuesFound: "🎉 Nie znaleziono problemow. Integralnosc projektu jest dobra.",
+        errorsFound: "❌ ZNALEZIONO BLEDY:",
+        warnings: "⚠️ OSTRZEZENIA:",
+        validationSummary: "📊 Podsumowanie Walidacji:",
+        errors: "Bledy:",
+        totalElementsChecked: "Calkowite Elementy Sprawdzone:",
+        duplicateIds: "Znaleziono duplikaty ID:",
+        orphanedTransition: "Przejscie $1 odwoluje sie do nieistniejacego wezla zrodlowego $2",
+        orphanedTransitionTarget: "Przejscie $1 odwoluje sie do nieistniejacego wezla docelowego $2",
+        emptyLabelsWarning: "$1 elementow ma puste etykiety"
     },
     
     de: {
@@ -2157,6 +2353,99 @@ const translations = {
         showTextInputCalled: "showTextInput aufgerufen",
         inputPositioning: "Eingabe-Positionierung",
         inputSetupCompleted: "Eingabe-Setup abgeschlossen",
+        
+        // System configuration translations
+        systemConfigTitle: "Systemkonfiguration",
+        canvasSettings: "Canvas-Einstellungen",
+        width: "Breite",
+        height: "Höhe",
+        backgroundColor: "Hintergrundfarbe",
+        zoom: "Zoom",
+        gridEnabled: "Raster aktiviert",
+        snapToGrid: "Am Raster ausrichten",
+        gridSize: "Rastergröße",
+        applicationSettings: "Anwendungseinstellungen",
+        version: "Version",
+        language: "Sprache",
+        autoSave: "Automatisches Speichern",
+        autoSaveInterval: "Auto-Speicher-Intervall",
+        saveFormat: "Speicherformat",
+        performanceSettings: "Leistungseinstellungen",
+        maxUndoSteps: "Max. Rückgängig-Schritte",
+        renderQuality: "Renderqualität",
+        enableAnimations: "Animationen aktivieren",
+        cacheSize: "Cache-Größe",
+        memoryUsage: "Speicherverbrauch",
+        storageInfo: "Speicherinformationen",
+        localStorageUsed: "Lokaler Speicher verwendet",
+        sessionStorageUsed: "Sitzungsspeicher verwendet",
+        totalStorageLimit: "Gesamtspeicherlimit",
+        availableStorage: "Verfügbarer Speicher",
+        
+        // Project backup translations
+        backupSuccess: "Projekt-Backup erfolgreich erstellt",
+        backupError: "Fehler beim Erstellen des Backups",
+        backupCreated: "Backup erstellt",
+        backupTimestamp: "Backup-Zeitstempel",
+        backupSize: "Backup-Größe",
+        backupLocation: "Backup-Speicherort",
+        
+        // Cleanup translations
+        cleanupStarted: "Bereinigung gestartet",
+        cleanupCompleted: "Bereinigung abgeschlossen",
+        tempFilesRemoved: "Temporäre Dateien entfernt",
+        cacheCleared: "Cache geleert",
+        oldBackupsRemoved: "Alte Backups entfernt",
+        memoryFreed: "Speicher freigegeben",
+        
+        // Ping translations
+        pingStarted: "Ping-Test gestartet",
+        pingCompleted: "Ping-Test abgeschlossen",
+        pingSuccess: "Ping erfolgreich",
+        pingFailed: "Ping fehlgeschlagen",
+        serverResponse: "Serverantwort",
+        responseTime: "Antwortzeit",
+        
+        // Error log translations
+        errorLogTitle: "Fehlerprotokoll",
+        noRecentErrors: "Keine aktuellen Fehler gefunden",
+        errorCount: "Fehleranzahl",
+        lastError: "Letzter Fehler",
+        errorType: "Fehlertyp",
+        errorMessage: "Fehlermeldung",
+        errorTimestamp: "Fehler-Zeitstempel",
+        
+        // Memory info translations
+        memoryInfoTitle: "Speicherinformationen",
+        totalMemory: "Gesamtspeicher",
+        usedMemory: "Verwendeter Speicher",
+        freeMemory: "Freier Speicher",
+        memoryPercentage: "Speicher-Prozentsatz",
+        javascriptHeap: "JavaScript-Heap",
+        heapUsed: "Heap verwendet",
+        heapTotal: "Heap gesamt",
+        heapLimit: "Heap-Limit",
+        
+        // Performance metrics translations
+        performanceTitle: "Leistungsmetriken",
+        frameRate: "Bildrate",
+        renderTime: "Renderzeit",
+        averageRenderTime: "Durchschnittliche Renderzeit",
+        lastRenderTime: "Letzte Renderzeit",
+        canvasOperations: "Canvas-Operationen",
+        drawCalls: "Zeichenaufrufe",
+        nodeCount: "Knotenanzahl",
+        transitionCount: "Übergangsanzahl",
+        
+        // Project validation translations
+        validationStarted: "Validierung gestartet",
+        validationCompleted: "Validierung abgeschlossen",
+        projectValid: "Projekt ist gültig",
+        validationErrors: "Validierungsfehler",
+        orphanedNodes: "Verwaiste Knoten",
+        invalidTransitions: "Ungültige Übergänge",
+        missingConnections: "Fehlende Verbindungen",
+        duplicateIds: "Doppelte IDs",
         errorShowingTextInput: "Fehler beim Anzeigen der Text-Eingabe",
         
         // GridService translations
@@ -2512,7 +2801,7 @@ const translations = {
         totalNodes: "🔸 Gesamte Knoten:",
         totalTexts: "🔸 Gesamte Texte:",
         totalTransitions: "🔸 Gesamte Übergänge:",
-        nodes: "🔷 Knoten ($1):",
+        nodes: "Knoten",
         textElements: "📝 Textelemente ($1):",
         transitions: "🔗 Übergänge ($1):",
         positionDebug: "      └ Position: ($1, $2)",

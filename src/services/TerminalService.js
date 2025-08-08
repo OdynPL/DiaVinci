@@ -2404,7 +2404,7 @@ class TerminalService {
      */
     showMemoryInfo() {
         this.addLine('', 'info');
-        this.addLine('Memory Usage', 'info');
+        this.addLine(window.t('memoryInfoTitle'), 'info');
         this.addLine('─'.repeat(30), 'info');
 
         if (performance.memory) {
@@ -2413,8 +2413,8 @@ class TerminalService {
             const totalMB = (memory.totalJSHeapSize / 1024 / 1024).toFixed(2);
             const limitMB = (memory.jsHeapSizeLimit / 1024 / 1024).toFixed(2);
             
-            this.addLine(`🔹 Used Memory:    ${usedMB} MB`, 'info');
-            this.addLine(`🔹 Total Memory:   ${totalMB} MB`, 'info');
+            this.addLine(`🔹 ${window.t('usedMemory')}:    ${usedMB} MB`, 'info');
+            this.addLine(`🔹 ${window.t('totalMemory')}:   ${totalMB} MB`, 'info');
             this.addLine(`🔹 Memory Limit:   ${limitMB} MB`, 'info');
             this.addLine(`🔹 Usage:          ${((memory.usedJSHeapSize / memory.jsHeapSizeLimit) * 100).toFixed(1)}%`, 'info');
         } else {
@@ -2436,7 +2436,7 @@ class TerminalService {
      */
     showPerformanceMetrics() {
         this.addLine('', 'info');
-        this.addLine('Performance Metrics', 'info');
+        this.addLine(window.t('performanceTitle'), 'info');
         this.addLine('─'.repeat(30), 'info');
 
         // Page load performance
@@ -2458,7 +2458,7 @@ class TerminalService {
         this.addLine('🌐 Browser Info:', 'info');
         this.addLine(`🔹 User Agent: ${navigator.userAgent.substring(0, 40)}...`, 'info');
         this.addLine(`🔹 Platform: ${navigator.platform}`, 'info');
-        this.addLine(`🔹 Language: ${navigator.language}`, 'info');
+        this.addLine(`🔹 ${window.t('language')}: ${navigator.language}`, 'info');
         this.addLine(`🔹 Cores: ${navigator.hardwareConcurrency || 'Unknown'}`, 'info');
         
         this.scrollToBottom();
@@ -2484,7 +2484,7 @@ class TerminalService {
         }
 
         this.addLine('', 'info');
-        this.addLine('Project Validation', 'info');
+        this.addLine(window.t('validationStarted'), 'info');
         this.addLine('─'.repeat(30), 'info');
 
         let issues = 0;
@@ -2500,7 +2500,7 @@ class TerminalService {
         
         const duplicateIds = allIds.filter((id, index) => allIds.indexOf(id) !== index);
         if (duplicateIds.length > 0) {
-            errors.push(`Duplicate IDs found: ${duplicateIds.join(', ')}`);
+            errors.push(`${window.t('duplicateIds')}: ${duplicateIds.join(', ')}`);
             issues++;
         }
 
@@ -2526,11 +2526,11 @@ class TerminalService {
 
         // Display results
         if (errors.length === 0 && warnings.length === 0) {
-            this.addLine('✅ Project validation completed successfully!', 'success');
-            this.addLine('🎉 No issues found. Project integrity is good.', 'success');
+            this.addLine(`✅ ${window.t('validationCompleted')}!`, 'success');
+            this.addLine(`🎉 ${window.t('projectValid')}`, 'success');
         } else {
             if (errors.length > 0) {
-                this.addLine('❌ ERRORS FOUND:', 'error');
+                this.addLine(`❌ ${window.t('validationErrors')}:`, 'error');
                 errors.forEach(error => this.addLine(`   • ${error}`, 'error'));
                 
             }
@@ -2555,7 +2555,7 @@ class TerminalService {
      */
     showSystemConfig() {
         this.addLine('', 'info');
-        this.addLine('System Configuration', 'info');
+        this.addLine(window.t('systemConfigTitle'), 'info');
         this.addLine('─'.repeat(30), 'info');
 
         // Terminal configuration
@@ -2568,8 +2568,8 @@ class TerminalService {
         // Window configuration
         
         this.addLine('🪟 Window Settings:', 'info');
-        this.addLine(`   • Width: ${window.innerWidth}px`, 'info');
-        this.addLine(`   • Height: ${window.innerHeight}px`, 'info');
+        this.addLine(`   • ${window.t('width')}: ${window.innerWidth}px`, 'info');
+        this.addLine(`   • ${window.t('height')}: ${window.innerHeight}px`, 'info');
         this.addLine(`   • Device Pixel Ratio: ${window.devicePixelRatio}`, 'info');
         this.addLine(`   • Screen: ${screen.width}x${screen.height}`, 'info');
         
@@ -2629,11 +2629,11 @@ class TerminalService {
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
             
-            this.addLine('✅ Project backup created successfully!', 'success');
-            this.addLine(`📄 Filename: ${filename}`, 'info');
+            this.addLine(`✅ ${window.t('backupSuccess')}`, 'success');
+            this.addLine(`📄 ${window.t('backupCreated')}: ${filename}`, 'info');
             this.addLine(`📊 Elements backed up: ${backupData.metadata.nodeCount + backupData.metadata.textCount + backupData.metadata.transitionCount}`, 'info');
         } catch (error) {
-            this.addLine(`❌ Failed to create backup: ${error.message}`, 'error');
+            this.addLine(`❌ ${window.t('backupError')}: ${error.message}`, 'error');
         }
         
         this.scrollToBottom();
@@ -2644,7 +2644,7 @@ class TerminalService {
      */
     cleanupTempData() {
         this.addLine('', 'info');
-        this.addLine('🧹 Cleanup Operation', 'info');
+        this.addLine(`🧹 ${window.t('cleanupStarted')}`, 'info');
         this.addLine('─'.repeat(30), 'info');
 
         let cleaned = 0;
@@ -2677,7 +2677,7 @@ class TerminalService {
         if (cleaned === 0) {
             this.addLine('✨ System is already clean. No cleanup needed.', 'success');
         } else {
-            this.addLine(`✅ Cleanup completed. ${cleaned} operations performed.`, 'success');
+            this.addLine(`✅ ${window.t('cleanupCompleted')}. ${cleaned} operations performed.`, 'success');
         }
         
         this.scrollToBottom();
@@ -2689,7 +2689,7 @@ class TerminalService {
     pingSystem() {
         const startTime = performance.now();
         
-        this.addLine('📡 Testing system responsiveness...', 'info');
+        this.addLine(`📡 ${window.t('pingStarted')}...`, 'info');
         
         // Test DOM manipulation
         const testDiv = document.createElement('div');
@@ -2710,9 +2710,9 @@ class TerminalService {
         const responseTime = (endTime - startTime).toFixed(2);
         
         this.addLine('', 'success');
-        this.addLine('📡 Ping Results', 'success');
+        this.addLine(`📡 ${window.t('pingCompleted')}`, 'success');
         this.addLine('─'.repeat(30), 'success');
-        this.addLine(`🔹 Response Time: ${responseTime}ms`, 'info');
+        this.addLine(`🔹 ${window.t('responseTime')}: ${responseTime}ms`, 'info');
         this.addLine(`🔹 DOM Access: ${testDiv ? '✅ OK' : '❌ Failed'}`, 'info');
         this.addLine(`🔹 Project Access: ${projectAccessible ? '✅ OK' : '❌ Failed'}`, 'info');
         this.addLine(`🔹 Terminal State: ${this.isVisible ? '✅ Active' : '⚠️ Hidden'}`, 'info');
@@ -2736,11 +2736,11 @@ class TerminalService {
         const errorLogs = this.history.filter(log => log.type === 'error');
         
         this.addLine('', 'error');
-        this.addLine('🚨 Recent Errors', 'error');
+        this.addLine(`🚨 ${window.t('errorLogTitle')}`, 'error');
         this.addLine('─'.repeat(30), 'error');
         
         if (errorLogs.length === 0) {
-            this.addLine('✅ No recent errors found. System is running smoothly!', 'success');
+            this.addLine(`✅ ${window.t('noRecentErrors')}`, 'success');
         } else {
             this.addLine(`📊 Found ${errorLogs.length} error(s) in terminal history:`, 'warning');
             
