@@ -283,8 +283,8 @@ class DiagramController {
         // Update data model references before opening editor
         this.updateFunctionNodeDataModelReferences(node);
         
-        // Open the built-in C# editor
-        this.csharpEditorService.openEditor(node);
+        // Open the built-in C# editor with project context
+        this.csharpEditorService.openEditor(node, this.project);
     }
 
     /**
@@ -293,18 +293,17 @@ class DiagramController {
     updateFunctionNodeDataModelReferences(functionNode) {
         if (!functionNode || functionNode.type !== 'function') return;
         
-        // Get all data models in the project
-        const dataModels = this.currentProject.nodes.filter(node => node.type === 'datamodel');
+        // Update data model references based on connections
+        if (typeof functionNode.updateDataModelReferences === 'function') {
+            functionNode.updateDataModelReferences(this.project);
+        }
         
-        // Update function's data model references
-        functionNode.dataModelReferences = dataModels.map(dm => ({
-            id: dm.id,
-            label: dm.label,
-            fields: dm.fields || []
-        }));
+        // Get connected models count
+        const connectedModelsCount = typeof functionNode.getDataModelCounter === 'function' ? 
+            functionNode.getDataModelCounter(this.project) : 0;
         
-        if (this.terminalService && dataModels.length > 0) {
-            this.terminalService.addLine(`🔗 Updated ${functionNode.label} with ${dataModels.length} data model references`, 'info');
+        if (this.terminalService) {
+            this.terminalService.addLine(`🔗 ${functionNode.label} has ${connectedModelsCount} connected Data Model(s)`, 'info');
         }
     }
 

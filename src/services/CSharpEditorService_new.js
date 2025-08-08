@@ -20,9 +20,8 @@ class CSharpEditorService {
     /**
      * Open C# editor for function node
      */
-    openEditor(functionNode, project = null) {
+    openEditor(functionNode) {
         this.currentFunctionNode = functionNode;
-        this.currentProject = project;
         this.createEditorUI();
         this.createEditor();
     }
@@ -114,11 +113,9 @@ class CSharpEditorService {
             gap: 12px;
         `;
 
-        // Data Models button with counter
+        // Data Models button
         const dataModelsButton = document.createElement('button');
-        const connectedModelsCount = this.currentProject ? 
-            this.currentFunctionNode.getDataModelCounter(this.currentProject) : 0;
-        dataModelsButton.textContent = `📊 Data Models (${connectedModelsCount})`;
+        dataModelsButton.textContent = '📊 Data Models';
         dataModelsButton.style.cssText = `
             background: rgba(255, 255, 255, 0.2);
             color: white;
@@ -422,28 +419,7 @@ class CSharpEditorService {
      * Show data models information
      */
     showDataModelsInfo() {
-        if (!this.currentProject) {
-            alert('No project loaded.');
-            return;
-        }
-
-        const connectedModels = this.currentFunctionNode.getConnectedDataModels(this.currentProject);
-        
-        if (connectedModels.length === 0) {
-            alert('No Data Models connected.\n\nTo connect Data Models:\n1. Create a Data Model node\n2. Draw a transition from the Data Model to this Function\n3. The counter will increase automatically');
-            return;
-        }
-
-        let message = `Connected Data Models (${connectedModels.length}):\n\n`;
-        connectedModels.forEach((model, index) => {
-            message += `${index + 1}. ${model.label} (ID: ${model.id})\n`;
-            if (model.fields && model.fields.length > 0) {
-                message += `   Fields: ${model.fields.map(f => f.name).join(', ')}\n`;
-            }
-        });
-        
-        message += '\nThese Data Models are available for IntelliSense in your C# code.';
-        alert(message);
+        alert('Data Models integration: This feature will show available data models from your project for IntelliSense support.');
     }
 
     /**

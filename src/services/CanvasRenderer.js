@@ -48,6 +48,9 @@ class CanvasRenderer {
      */
     render(project, multiSelectionManager = null, transitionDrawing = null) {
         try {
+            // Store project reference for child methods
+            this.project = project;
+            
             const startTime = performance.now();
             this.clearCanvas();
             this.setBackground();
@@ -908,18 +911,18 @@ class CanvasRenderer {
             this.ctx.restore();
         } else if (node.type === 'function') {
             // Draw rounded rectangle for function nodes
-            const width = node.width || 200;
-            const height = node.height || 150;
+            const width = node.width || 160;
+            const height = node.height || 120;
             const x = node.x - width/2;
             const y = node.y - height/2;
-            const radius = 8;
+            const radius = 6;
             
             // Draw shadow
             this.ctx.save();
-            this.ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
-            this.ctx.shadowBlur = 10;
-            this.ctx.shadowOffsetX = 3;
-            this.ctx.shadowOffsetY = 3;
+            this.ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
+            this.ctx.shadowBlur = 6;
+            this.ctx.shadowOffsetX = 2;
+            this.ctx.shadowOffsetY = 2;
             
             // Draw rounded rectangle
             this.ctx.beginPath();
@@ -1455,8 +1458,8 @@ class CanvasRenderer {
      * Draw function node content with professional C# styling
      */
     drawFunctionContent(node) {
-        const width = node.width || 200;
-        const height = node.height || 150;
+        const width = node.width || 160;
+        const height = node.height || 120;
         const x = node.x - width/2;
         const y = node.y - height/2;
         
@@ -1464,105 +1467,121 @@ class CanvasRenderer {
         this.ctx.fillStyle = '#ffffff';
         this.ctx.strokeStyle = node.color || '#8B5CF6';
         this.ctx.lineWidth = 2;
-        this.roundRect(x, y, width, height, 8);
+        this.roundRect(x, y, width, height, 6);
         this.ctx.fill();
         this.ctx.stroke();
         
         // Draw header area with gradient
-        const gradient = this.ctx.createLinearGradient(x, y, x, y + 35);
+        const gradient = this.ctx.createLinearGradient(x, y, x, y + 28);
         gradient.addColorStop(0, node.color || '#8B5CF6');
         gradient.addColorStop(1, this.darkenColor(node.color || '#8B5CF6', 0.1));
         this.ctx.fillStyle = gradient;
-        this.roundRect(x, y, width, 35, 8, true, false);
+        this.roundRect(x, y, width, 28, 6, true, false);
         this.ctx.fill();
         
         // Draw function icon
         this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 14px "Segoe UI", Arial, sans-serif';
+        this.ctx.font = 'bold 12px "Segoe UI", Arial, sans-serif';
         this.ctx.textAlign = 'left';
         this.ctx.textBaseline = 'middle';
-        this.ctx.fillText('{ }', x + 8, y + 17);
+        this.ctx.fillText('{ }', x + 6, y + 14);
         
         // Draw function name
         this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 13px "Segoe UI", Arial, sans-serif';
+        this.ctx.font = 'bold 11px "Segoe UI", Arial, sans-serif';
         this.ctx.textAlign = 'left';
         this.ctx.textBaseline = 'middle';
         const funcName = node.label || 'Function';
-        this.ctx.fillText(funcName, x + 35, y + 17);
+        const shortName = funcName.length > 14 ? funcName.substring(0, 11) + '...' : funcName;
+        this.ctx.fillText(shortName, x + 28, y + 14);
         
         // Draw code preview area with subtle background
         this.ctx.fillStyle = '#f8fafc';
-        this.ctx.fillRect(x + 1, y + 35, width - 2, height - 60);
+        this.ctx.fillRect(x + 1, y + 28, width - 2, height - 48);
         
         // Draw border for code area
         this.ctx.strokeStyle = '#e2e8f0';
         this.ctx.lineWidth = 1;
-        this.ctx.strokeRect(x + 1, y + 35, width - 2, height - 60);
+        this.ctx.strokeRect(x + 1, y + 28, width - 2, height - 48);
         
-        // Draw code preview or placeholder
+        // Draw code preview or elegant placeholder
         if (node.code && node.code.trim()) {
             const lines = node.code.split('\n');
-            const previewLines = lines.slice(0, 5); // Show first 5 lines
+            const previewLines = lines.slice(0, 4); // Show first 4 lines
             
             this.ctx.fillStyle = '#374151';
-            this.ctx.font = '10px "Fira Code", "Consolas", monospace';
+            this.ctx.font = '9px "Fira Code", "Consolas", monospace';
             this.ctx.textAlign = 'left';
             this.ctx.textBaseline = 'top';
             
             previewLines.forEach((line, index) => {
-                const displayLine = line.length > 22 ? line.substring(0, 19) + '...' : line;
-                this.ctx.fillText(displayLine, x + 8, y + 42 + index * 13);
+                const displayLine = line.length > 18 ? line.substring(0, 15) + '...' : line;
+                this.ctx.fillText(displayLine, x + 6, y + 34 + index * 11);
             });
             
             // Show "..." if there are more lines
-            if (lines.length > 5) {
+            if (lines.length > 4) {
                 this.ctx.fillStyle = '#8B5CF6';
-                this.ctx.font = 'bold 10px "Segoe UI", Arial, sans-serif';
-                this.ctx.fillText('...', x + 8, y + 42 + 5 * 13);
+                this.ctx.font = 'bold 9px "Segoe UI", Arial, sans-serif';
+                this.ctx.fillText('...', x + 6, y + 34 + 4 * 11);
             }
         } else {
-            // Show placeholder text with icon
-            this.ctx.fillStyle = '#9ca3af';
-            this.ctx.font = '12px "Segoe UI", Arial, sans-serif';
-            this.ctx.textAlign = 'center';
-            this.ctx.textBaseline = 'middle';
-            this.ctx.fillText('Double-click to add code', node.x, y + 65);
+            // Show elegant placeholder with example code
+            const placeholderCode = [
+                'public void Execute()',
+                '{',
+                '    // Your code here',
+                '    Console.WriteLine("Hello");',
+                '}'
+            ];
             
-            // Draw code icon
+            this.ctx.fillStyle = '#9ca3af';
+            this.ctx.font = '8px "Fira Code", "Consolas", monospace';
+            this.ctx.textAlign = 'left';
+            this.ctx.textBaseline = 'top';
+            
+            placeholderCode.forEach((line, index) => {
+                if (index < 4) { // Only show first 4 lines
+                    this.ctx.fillText(line, x + 6, y + 34 + index * 10);
+                }
+            });
+            
+            // Add subtle hint
             this.ctx.fillStyle = '#d1d5db';
-            this.ctx.font = '20px "Segoe UI", Arial, sans-serif';
-            this.ctx.fillText('</>', node.x, y + 85);
+            this.ctx.font = '9px "Segoe UI", Arial, sans-serif';
+            this.ctx.textAlign = 'center';
+            this.ctx.textBaseline = 'bottom';
+            this.ctx.fillText('Double-click to edit', node.x, y + height - 25);
         }
         
         // Draw footer with professional styling
         this.ctx.fillStyle = '#f1f5f9';
-        this.ctx.fillRect(x + 1, y + height - 25, width - 2, 24);
+        this.ctx.fillRect(x + 1, y + height - 20, width - 2, 19);
         
         // Draw footer border
         this.ctx.strokeStyle = '#e2e8f0';
         this.ctx.lineWidth = 1;
         this.ctx.beginPath();
-        this.ctx.moveTo(x + 1, y + height - 25);
-        this.ctx.lineTo(x + width - 1, y + height - 25);
+        this.ctx.moveTo(x + 1, y + height - 20);
+        this.ctx.lineTo(x + width - 1, y + height - 20);
         this.ctx.stroke();
         
-        // Draw data model references count with icon
-        const dmCount = node.dataModelReferences ? node.dataModelReferences.length : 0;
-        this.ctx.fillStyle = '#6b7280';
+        // Draw data model references count with icon (show connected models via transitions)
+        const dmCount = node.getDataModelCounter ? node.getDataModelCounter(this.project) : 0;
+        this.ctx.fillStyle = dmCount > 0 ? '#059669' : '#6b7280';
         this.ctx.font = '9px "Segoe UI", Arial, sans-serif';
         this.ctx.textAlign = 'left';
         this.ctx.textBaseline = 'middle';
-        this.ctx.fillText(`📊 ${dmCount} models`, x + 8, y + height - 13);
+        this.ctx.fillText(`📊 ${dmCount}`, x + 6, y + height - 10);
         
         // Draw function signature
         const signature = node.getFunctionSignature ? node.getFunctionSignature() : 'void Execute()';
-        const shortSignature = signature.length > 18 ? signature.substring(0, 15) + '...' : signature;
+        const shortSignature = signature.length > 14 ? signature.substring(0, 11) + '...' : signature;
         this.ctx.fillStyle = '#6b7280';
-        this.ctx.font = '8px "Fira Code", "Consolas", monospace';
+        this.ctx.font = '7px "Fira Code", "Consolas", monospace';
         this.ctx.textAlign = 'right';
         this.ctx.textBaseline = 'middle';
-        this.ctx.fillText(shortSignature, x + width - 8, y + height - 13);
+        this.ctx.fillText(shortSignature, x + width - 6, y + height - 10);
     }
     
     /**

@@ -2,7 +2,7 @@
  * Project model representing a complete diagram project
  */
 class Project {
-    constructor({name, nodes = [], transitions = [], texts = [], nodeCounter = 1, functionCounter = 1, timestamp = null, isPrivate = false, passwordHash = null}) {
+    constructor({name, nodes = [], transitions = [], texts = [], nodeCounter = 0, functionCounter = 1, timestamp = null, isPrivate = false, passwordHash = null}) {
         this.name = name;
         this.nodes = nodes;
         this.transitions = transitions;
@@ -20,7 +20,8 @@ class Project {
      */
     addNode(node) {
         this.nodes.push(node);
-        if (node.type === 'node' || node.type === 'datamodel') {
+        // Only increment counters when actually adding new nodes of specific types
+        if (node.type === 'datamodel') {
             this.nodeCounter++;
         }
         if (node.type === 'function') {

@@ -7,13 +7,14 @@ class FunctionNode {
         this.type = 'function';
         this.x = options.x || 0;
         this.y = options.y || 0;
-        this.width = options.width || 200;
-        this.height = options.height || 150;
+        this.width = options.width || 160;
+        this.height = options.height || 120;
         this.label = options.label || 'Function';
         this.color = options.color || '#4CAF50';
         
         // C# code content
-        this.code = options.hasOwnProperty('code') ? options.code : '// C# Function\npublic void Execute()\n{\n    // Your code here\n}';
+        this.code = options.hasOwnProperty('code') ? options.code : 
+            'public void Execute()\n{\n    // Your code here\n    Console.WriteLine("Hello World!");\n}';
         this.language = 'csharp';
         
         // Data Model references and imports
@@ -54,6 +55,13 @@ class FunctionNode {
     }
 
     /**
+     * Update code (alias for setCode for compatibility)
+     */
+    updateCode(code) {
+        this.setCode(code);
+    }
+
+    /**
      * Add a data model reference for IntelliSense
      */
     addDataModelReference(dataModelNode) {
@@ -71,6 +79,43 @@ class FunctionNode {
      */
     removeDataModelReference(dataModelId) {
         this.dataModelReferences = this.dataModelReferences.filter(ref => ref.id !== dataModelId);
+    }
+
+    /**
+     * Get connected Data Models via transitions from project
+     */
+    getConnectedDataModels(project) {
+        if (!project) return [];
+        
+        const connectedDataModels = [];
+        const incomingTransitions = project.transitions.filter(transition => transition.to === this);
+        
+        incomingTransitions.forEach(transition => {
+            if (transition.from && transition.from.type === 'datamodel') {
+                connectedDataModels.push(transition.from);
+            }
+        });
+        
+        return connectedDataModels;
+    }
+
+    /**
+     * Get count of connected Data Models
+     */
+    getDataModelCounter(project) {
+        return this.getConnectedDataModels(project).length;
+    }
+
+    /**
+     * Update data model references based on connections
+     */
+    updateDataModelReferences(project) {
+        const connectedModels = this.getConnectedDataModels(project);
+        this.dataModelReferences = connectedModels.map(model => ({
+            id: model.id,
+            label: model.label,
+            fields: model.fields || []
+        }));
     }
 
     /**
@@ -146,8 +191,14 @@ class FunctionNode {
      * Check if a point is within the function node bounds
      */
     containsPoint(x, y) {
-        return x >= this.x && x <= this.x + this.width &&
-               y >= this.y && y <= this.y + this.height;
+        const width = this.width || 160;
+        const height = this.height || 120;
+        const left = this.x - width/2;
+        const right = this.x + width/2;
+        const top = this.y - height/2;
+        const bottom = this.y + height/2;
+        
+        return x >= left && x <= right && y >= top && y <= bottom;
     }
 
     /**

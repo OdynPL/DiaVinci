@@ -173,6 +173,36 @@ class Transition {
                 x: this.to.x - cosAngle * distance,
                 y: this.to.y - sinAngle * distance
             };
+        } else if (this.to.type === 'function' || this.to.type === 'datamodel') {
+            // Handle rectangular nodes (Function, DataModel)
+            let halfWidth, halfHeight;
+            
+            if (this.to.type === 'function') {
+                halfWidth = (this.to.width || 160) / 2;
+                halfHeight = (this.to.height || 120) / 2;
+            } else if (this.to.type === 'datamodel') {
+                // DataModel uses calculated dimensions based on fields
+                const width = this.to.r * 4.5;
+                const visibleFieldsCount = Math.min(this.to.fields ? this.to.fields.length : 0, 10);
+                const additionalHeight = (this.to.fields && this.to.fields.length > 10) ? 18 : 0;
+                const height = Math.max(this.to.r * 2, visibleFieldsCount * 18 + 50 + additionalHeight);
+                halfWidth = width / 2;
+                halfHeight = height / 2;
+            }
+            
+            // Calculate intersection with rectangle edge
+            const cosAngle = Math.cos(angle);
+            const sinAngle = Math.sin(angle);
+            
+            // Find which edge the line intersects
+            const t1 = halfWidth / Math.abs(cosAngle);
+            const t2 = halfHeight / Math.abs(sinAngle);
+            const t = Math.min(t1, t2);
+            
+            return {
+                x: this.to.x - cosAngle * t,
+                y: this.to.y - sinAngle * t
+            };
         } else {
             return {
                 x: this.to.x - Math.cos(angle) * this.to.r,
@@ -198,6 +228,36 @@ class Transition {
             return {
                 x: this.from.x + cosAngle * distance,
                 y: this.from.y + sinAngle * distance
+            };
+        } else if (this.from.type === 'function' || this.from.type === 'datamodel') {
+            // Handle rectangular nodes (Function, DataModel)
+            let halfWidth, halfHeight;
+            
+            if (this.from.type === 'function') {
+                halfWidth = (this.from.width || 160) / 2;
+                halfHeight = (this.from.height || 120) / 2;
+            } else if (this.from.type === 'datamodel') {
+                // DataModel uses calculated dimensions based on fields
+                const width = this.from.r * 4.5;
+                const visibleFieldsCount = Math.min(this.from.fields ? this.from.fields.length : 0, 10);
+                const additionalHeight = (this.from.fields && this.from.fields.length > 10) ? 18 : 0;
+                const height = Math.max(this.from.r * 2, visibleFieldsCount * 18 + 50 + additionalHeight);
+                halfWidth = width / 2;
+                halfHeight = height / 2;
+            }
+            
+            // Calculate intersection with rectangle edge
+            const cosAngle = Math.cos(angle);
+            const sinAngle = Math.sin(angle);
+            
+            // Find which edge the line intersects
+            const t1 = halfWidth / Math.abs(cosAngle);
+            const t2 = halfHeight / Math.abs(sinAngle);
+            const t = Math.min(t1, t2);
+            
+            return {
+                x: this.from.x + cosAngle * t,
+                y: this.from.y + sinAngle * t
             };
         } else {
             return {

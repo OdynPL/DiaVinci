@@ -159,6 +159,9 @@ class Node {
         if (data.type === 'datamodel' && typeof DataModelNode !== 'undefined') {
             return DataModelNode.fromJSON(data);
         }
+        if (data.type === 'function' && typeof FunctionNode !== 'undefined') {
+            return FunctionNode.fromJSON(data);
+        }
         return new Node(data);
     }
 }
