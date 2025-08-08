@@ -201,8 +201,8 @@ class NodeFactory {
             id: Date.now(),
             label: `Function ${functionCounter}`,
             color: '#8B5CF6',
-            width: 160,
-            height: 120,
+            width: 100,
+            height: 90,
             code: '',  // Start with empty code
             returnType: 'void',
             parameters: [],

@@ -1455,11 +1455,11 @@ class CanvasRenderer {
     }
 
     /**
-     * Draw function node content with professional C# styling
+     * Draw compact function node with simple, elegant design
      */
     drawFunctionContent(node) {
-        const width = node.width || 160;
-        const height = node.height || 120;
+        const width = node.width || 100;
+        const height = node.height || 90;
         const x = node.x - width/2;
         const y = node.y - height/2;
         
@@ -1467,121 +1467,71 @@ class CanvasRenderer {
         this.ctx.fillStyle = '#ffffff';
         this.ctx.strokeStyle = node.color || '#8B5CF6';
         this.ctx.lineWidth = 2;
-        this.roundRect(x, y, width, height, 6);
+        this.roundRect(x, y, width, height, 8);
         this.ctx.fill();
         this.ctx.stroke();
         
         // Draw header area with gradient
-        const gradient = this.ctx.createLinearGradient(x, y, x, y + 28);
+        const gradient = this.ctx.createLinearGradient(x, y, x, y + 22);
         gradient.addColorStop(0, node.color || '#8B5CF6');
-        gradient.addColorStop(1, this.darkenColor(node.color || '#8B5CF6', 0.1));
+        gradient.addColorStop(1, this.darkenColor(node.color || '#8B5CF6', 0.15));
         this.ctx.fillStyle = gradient;
-        this.roundRect(x, y, width, 28, 6, true, false);
+        this.roundRect(x, y, width, 22, 8, true, false);
         this.ctx.fill();
         
-        // Draw function icon
+        // Draw function name in header
         this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 12px "Segoe UI", Arial, sans-serif';
-        this.ctx.textAlign = 'left';
-        this.ctx.textBaseline = 'middle';
-        this.ctx.fillText('{ }', x + 6, y + 14);
-        
-        // Draw function name
-        this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 11px "Segoe UI", Arial, sans-serif';
-        this.ctx.textAlign = 'left';
+        this.ctx.font = 'bold 9px "Segoe UI", Arial, sans-serif';
+        this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
         const funcName = node.label || 'Function';
-        const shortName = funcName.length > 14 ? funcName.substring(0, 11) + '...' : funcName;
-        this.ctx.fillText(shortName, x + 28, y + 14);
+        const shortName = funcName.length > 12 ? funcName.substring(0, 9) + '...' : funcName;
+        this.ctx.fillText(shortName, node.x, y + 11);
         
-        // Draw code preview area with subtle background
+        // Draw main content area
         this.ctx.fillStyle = '#f8fafc';
-        this.ctx.fillRect(x + 1, y + 28, width - 2, height - 48);
+        this.ctx.fillRect(x + 1, y + 22, width - 2, height - 38);
         
-        // Draw border for code area
-        this.ctx.strokeStyle = '#e2e8f0';
-        this.ctx.lineWidth = 1;
-        this.ctx.strokeRect(x + 1, y + 28, width - 2, height - 48);
+        // Draw large "C#" text in center
+        this.ctx.fillStyle = '#6366f1';
+        this.ctx.font = 'bold 24px "Segoe UI", Arial, sans-serif';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText('C#', node.x, node.y + 8);
         
-        // Draw code preview or elegant placeholder
-        if (node.code && node.code.trim()) {
-            const lines = node.code.split('\n');
-            const previewLines = lines.slice(0, 4); // Show first 4 lines
-            
-            this.ctx.fillStyle = '#374151';
-            this.ctx.font = '9px "Fira Code", "Consolas", monospace';
-            this.ctx.textAlign = 'left';
-            this.ctx.textBaseline = 'top';
-            
-            previewLines.forEach((line, index) => {
-                const displayLine = line.length > 18 ? line.substring(0, 15) + '...' : line;
-                this.ctx.fillText(displayLine, x + 6, y + 34 + index * 11);
-            });
-            
-            // Show "..." if there are more lines
-            if (lines.length > 4) {
-                this.ctx.fillStyle = '#8B5CF6';
-                this.ctx.font = 'bold 9px "Segoe UI", Arial, sans-serif';
-                this.ctx.fillText('...', x + 6, y + 34 + 4 * 11);
-            }
-        } else {
-            // Show elegant placeholder with example code
-            const placeholderCode = [
-                'public void Execute()',
-                '{',
-                '    // Your code here',
-                '    Console.WriteLine("Hello");',
-                '}'
-            ];
-            
-            this.ctx.fillStyle = '#9ca3af';
-            this.ctx.font = '8px "Fira Code", "Consolas", monospace';
-            this.ctx.textAlign = 'left';
-            this.ctx.textBaseline = 'top';
-            
-            placeholderCode.forEach((line, index) => {
-                if (index < 4) { // Only show first 4 lines
-                    this.ctx.fillText(line, x + 6, y + 34 + index * 10);
-                }
-            });
-            
-            // Add subtle hint
-            this.ctx.fillStyle = '#d1d5db';
-            this.ctx.font = '9px "Segoe UI", Arial, sans-serif';
-            this.ctx.textAlign = 'center';
-            this.ctx.textBaseline = 'bottom';
-            this.ctx.fillText('Double-click to edit', node.x, y + height - 25);
-        }
+        // Draw small code icon below
+        this.ctx.fillStyle = '#9ca3af';
+        this.ctx.font = '12px "Segoe UI", Arial, sans-serif';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText('{ }', node.x, node.y + 26);
         
-        // Draw footer with professional styling
+        // Draw footer with data model counter
         this.ctx.fillStyle = '#f1f5f9';
-        this.ctx.fillRect(x + 1, y + height - 20, width - 2, 19);
+        this.ctx.fillRect(x + 1, y + height - 16, width - 2, 15);
         
         // Draw footer border
         this.ctx.strokeStyle = '#e2e8f0';
         this.ctx.lineWidth = 1;
         this.ctx.beginPath();
-        this.ctx.moveTo(x + 1, y + height - 20);
-        this.ctx.lineTo(x + width - 1, y + height - 20);
+        this.ctx.moveTo(x + 1, y + height - 16);
+        this.ctx.lineTo(x + width - 1, y + height - 16);
         this.ctx.stroke();
         
         // Draw data model references count with icon (show connected models via transitions)
         const dmCount = node.getDataModelCounter ? node.getDataModelCounter(this.project) : 0;
         this.ctx.fillStyle = dmCount > 0 ? '#059669' : '#6b7280';
-        this.ctx.font = '9px "Segoe UI", Arial, sans-serif';
+        this.ctx.font = '8px "Segoe UI", Arial, sans-serif';
         this.ctx.textAlign = 'left';
         this.ctx.textBaseline = 'middle';
-        this.ctx.fillText(`📊 ${dmCount}`, x + 6, y + height - 10);
+        this.ctx.fillText(`📊 ${dmCount}`, x + 4, y + height - 8);
         
-        // Draw function signature
-        const signature = node.getFunctionSignature ? node.getFunctionSignature() : 'void Execute()';
-        const shortSignature = signature.length > 14 ? signature.substring(0, 11) + '...' : signature;
+        // Draw edit hint on right
         this.ctx.fillStyle = '#6b7280';
-        this.ctx.font = '7px "Fira Code", "Consolas", monospace';
+        this.ctx.font = '7px "Segoe UI", Arial, sans-serif';
         this.ctx.textAlign = 'right';
         this.ctx.textBaseline = 'middle';
-        this.ctx.fillText(shortSignature, x + width - 6, y + height - 10);
+        this.ctx.fillText('dbl-click', x + width - 4, y + height - 8);
     }
     
     /**

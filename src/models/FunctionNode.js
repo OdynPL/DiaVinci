@@ -7,10 +7,10 @@ class FunctionNode {
         this.type = 'function';
         this.x = options.x || 0;
         this.y = options.y || 0;
-        this.width = options.width || 160;
-        this.height = options.height || 120;
+        this.width = options.width || 100;
+        this.height = options.height || 90;
         this.label = options.label || 'Function';
-        this.color = options.color || '#4CAF50';
+        this.color = options.color || '#8B5CF6';
         
         // C# code content
         this.code = options.hasOwnProperty('code') ? options.code : 
