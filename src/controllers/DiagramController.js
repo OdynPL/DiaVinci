@@ -486,7 +486,7 @@ class DiagramController {
      * Start dragging break point
      */
     startDraggingBreakPoint(breakPointHit, x, y) {
-        Logger.debug('Start dragging break point', { 
+        Logger.debug(t('startDraggingBreakPoint'), { 
             transition: breakPointHit.transition.label, 
             index: breakPointHit.breakPointIndex, 
             x, y 
@@ -507,7 +507,7 @@ class DiagramController {
      * Start dragging transition (moves all break points together)
      */
     startDraggingTransition(transition, x, y) {
-        Logger.debug('Start dragging transition', { 
+        Logger.debug(t('startDraggingTransition'), { 
             transition: transition.label, 
             breakPointsCount: transition.breakPoints.length,
             x, y 
@@ -756,13 +756,13 @@ class DiagramController {
             this.setSelection(node, 'node');
             this.render();
             
-            Logger.debug('Transition start node selected', { nodeId: node.id, nodeType: node.type });
+            Logger.debug(t('transitionStartNodeSelected'), { nodeId: node.id, nodeType: node.type });
             
         } else if (this.transitionDrawing.startNode !== node) {
             // Second node selection - create transition
             // Additional validation before attempting to create transition
             if (!this.transitionDrawing.startNode) {
-                Logger.error('StartNode is null when trying to create transition');
+                Logger.error(t('startNodeIsNull'));
                 this.cancelTransitionDrawing();
                 return;
             }
@@ -787,7 +787,7 @@ class DiagramController {
         } else {
             // Clicking the same node - cancel transition drawing
             this.cancelTransitionDrawing();
-            Logger.debug('Transition cancelled - same node clicked twice');
+            Logger.debug(t('transitionCancelledSameNodeClicked'));
         }
     }
 
@@ -797,7 +797,7 @@ class DiagramController {
     createTransition(fromNode, toNode) {
         // Validate nodes before creating transition
         if (!fromNode || !toNode) {
-            Logger.error('Cannot create transition - invalid nodes', { fromNode, toNode });
+            Logger.error(t('cannotCreateTransitionInvalidNodes'), { fromNode, toNode });
             return false;
         }
         
@@ -845,11 +845,11 @@ class DiagramController {
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
 
-        Logger.debug('Double click at', { x, y });
+        Logger.debug(t('doubleClickAt'), { x, y });
 
         const node = this.currentProject.findNodeAtPosition(x, y);
         if (node) {
-            Logger.debug('Double click on node', { label: node.label, type: node.type });
+            Logger.debug(t('doubleClickOnNode'), { label: node.label, type: node.type });
             
             // Special handling for DataModelNode
             if (node.type === 'datamodel') {
@@ -865,7 +865,7 @@ class DiagramController {
 
         const text = this.currentProject.findTextAtPosition(x, y, this.ctx);
         if (text) {
-            Logger.debug('Double click on text', { label: text.label });
+            Logger.debug(t('doubleClickOnText'), { label: text.label });
             this.inputService.showTextInput(text);
             this.setSelection(text, 'text');
             return;
@@ -873,7 +873,7 @@ class DiagramController {
 
         const transition = this.currentProject.findTransitionNearPosition(x, y);
         if (transition) {
-            Logger.debug('Double click on transition', { label: transition.label });
+            Logger.debug(t('doubleClickOnTransition'), { label: transition.label });
             this.inputService.showTransitionInput(transition);
             this.setSelection(transition, 'transition');
         }
@@ -1128,7 +1128,7 @@ class DiagramController {
      * Rotate IF node counter-clockwise (90 degrees)
      */
     rotateIFNodeCounterClockwise(ifNode) {
-        Logger.debug('Rotating IF node counter-clockwise', { 
+        Logger.debug(t('rotatingIfNodeCounterClockwise'), { 
             ifNodeId: ifNode.id, 
             currentRotation: ifNode.rotation
         });
@@ -1139,7 +1139,7 @@ class DiagramController {
         const trueTransition = allIFTransitions.find(tr => tr.label === 'Step1');
         const falseTransition = allIFTransitions.find(tr => tr.label === 'Step2');
         
-        Logger.debug('Found transitions for counter-clockwise rotation', { 
+        Logger.debug(t('foundTransitionsForCounterClockwiseRotation'), { 
             trueTransition: trueTransition ? trueTransition.label : null,
             falseTransition: falseTransition ? falseTransition.label : null,
             newRotation: ifNode.rotation
@@ -1628,7 +1628,7 @@ class DiagramController {
      * Handle element edited event
      */
     handleElementEdited(data) {
-        Logger.debug('Element edited event received', { type: data.type, newValue: data.newValue });
+        Logger.debug(t('elementEditedEventReceived'), { type: data.type, newValue: data.newValue });
         this.render();
         
         // Trigger auto-save after editing element
@@ -1739,7 +1739,7 @@ class DiagramController {
         // If project has a name, also save to named project
         if (this.currentProject.name) {
             this.storageService.saveProject(this.currentProject);
-            Logger.debug('Auto-saved to named project', { projectName: this.currentProject.name });
+            Logger.debug(t('autoSavedToNamedProject'), { projectName: this.currentProject.name });
         }
     }
 
@@ -1754,7 +1754,7 @@ class DiagramController {
         
         this.autoSaveTimeout = setTimeout(() => {
             this.autoSave();
-            Logger.debug('Auto-save triggered after modification');
+            Logger.debug(t('autoSaveTriggeredAfterModification'));
         }, 500); // Wait 500ms after last change
     }
 

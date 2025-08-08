@@ -421,6 +421,15 @@ const translations = {
         cannotCreateTransitionInvalidNodes: "Cannot create transition - invalid nodes",
         transitionAlreadyExistsBetweenNodes: "Transition already exists between these nodes",
         
+        // Additional DiagramController debug translations
+        startDraggingBreakPoint: "Start dragging break point",
+        elementEditedEventReceived: "Element edited event received",
+        dataModelUpdatedEventReceived: "Data model updated event received",
+        breakPointMovedEventReceived: "Break point moved event received",
+        multipleBreakPointsMovedEventReceived: "Multiple break points moved event received",
+        autoSavedToNamedProject: "Auto-saved to named project",
+        autoSaveTriggeredAfterModification: "Auto-save triggered after modification",
+        
         terminalClear: "Clear Terminal",
         terminalClose: "Close Terminal",
         terminalExport: "Export Logs",
@@ -1096,6 +1105,15 @@ const translations = {
         transitionCreationFailedOrDuplicate: "Utworzenie przejścia nie powiodło się lub wykryto duplikat",
         cannotCreateTransitionInvalidNodes: "Nie można utworzyć przejścia - nieprawidłowe węzły",
         transitionAlreadyExistsBetweenNodes: "Przejście już istnieje między tymi węzłami",
+        
+        // Additional DiagramController debug translations
+        startDraggingBreakPoint: "Start przeciągania punktu przerwania",
+        elementEditedEventReceived: "Otrzymano zdarzenie edycji elementu",
+        dataModelUpdatedEventReceived: "Otrzymano zdarzenie aktualizacji modelu danych",
+        breakPointMovedEventReceived: "Otrzymano zdarzenie przesunięcia punktu przerwania",
+        multipleBreakPointsMovedEventReceived: "Otrzymano zdarzenie przesunięcia wielu punktów przerwania",
+        autoSavedToNamedProject: "Auto-zapisano do nazwanego projektu",
+        autoSaveTriggeredAfterModification: "Auto-zapis uruchomiony po modyfikacji",
         
         // Terminal filter options
         allMessages: "Wszystkie Wiadomości",
