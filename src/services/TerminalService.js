@@ -1028,58 +1028,58 @@ class TerminalService {
                 break;
             case 'clear':
                 this.clear();
-                this.addLine('Terminal cleared by user command.', 'info');
+                this.addLine(t('terminalClearedByUser'), 'info');
                 break;
             case 'status':
                 
-                this.addLine('⚡ System Status:', 'info');
+                this.addLine(t('systemStatus'), 'info');
                 this.addLine('─'.repeat(30), 'info');
-                this.addLine(`🔹 Terminal lines: ${this.history.length}`, 'info');
-                this.addLine(`🔹 Active filter: ${this.currentTypeFilter}`, 'info');
-                this.addLine(`🔹 Terminal visible: ${this.isVisible ? 'Yes' : 'No'}`, 'info');
-                this.addLine(`🔹 Max lines: ${this.maxLines}`, 'info');
-                this.addLine(`🔹 Browser: ${navigator.userAgent.split(' ')[0]}`, 'info');
+                this.addLine(`${t('terminalLines')} ${this.history.length}`, 'info');
+                this.addLine(`${t('activeFilter')} ${this.currentTypeFilter}`, 'info');
+                this.addLine(`${t('terminalVisible')} ${this.isVisible ? t('yes') : t('no')}`, 'info');
+                this.addLine(`${t('maxLines')} ${this.maxLines}`, 'info');
+                this.addLine(`${t('browser')} ${navigator.userAgent.split(' ')[0]}`, 'info');
                 break;
             case 'version':
                 
-                this.addLine('🎨 DIAVINCI - Data Flow Designer', 'info');
-                this.addLine('📦 Version 1.0.0', 'info');
-                this.addLine('© 2025 DiAVinci Development', 'info');
+                this.addLine(t('divinciTitle'), 'info');
+                this.addLine(t('versionInfo'), 'info');
+                this.addLine(t('copyrightInfo'), 'info');
                 
                 break;
             case 'time':
                 const now = new Date();
-                this.addLine(`🕐 Current time: ${now.toLocaleString()}`, 'info');
+                this.addLine(`${t('currentTime')} ${now.toLocaleString()}`, 'info');
                 break;
             case 'history':
                 if (this.commandHistory && this.commandHistory.length > 0) {
                     
-                    this.addLine('📚 Command History (last 10):', 'info');
+                    this.addLine(t('commandHistoryTitle'), 'info');
                     this.addLine('─'.repeat(30), 'info');
                     this.commandHistory.slice(-10).forEach((cmd, index) => {
                         this.addLine(`   ${index + 1}. ${cmd}`, 'info');
                     });
                 } else {
-                    this.addLine('❌ No command history available.', 'warning');
+                    this.addLine(t('noCommandHistory'), 'warning');
                 }
                 break;
             case 'export':
                 this.exportLogs();
-                this.addLine('📄 Logs exported successfully to download folder.', 'success');
+                this.addLine(t('logsExportedSuccess'), 'success');
                 break;
             case 'reset':
-                this.addLine('⚠️  Are you sure you want to reset? Type "reset confirm" to proceed.', 'warning');
+                this.addLine(t('resetConfirmation'), 'warning');
                 break;
             case 'reset confirm':
                 this.clear();
-                this.addLine('🔄 Application state reset completed.', 'success');
-                this.addLine('Welcome back to DiAVinci Terminal!', 'info');
+                this.addLine(t('resetCompleted'), 'success');
+                this.addLine(t('welcomeBackMessage'), 'info');
                 break;
             case 'debug on':
-                this.addLine('🐛 Debug mode enabled - verbose logging activated.', 'success');
+                this.addLine(t('debugModeEnabled'), 'success');
                 break;
             case 'debug off':
-                this.addLine('🔇 Debug mode disabled - normal logging restored.', 'info');
+                this.addLine(t('debugModeDisabled'), 'info');
                 break;
             case 'models':
                 console.log('ExecuteCommand - models case matched');
@@ -1161,7 +1161,7 @@ class TerminalService {
                         const fieldName = params.slice(1).join(' '); // Support field names with spaces
                         this.getDataModelFieldValue(id, fieldName);
                     } else {
-                        this.addLine('❌ Invalid syntax. Usage: field <data-model-id> <field-name>', 'error');
+                        this.addLine(t('invalidSyntaxField'), 'error');
                     }
                 } else if (cmd.includes('.') && /^\d+\.\w+/.test(cmd)) {
                     // Handle ID.field_name syntax for quick field access
@@ -1169,7 +1169,7 @@ class TerminalService {
                 } else {
                     console.log('ExecuteCommand - Unknown command reached else clause:', { command, cmd });
                     this.addLine(`❌ Unknown command: "${command}"`, 'error');
-                    this.addLine('💡 Type "help" to see all available commands.', 'info');
+                    this.addLine(t('typeHelpForCommands'), 'info');
                 }
                 break;
         }
@@ -1196,14 +1196,14 @@ class TerminalService {
         const id = parseInt(idPart);
         
         if (isNaN(id)) {
-            this.addLine(`❌ Invalid ID: "${idPart}". Must be a number.`, 'error');
+            this.addLine(t('invalidIdNumber').replace('$1', idPart), 'error');
             return;
         }
 
         // Find the element by ID using internal helper method
         const element = this.getElementByIdInternal(id);
         if (!element) {
-            this.addLine(`❌ Element with ID ${id} not found.`, 'error');
+            this.addLine(t('elementNotFoundById').replace('$1', id), 'error');
             return;
         }
 
@@ -1415,7 +1415,7 @@ class TerminalService {
      */
     findElementById(id) {
         if (!id) {
-            this.addLine('❌ Please provide an element ID. Usage: find <id>', 'error');
+            this.addLine(t('provideElementId'), 'error');
             return;
         }
 
@@ -1433,9 +1433,9 @@ class TerminalService {
         }
         
         if (!currentProject) {
-            this.addLine('❌ No active project found. Please ensure the application is fully loaded.', 'error');
-            this.addLine('🔧 Debugging: window.app available?', window.app ? 'Yes' : 'No', 'debug');
-            this.addLine('🔧 Debugging: window.container available?', window.container ? 'Yes' : 'No', 'debug');
+            this.addLine(t('noActiveProject'), 'error');
+            this.addLine(`${t('debuggingWindowApp')} ${window.app ? t('yes') : t('no')}`, 'debug');
+            this.addLine(`${t('debuggingWindowContainer')} ${window.container ? t('yes') : t('no')}`, 'debug');
             return;
         }
 
@@ -1460,44 +1460,44 @@ class TerminalService {
         
         if (found) {
             
-            this.addLine('✅ ELEMENT FOUND', 'success');
+            this.addLine(t('elementFound'), 'success');
             this.addLine('─'.repeat(50), 'info');
-            this.addLine(`🔹 Type: ${found.elementType}`, 'info');
-            this.addLine(`🔹 ID: ${found.id}`, 'info');
-            this.addLine(`🔹 Label: ${found.label || 'N/A'}`, 'info');
+            this.addLine(`${t('elementType')} ${found.elementType}`, 'info');
+            this.addLine(`${t('elementId')} ${found.id}`, 'info');
+            this.addLine(`${t('elementLabel')} ${found.label || 'N/A'}`, 'info');
             
             if (found.x !== undefined && found.y !== undefined) {
-                this.addLine(`🔹 Position: (${Math.round(found.x)}, ${Math.round(found.y)})`, 'info');
+                this.addLine(`${t('elementPosition')} (${Math.round(found.x)}, ${Math.round(found.y)})`, 'info');
             }
             
             if (found.width !== undefined && found.height !== undefined) {
-                this.addLine(`🔹 Size: ${Math.round(found.width)}×${Math.round(found.height)}`, 'info');
+                this.addLine(`${t('elementSize')} ${Math.round(found.width)}×${Math.round(found.height)}`, 'info');
             }
             
             if (found.color) {
-                this.addLine(`🔹 Color: ${found.color}`, 'info');
+                this.addLine(`${t('elementColor')} ${found.color}`, 'info');
             }
             
             if (found.type && found.elementType === 'Node') {
-                this.addLine(`🔹 Node Type: ${found.type}`, 'info');
+                this.addLine(`${t('nodeType')} ${found.type}`, 'info');
             }
             
             if (found.elementType === 'Transition') {
-                this.addLine(`🔹 From: ${found.from?.label || found.from?.id || 'N/A'}`, 'info');
-                this.addLine(`🔹 To: ${found.to?.label || found.to?.id || 'N/A'}`, 'info');
+                this.addLine(`${t('transitionFrom')} ${found.from?.label || found.from?.id || 'N/A'}`, 'info');
+                this.addLine(`${t('transitionTo')} ${found.to?.label || found.to?.id || 'N/A'}`, 'info');
                 if (found.style) {
-                    this.addLine(`🔹 Style: ${found.style}`, 'info');
+                    this.addLine(`${t('transitionStyle')} ${found.style}`, 'info');
                 }
             }
             
             if (found.fields && found.fields.length > 0) {
-                this.addLine(`🔹 Fields: ${found.fields.length} fields available`, 'info');
+                this.addLine(t('fieldsAvailable').replace('$1', found.fields.length), 'info');
             }
             
             this.addLine('─'.repeat(50), 'info');
             
             // Show usage tip
-            this.addLine(`💡 Use "inspect ${found.id}" for more details`, 'info');
+            this.addLine(t('useInspectForDetails').replace('$1', found.id), 'info');
         } else {
             
             this.addLine('❌ ELEMENT NOT FOUND', 'error');
