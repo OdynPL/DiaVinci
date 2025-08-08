@@ -711,6 +711,11 @@ const translations = {
         inputContainsDangerousSystem: "Input contains potentially dangerous system access patterns",
         inputExceedsMaxLength: "Input exceeds maximum length of $1 characters",
         
+        // InputValidator validation messages
+        inputContainsDangerousScriptPatterns: "Input contains potentially dangerous script patterns",
+        inputExceedsMaxLength100KB: "Input exceeds maximum length of 100KB",
+        inputContainsUnsafeCharacters: "Input contains unsafe characters",
+        
         // Messages
         projectSaved: "Project saved successfully",
         projectLoaded: "Project loaded successfully",
@@ -1625,6 +1630,11 @@ const translations = {
         inputContainsDangerousSQL: "Wejscie zawiera potencjalnie niebezpieczne wzorce SQL",
         inputContainsDangerousSystem: "Wejscie zawiera potencjalnie niebezpieczne wzorce dostepu do systemu",
         inputExceedsMaxLength: "Wejscie przekracza maksymalna dlugosc $1 znakow",
+        
+        // InputValidator validation messages
+        inputContainsDangerousScriptPatterns: "Wejscie zawiera potencjalnie niebezpieczne wzorce skryptu",
+        inputExceedsMaxLength100KB: "Wejscie przekracza maksymalna dlugosc 100KB",
+        inputContainsUnsafeCharacters: "Wejscie zawiera niebezpieczne znaki",
         
         // Messages
         projectSaved: "Projekt zapisany pomyslnie",
@@ -2901,6 +2911,11 @@ const translations = {
         inputContainsDangerousSQL: "Eingabe enthält potenziell gefährliche SQL-Muster",
         inputContainsDangerousSystem: "Eingabe enthält potenziell gefährliche Systemzugriffsmuster",
         inputExceedsMaxLength: "Eingabe überschreitet maximale Länge von $1 Zeichen",
+        
+        // InputValidator validation messages
+        inputContainsDangerousScriptPatterns: "Eingabe enthält potenziell gefährliche Skript-Muster",
+        inputExceedsMaxLength100KB: "Eingabe überschreitet maximale Länge von 100KB",
+        inputContainsUnsafeCharacters: "Eingabe enthält unsichere Zeichen",
         
         // Messages
         projectSaved: "Projekt erfolgreich gespeichert",

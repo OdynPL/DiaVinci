@@ -4,6 +4,28 @@
 class InputValidator {
     
     /**
+     * Get translation function
+     */
+    static getTranslation() {
+        return window.t || ((key, ...params) => {
+            // Fallback if translation system not available
+            const fallbacks = {
+                inputContainsDangerousScript: 'Input contains potentially dangerous script patterns',
+                inputExceedsMaxLength100KB: 'Input exceeds maximum length of 100KB',
+                inputContainsDangerousSQL: 'Input contains potentially dangerous SQL patterns',
+                inputExceedsMaxLength: 'Input exceeds maximum length of $1 characters',
+                inputContainsUnsafeCharacters: 'Input contains unsafe characters'
+            };
+            let text = fallbacks[key] || key;
+            // Simple parameter substitution for $1, $2, etc.
+            params.forEach((param, index) => {
+                text = text.replace(`$${index + 1}`, param);
+            });
+            return text;
+        });
+    }
+    
+    /**
      * Sanitize user input based on type
      */
     static sanitize(input, type = 'text') {
@@ -310,6 +332,7 @@ class InputValidator {
      */
     static validateDataModelInput(text, type = 'fieldValue', fieldType = 'String') {
         const errors = [];
+        const t = this.getTranslation();
         
         if (!text || typeof text !== 'string') {
             return { valid: true, errors: [], sanitized: '' };
@@ -319,35 +342,35 @@ class InputValidator {
         if (type === 'json' || text.length > 1000) {
             // Only check for obviously dangerous script content in JSON
             if (/<script[^>]*>|javascript\s*:|on\w+\s*=\s*['"]|<iframe[^>]*>/i.test(text)) {
-                errors.push('Input contains potentially dangerous script patterns');
+                errors.push(t('inputContainsDangerousScript'));
             }
             
             // Allow longer content for JSON
             if (text.length > 100000) { // 100KB limit for JSON
-                errors.push('Input exceeds maximum length of 100KB');
+                errors.push(t('inputExceedsMaxLength100KB'));
             }
         } else {
             // Standard validation for regular inputs
             
             // Check for SQL injection
             if (this.detectSQLInjection(text)) {
-                errors.push('Input contains potentially dangerous SQL patterns');
+                errors.push(t('inputContainsDangerousSQL'));
             }
             
             // Check for XSS
             if (this.detectXSS(text)) {
-                errors.push('Input contains potentially dangerous script patterns');
+                errors.push(t('inputContainsDangerousScript'));
             }
             
             // Check length
             if (!this.validateLength(text, type)) {
                 const rules = this.getValidationRules(type);
-                errors.push(`Input exceeds maximum length of ${rules.maxLength} characters`);
+                errors.push(t('inputExceedsMaxLength', rules.maxLength));
             }
             
             // Check safe characters
             if (!this.isSafe(text, type)) {
-                errors.push('Input contains unsafe characters');
+                errors.push(t('inputContainsUnsafeCharacters'));
             }
         }
         
