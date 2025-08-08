@@ -99,32 +99,54 @@ class SecurityConfig {
     }
 
     /**
+     * Get translation function
+     */
+    static getTranslation() {
+        return window.t || ((key, ...params) => {
+            // Fallback if translation system not available
+            const fallbacks = {
+                inputContainsDangerousScript: 'Input contains potentially dangerous script content',
+                inputContainsDangerousSQL: 'Input contains potentially dangerous SQL patterns',
+                inputContainsDangerousSystem: 'Input contains potentially dangerous system access patterns',
+                inputExceedsMaxLength: 'Input exceeds maximum length of $1 characters'
+            };
+            let text = fallbacks[key] || key;
+            // Simple parameter substitution for $1, $2, etc.
+            params.forEach((param, index) => {
+                text = text.replace(`$${index + 1}`, param);
+            });
+            return text;
+        });
+    }
+
+    /**
      * Validate input against security patterns
      */
     static validateSecurity(input, type = 'general') {
         const errors = [];
         const patterns = this.getBlockedPatterns();
+        const t = this.getTranslation();
         
         // Check XSS patterns
         if (patterns.xss.some(pattern => pattern.test(input))) {
-            errors.push('Input contains potentially dangerous script content');
+            errors.push(t('inputContainsDangerousScript'));
         }
         
         // Check SQL injection patterns
         if (patterns.sql.some(pattern => pattern.test(input))) {
-            errors.push('Input contains potentially dangerous SQL patterns');
+            errors.push(t('inputContainsDangerousSQL'));
         }
         
         // Check system access patterns
         if (patterns.system.some(pattern => pattern.test(input))) {
-            errors.push('Input contains potentially dangerous system access patterns');
+            errors.push(t('inputContainsDangerousSystem'));
         }
         
         // Check input length
         const limits = this.getInputLimits();
         const maxLength = limits[type] || limits.fieldValue;
         if (input.length > maxLength) {
-            errors.push(`Input exceeds maximum length of ${maxLength} characters`);
+            errors.push(t('inputExceedsMaxLength', maxLength));
         }
         
         return {

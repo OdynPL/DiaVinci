@@ -690,6 +690,27 @@ const translations = {
         passwordTooShort: "Password must be at least 6 characters long",
         invalidColorFormat: "Invalid color format: '$1'. Use hex (#ff0000), color name, or rgb/rgba",
         
+        // DataModelEditor validation messages
+        securityViolation: "Security violation",
+        pleaseFixValidationErrors: "Please fix validation errors",
+        invalidJsonSchemaStructure: "Invalid JSON schema structure",
+        invalidJsonSyntax: "Invalid JSON syntax",
+        jsonError: "JSON Error",
+        generalError: "General",
+        fieldErrors: "Field Errors",
+        validJsonSchema: "Valid JSON Schema",
+        warnings: "Warnings",
+        missingTitle: "Missing title",
+        missingDescription: "Missing description",
+        noPropertiesDefined: "No properties defined",
+        duplicateFieldNames: "Duplicate field names",
+        
+        // SecurityConfig validation messages
+        inputContainsDangerousScript: "Input contains potentially dangerous script content",
+        inputContainsDangerousSQL: "Input contains potentially dangerous SQL patterns",
+        inputContainsDangerousSystem: "Input contains potentially dangerous system access patterns",
+        inputExceedsMaxLength: "Input exceeds maximum length of $1 characters",
+        
         // Messages
         projectSaved: "Project saved successfully",
         projectLoaded: "Project loaded successfully",
@@ -1583,6 +1604,27 @@ const translations = {
         invalidUuidFormat: "Nieprawidlowy format UUID: '$1'. Uzyj formatu: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
         passwordTooShort: "Haslo musi miec co najmniej 6 znakow",
         invalidColorFormat: "Nieprawidlowy format koloru: '$1'. Uzyj hex (#ff0000), nazwy koloru lub rgb/rgba",
+        
+        // DataModelEditor validation messages
+        securityViolation: "Naruszenie bezpieczenstwa",
+        pleaseFixValidationErrors: "Prosze naprawic bledy walidacji",
+        invalidJsonSchemaStructure: "Nieprawidlowa struktura schematu JSON",
+        invalidJsonSyntax: "Nieprawidlowa skladnia JSON",
+        jsonError: "Blad JSON",
+        generalError: "Ogolny",
+        fieldErrors: "Bledy pol",
+        validJsonSchema: "Prawidlowy schemat JSON",
+        warnings: "Ostrzezenia",
+        missingTitle: "Brakuje tytulu",
+        missingDescription: "Brakuje opisu",
+        noPropertiesDefined: "Nie zdefiniowano wlasciwosci",
+        duplicateFieldNames: "Duplikaty nazw pol",
+        
+        // SecurityConfig validation messages
+        inputContainsDangerousScript: "Wejscie zawiera potencjalnie niebezpieczna tresc skryptu",
+        inputContainsDangerousSQL: "Wejscie zawiera potencjalnie niebezpieczne wzorce SQL",
+        inputContainsDangerousSystem: "Wejscie zawiera potencjalnie niebezpieczne wzorce dostepu do systemu",
+        inputExceedsMaxLength: "Wejscie przekracza maksymalna dlugosc $1 znakow",
         
         // Messages
         projectSaved: "Projekt zapisany pomyslnie",
@@ -2838,6 +2880,27 @@ const translations = {
         invalidUuidFormat: "Ungültiges UUID-Format: '$1'. Verwenden Sie Format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
         passwordTooShort: "Passwort muss mindestens 6 Zeichen lang sein",
         invalidColorFormat: "Ungültiges Farbformat: '$1'. Verwenden Sie Hex (#ff0000), Farbname oder rgb/rgba",
+        
+        // DataModelEditor validation messages
+        securityViolation: "Sicherheitsverletzung",
+        pleaseFixValidationErrors: "Bitte beheben Sie die Validierungsfehler",
+        invalidJsonSchemaStructure: "Ungültige JSON-Schema-Struktur",
+        invalidJsonSyntax: "Ungültige JSON-Syntax",
+        jsonError: "JSON-Fehler",
+        generalError: "Allgemein",
+        fieldErrors: "Feldfehler",
+        validJsonSchema: "Gültiges JSON-Schema",
+        warnings: "Warnungen",
+        missingTitle: "Titel fehlt",
+        missingDescription: "Beschreibung fehlt",
+        noPropertiesDefined: "Keine Eigenschaften definiert",
+        duplicateFieldNames: "Doppelte Feldnamen",
+        
+        // SecurityConfig validation messages
+        inputContainsDangerousScript: "Eingabe enthält potenziell gefährlichen Skript-Inhalt",
+        inputContainsDangerousSQL: "Eingabe enthält potenziell gefährliche SQL-Muster",
+        inputContainsDangerousSystem: "Eingabe enthält potenziell gefährliche Systemzugriffsmuster",
+        inputExceedsMaxLength: "Eingabe überschreitet maximale Länge von $1 Zeichen",
         
         // Messages
         projectSaved: "Projekt erfolgreich gespeichert",

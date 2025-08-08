@@ -1523,7 +1523,7 @@ class DataModelEditor {
         if (!securityValidation.valid) {
             inputElement.classList.add('border-red-500', 'bg-red-50');
             inputElement.classList.remove('border-gray-300');
-            this.showFieldValidationError(inputElement, 'Security violation: ' + securityValidation.errors.join(', '));
+            this.showFieldValidationError(inputElement, window.t('securityViolation') + ': ' + securityValidation.errors.join(', '));
             this.updateSaveButtonState();
             return;
         }
@@ -1590,7 +1590,7 @@ class DataModelEditor {
         if (!securityValidation.valid) {
             inputElement.classList.add('border-red-500', 'bg-red-50');
             inputElement.classList.remove('border-gray-300');
-            this.showFieldValidationError(inputElement, 'Security violation: ' + securityValidation.errors.join(', '));
+            this.showFieldValidationError(inputElement, window.t('securityViolation') + ': ' + securityValidation.errors.join(', '));
             this.updateSaveButtonState();
             return;
         }
@@ -1672,7 +1672,7 @@ class DataModelEditor {
             saveBtn.classList.remove('hover:from-violet-600', 'hover:to-purple-700');
             
             // Show appropriate error message
-            let errorMessage = validation.error || 'Please fix validation errors';
+            let errorMessage = validation.error || window.t('pleaseFixValidationErrors');
             if (!jsonValidation.valid) {
                 errorMessage = jsonValidation.error;
             }
@@ -1703,13 +1703,13 @@ class DataModelEditor {
             } else {
                 return { 
                     valid: false, 
-                    error: 'Invalid JSON schema structure' 
+                    error: window.t('invalidJsonSchemaStructure')
                 };
             }
         } catch (error) {
             return { 
                 valid: false, 
-                error: `Invalid JSON syntax: ${error.message}` 
+                error: `${window.t('invalidJsonSyntax')}: ${error.message}` 
             };
         }
     }
@@ -1727,16 +1727,16 @@ class DataModelEditor {
         
         // Add JSON validation errors first (highest priority)
         if (jsonValidation && !jsonValidation.valid) {
-            errorHTML += `<div class="mb-2"><strong>JSON Error:</strong> ${jsonValidation.error}</div>`;
+            errorHTML += `<div class="mb-2"><strong>${window.t('jsonError')}:</strong> ${jsonValidation.error}</div>`;
         }
         
         // Add general model validation errors
         if (!validation.valid) {
-            errorHTML += `<div class="mb-2"><strong>General:</strong> ${validation.error}</div>`;
+            errorHTML += `<div class="mb-2"><strong>${window.t('generalError')}:</strong> ${validation.error}</div>`;
         }
         
         if (validation.fieldErrors) {
-            errorHTML += '<div><strong>Field Errors:</strong></div><ul class="list-disc list-inside ml-4 space-y-1">';
+            errorHTML += `<div><strong>${window.t('fieldErrors')}:</strong></div><ul class="list-disc list-inside ml-4 space-y-1">`;
             
             Object.keys(validation.fieldErrors).forEach(fieldId => {
                 const field = this.currentNode.getField(fieldId);
@@ -2945,15 +2945,15 @@ class DataModelEditor {
                 
                 // Check for potential issues
                 if (!schema.title) {
-                    warnings.push('Missing title');
+                    warnings.push(window.t('missingTitle'));
                 }
                 
                 if (!schema.description) {
-                    warnings.push('Missing description');
+                    warnings.push(window.t('missingDescription'));
                 }
                 
                 if (Object.keys(schema.properties).length === 0) {
-                    warnings.push('No properties defined');
+                    warnings.push(window.t('noPropertiesDefined'));
                 }
                 
                 // Check for duplicate field names (case-insensitive)
@@ -2964,12 +2964,12 @@ class DataModelEditor {
                 );
                 
                 if (duplicates.length > 0) {
-                    warnings.push(`Duplicate field names: ${duplicates.join(', ')}`);
+                    warnings.push(`${window.t('duplicateFieldNames')}: ${duplicates.join(', ')}`);
                 }
                 
-                let message = 'Valid JSON Schema';
+                let message = window.t('validJsonSchema');
                 if (warnings.length > 0) {
-                    message += ` (Warnings: ${warnings.join(', ')})`;
+                    message += ` (${window.t('warnings')}: ${warnings.join(', ')})`;
                 }
                 
                 this.showValidationMessage(message, warnings.length > 0 ? 'warning' : 'success');
@@ -2977,7 +2977,7 @@ class DataModelEditor {
             // Error messages are already shown by validateJSONSchema
             
         } catch (error) {
-            let errorMessage = `Invalid JSON: ${error.message}`;
+            let errorMessage = `${window.t('invalidJsonSyntax')}: ${error.message}`;
             
             // Clear any previous error highlighting
             this.clearErrorHighlighting();
@@ -3012,7 +3012,7 @@ class DataModelEditor {
                 
                 // Remove redundant position info from error message
                 const cleanErrorMessage = error.message.replace(/at position \d+/i, '').replace(/line \d+ column \d+/i, '').trim();
-                errorMessage = `Invalid JSON: ${cleanErrorMessage} (line ${lineInfo.line}, column ${lineInfo.column})`;
+                errorMessage = `${window.t('invalidJsonSyntax')}: ${cleanErrorMessage} (line ${lineInfo.line}, column ${lineInfo.column})`;
                 
                 // Highlight the error line
                 this.highlightErrorLine(jsonEditor, lineInfo.line);
