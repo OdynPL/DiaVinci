@@ -139,11 +139,11 @@ document.addEventListener('DOMContentLoaded', async function() {
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
         
-        Logger.info('DiaVinci application initialized successfully!');
+        Logger.info(t('appInitializedSuccessfully'));
         
     } catch (error) {
-        Logger.error('Error initializing application', error);
-        alert('Error starting application. Please refresh the page.');
+        Logger.error(t('errorInitializingApplication'), error);
+        alert(t('errorStartingApplication'));
     }
 });
 

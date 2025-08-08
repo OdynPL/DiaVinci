@@ -437,7 +437,70 @@ const translations = {
         errorDeleting: "Error deleting project",
         errorExporting: "Error exporting",
         errorImporting: "Error importing file",
-        invalidFile: "Invalid file format"
+        invalidFile: "Invalid file format",
+        
+        // Application initialization
+        appInitializedSuccessfully: "DiaVinci application initialized successfully!",
+        errorInitializingApplication: "Error initializing application",
+        errorStartingApplication: "Error starting application. Please refresh the page.",
+        
+        // Error handling
+        unhandledPromiseRejection: "Unhandled promise rejection",
+        uncaughtError: "Uncaught error",
+        unexpectedErrorOccurred: "Unexpected error occurred",
+        applicationError: "Application error",
+        operationFailed: "Operation failed",
+        missingRequiredParameters: "Missing required parameters",
+        failedToParseJson: "Failed to parse JSON",
+        failedToStringifyJson: "Failed to stringify JSON",
+        
+        // Logger messages
+        droppedElement: "Dropped",
+        atPosition: "at position",
+        canvasDrop: "Canvas Drop",
+        textControl: "Text control",
+        movedElement: "Moved",
+        fromPosition: "from",
+        toPosition: "to",
+        fromPositionShort: "From",
+        toPositionShort: "to",
+        modifiedElement: "Modified",
+        changedFrom: "changed from",
+        changedTo: "to",
+        elementMove: "Element Move",
+        elementModify: "Element Modify",
+        performance: "Performance",
+        userAction: "User Action",
+        
+        // Storage Service messages
+        storageServiceInitialized: "StorageService initialized",
+        failedToSaveProject: "Failed to save project",
+        projectSavedSuccessfully: "Project saved successfully",
+        errorSavingProject: "Error saving project",
+        projectNotFound: "Project not found",
+        errorLoadingProject: "Error loading project",
+        errorGettingProjects: "Error getting projects", 
+        errorDeletingProject: "Error deleting project",
+        errorClearingProjects: "Error clearing projects",
+        autoSaveCompleted: "Auto-save completed",
+        untitled: "Untitled",
+        autoSaveFailed: "Auto-save failed",
+        failedToLoadAutoSave: "Failed to load auto-save",
+        errorExportingProject: "Error exporting project",
+        invalidProjectFileFormat: "Invalid project file format",
+        errorReadingFile: "Error reading file",
+        
+        // Canvas Renderer messages
+        canvasRendererInitialized: "CanvasRenderer initialized",
+        invalidNodeDetected: "Invalid node detected",
+        canvasRender: "Canvas Render",
+        errorRenderingCanvas: "Error rendering canvas",
+        invalidTransitionDetected: "Invalid transition detected",
+        invalidConnectionPoints: "Invalid connection points",
+        errorRenderingTransition: "Error rendering transition",
+        errorRenderingNode: "Error rendering node", 
+        invalidTextElementDetected: "Invalid text element detected",
+        errorRenderingText: "Error rendering text"
     },
     
     pl: {
@@ -875,7 +938,70 @@ const translations = {
         errorDeleting: "Błąd podczas usuwania projektu",
         errorExporting: "Błąd podczas eksportowania",
         errorImporting: "Błąd podczas importowania pliku",
-        invalidFile: "Nieprawidłowy format pliku"
+        invalidFile: "Nieprawidłowy format pliku",
+        
+        // Application initialization
+        appInitializedSuccessfully: "Aplikacja DiaVinci została pomyślnie zainicjalizowana!",
+        errorInitializingApplication: "Błąd podczas inicjalizacji aplikacji",
+        errorStartingApplication: "Błąd uruchamiania aplikacji. Proszę odświeżyć stronę.",
+        
+        // Error handling
+        unhandledPromiseRejection: "Nieobsługiwane odrzucenie obietnicy",
+        uncaughtError: "Nieprzechwycony błąd",
+        unexpectedErrorOccurred: "Wystąpił nieoczekiwany błąd",
+        applicationError: "Błąd aplikacji",
+        operationFailed: "Operacja nie powiodła się",
+        missingRequiredParameters: "Brakuje wymaganych parametrów",
+        failedToParseJson: "Nie udało się sparsować JSON",
+        failedToStringifyJson: "Nie udało się przekształcić JSON",
+        
+        // Logger messages
+        droppedElement: "Upuszczono",
+        atPosition: "na pozycji",
+        canvasDrop: "Upuszczenie na Płótno",
+        textControl: "Kontrolka tekstu",
+        movedElement: "Przeniesiono",
+        fromPosition: "z",
+        toPosition: "do",
+        fromPositionShort: "Z",
+        toPositionShort: "do",
+        modifiedElement: "Zmodyfikowano",
+        changedFrom: "zmieniono z",
+        changedTo: "na",
+        elementMove: "Przeniesienie Elementu",
+        elementModify: "Modyfikacja Elementu",
+        performance: "Wydajność",
+        userAction: "Akcja Użytkownika",
+        
+        // Storage Service messages
+        storageServiceInitialized: "StorageService zainicjalizowany",
+        failedToSaveProject: "Nie udało się zapisać projektu",
+        projectSavedSuccessfully: "Projekt zapisany pomyślnie",
+        errorSavingProject: "Błąd podczas zapisywania projektu",
+        projectNotFound: "Projekt nie został znaleziony",
+        errorLoadingProject: "Błąd podczas wczytywania projektu",
+        errorGettingProjects: "Błąd podczas pobierania projektów",
+        errorDeletingProject: "Błąd podczas usuwania projektu",
+        errorClearingProjects: "Błąd podczas czyszczenia projektów",
+        autoSaveCompleted: "Autozapis zakończony",
+        untitled: "Bez tytułu",
+        autoSaveFailed: "Autozapis nie powiódł się",
+        failedToLoadAutoSave: "Nie udało się wczytać autozapisu",
+        errorExportingProject: "Błąd podczas eksportowania projektu",
+        invalidProjectFileFormat: "Nieprawidłowy format pliku projektu",
+        errorReadingFile: "Błąd podczas odczytu pliku",
+        
+        // Canvas Renderer messages
+        canvasRendererInitialized: "CanvasRenderer zainicjalizowany",
+        invalidNodeDetected: "Wykryto nieprawidłowy węzeł",
+        canvasRender: "Renderowanie Płótna",
+        errorRenderingCanvas: "Błąd podczas renderowania płótna",
+        invalidTransitionDetected: "Wykryto nieprawidłowe przejście",
+        invalidConnectionPoints: "Nieprawidłowe punkty połączenia",
+        errorRenderingTransition: "Błąd podczas renderowania przejścia",
+        errorRenderingNode: "Błąd podczas renderowania węzła",
+        invalidTextElementDetected: "Wykryto nieprawidłowy element tekstowy",
+        errorRenderingText: "Błąd podczas renderowania tekstu"
     }
 };
 

@@ -9,7 +9,7 @@ class CanvasRenderer {
         this.errorHandler = errorHandler;
         this.selectedElement = null;
         this.selectedType = null;
-        Logger.info('CanvasRenderer initialized');
+        Logger.info(t('canvasRendererInitialized'));
     }
 
     /**
@@ -29,7 +29,7 @@ class CanvasRenderer {
             if (node && node.x !== undefined && node.y !== undefined && node.r !== undefined) {
                 this.renderNode(node, multiSelectionManager);
             } else {
-                Logger.error('Invalid node detected', null, { node });
+                Logger.error(t('invalidNodeDetected'), null, { node });
             }
         });
     }
@@ -65,9 +65,9 @@ class CanvasRenderer {
                 this.renderTransitionDrawingPreview(transitionDrawing);
             }
             
-            Logger.performance('Canvas Render', startTime);
+            Logger.performance(t('canvasRender'), startTime);
         } catch (error) {
-            Logger.error('Error rendering canvas', error, { 
+            Logger.error(t('errorRenderingCanvas'), error, { 
                 nodesCount: project.nodes.length,
                 transitionsCount: project.transitions.length,
                 textsCount: project.texts.length
@@ -101,7 +101,7 @@ class CanvasRenderer {
             if (transition && transition.from && transition.to) {
                 this.renderTransition(transition, multiSelectionManager);
             } else {
-                Logger.error('Invalid transition detected', null, { transition });
+                Logger.error(t('invalidTransitionDetected'), null, { transition });
             }
         });
     }
@@ -115,7 +115,7 @@ class CanvasRenderer {
             
             // Validate connection points
             if (isNaN(startX) || isNaN(startY) || isNaN(endX) || isNaN(endY)) {
-                Logger.error('Invalid connection points', null, { 
+                Logger.error(t('invalidConnectionPoints'), null, { 
                     startX, startY, endX, endY, 
                     transition: {
                         id: transition.id,
@@ -147,7 +147,7 @@ class CanvasRenderer {
         this.renderTransitionLabel(transition, startX, startY, endX, endY);
         
         } catch (error) {
-            Logger.error('Error rendering transition', error, { 
+            Logger.error(t('errorRenderingTransition'), error, { 
                 transition: {
                     id: transition.id,
                     label: transition.label,
@@ -820,7 +820,7 @@ class CanvasRenderer {
             // Draw label
             this.drawNodeLabel(node);
         } catch (error) {
-            Logger.error('Error rendering node', error, { node });
+            Logger.error(t('errorRenderingNode'), error, { node });
         }
     }
 
@@ -1102,7 +1102,7 @@ class CanvasRenderer {
             if (text && text.x !== undefined && text.y !== undefined) {
                 this.renderText(text, multiSelectionManager);
             } else {
-                Logger.error('Invalid text element detected', null, { text });
+                Logger.error(t('invalidTextElementDetected'), null, { text });
             }
         });
     }
@@ -1133,7 +1133,7 @@ class CanvasRenderer {
             this.ctx.textBaseline = 'middle';
             this.ctx.fillText(text.label, text.x, text.y);
         } catch (error) {
-            Logger.error('Error rendering text', error, { text });
+            Logger.error(t('errorRenderingText'), error, { text });
         }
     }
 

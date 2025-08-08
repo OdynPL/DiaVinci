@@ -6,7 +6,7 @@ class StorageService {
         this.errorHandler = errorHandler;
         this.storageKey = 'diaVinciProjects';
         this.autoSaveKey = 'diaVinciAutoSave';
-        Logger.info('StorageService initialized');
+        Logger.info(t('storageServiceInitialized'));
     }
 
     /**
@@ -16,7 +16,7 @@ class StorageService {
         return this.errorHandler ? 
             this.errorHandler.executeSync(
                 () => this._saveProject(project),
-                'Failed to save project'
+                t('failedToSaveProject')
             ) : this._saveProject(project);
     }
 
@@ -25,10 +25,10 @@ class StorageService {
             const savedProjects = this.getAllProjects();
             savedProjects[project.name] = project.toJSON();
             localStorage.setItem(this.storageKey, JSON.stringify(savedProjects));
-            Logger.info('Project saved successfully', { projectName: project.name });
+            Logger.info(t('projectSavedSuccessfully'), { projectName: project.name });
             return true;
         } catch (error) {
-            Logger.error('Error saving project', error, { projectName: project.name });
+            Logger.error(t('errorSavingProject'), error, { projectName: project.name });
             return false;
         }
     }
@@ -41,11 +41,11 @@ class StorageService {
             const savedProjects = this.getAllProjects();
             const projectData = savedProjects[projectName];
             if (!projectData) {
-                throw new Error(`Project '${projectName}' not found`);
+                throw new Error(`${t('projectNotFound')} '${projectName}'`);
             }
             return Project.fromJSON(projectData);
         } catch (error) {
-            Logger.error('Error loading project', error, { projectName });
+            Logger.error(t('errorLoadingProject'), error, { projectName });
             return null;
         }
     }
@@ -58,7 +58,7 @@ class StorageService {
             const data = localStorage.getItem(this.storageKey) || '{}';
             return JSON.parse(data);
         } catch (error) {
-            Logger.error('Error getting projects', error);
+            Logger.error(t('errorGettingProjects'), error);
             return {};
         }
     }
@@ -73,7 +73,7 @@ class StorageService {
             localStorage.setItem(this.storageKey, JSON.stringify(savedProjects));
             return true;
         } catch (error) {
-            Logger.error('Error deleting project', error, { projectName });
+            Logger.error(t('errorDeletingProject'), error, { projectName });
             return false;
         }
     }
@@ -114,7 +114,7 @@ class StorageService {
             localStorage.removeItem(this.autoSaveKey);
             return true;
         } catch (error) {
-            Logger.error('Error clearing projects', error);
+            Logger.error(t('errorClearingProjects'), error);
             return false;
         }
     }
@@ -129,8 +129,8 @@ class StorageService {
                 timestamp: new Date().toISOString()
             };
             localStorage.setItem(this.autoSaveKey, JSON.stringify(autoSaveData));
-            Logger.debug('Auto-save completed', { 
-                projectName: project.name || 'Untitled',
+            Logger.debug(t('autoSaveCompleted'), { 
+                projectName: project.name || t('untitled'),
                 nodeCount: project.nodes.length,
                 transitionCount: project.transitions.length,
                 textCount: project.texts.length,
@@ -138,7 +138,7 @@ class StorageService {
             });
             return true;
         } catch (error) {
-            Logger.error('Auto-save failed', error);
+            Logger.error(t('autoSaveFailed'), error);
             return false;
         }
     }
@@ -161,7 +161,7 @@ class StorageService {
             }
             return null;
         } catch (error) {
-            Logger.warn('Failed to load auto-save', error);
+            Logger.warn(t('failedToLoadAutoSave'), error);
             return null;
         }
     }
@@ -187,7 +187,7 @@ class StorageService {
             URL.revokeObjectURL(url);
             return true;
         } catch (error) {
-            Logger.error('Error exporting project', error, { projectName: project.name });
+            Logger.error(t('errorExportingProject'), error, { projectName: project.name });
             return false;
         }
     }
@@ -204,7 +204,7 @@ class StorageService {
                     const projectData = JSON.parse(e.target.result);
                     
                     if (!projectData.nodes || !projectData.transitions) {
-                        throw new Error('Invalid project file format');
+                        throw new Error(t('invalidProjectFileFormat'));
                     }
                     
                     const project = Project.fromJSON(projectData);
@@ -215,7 +215,7 @@ class StorageService {
             };
             
             reader.onerror = () => {
-                reject(new Error('Error reading file'));
+                reject(new Error(t('errorReadingFile')));
             };
             
             reader.readAsText(file);

@@ -43,7 +43,7 @@ class DiagramController {
             type: null
         };
         
-        Logger.info('DiagramController initialized');
+        Logger.info(t('diagramControllerInitialized'));
         this.initialize();
     }
 
@@ -180,11 +180,11 @@ class DiagramController {
      * Create IF node with children
      */
     createIFNode(x, y) {
-        Logger.debug('Creating IF node', { x, y });
+        Logger.debug(t('creatingIfNode'), { x, y });
         
         const {ifNode, trueNode, falseNode} = NodeFactory.createIFNode(x, y);
         
-        Logger.debug('Created IF nodes', { 
+        Logger.debug(t('createdIfNodes'), { 
             ifNode: { id: ifNode.id, x: ifNode.x, y: ifNode.y, rotation: ifNode.rotation },
             trueNode: { id: trueNode.id, x: trueNode.x, y: trueNode.y },
             falseNode: { id: falseNode.id, x: falseNode.x, y: falseNode.y }
@@ -198,7 +198,7 @@ class DiagramController {
         // Create transitions after nodes are added
         const {trueTransition, falseTransition} = NodeFactory.createIFTransitions(ifNode, trueNode, falseNode);
         
-        Logger.debug('Created IF transitions', { 
+        Logger.debug(t('createdIfTransitions'), { 
             trueTransition: { 
                 id: trueTransition.id, 
                 label: trueTransition.label, 
@@ -240,7 +240,7 @@ class DiagramController {
      */
     openDataModelEditor(node) {
         if (!node || node.type !== 'datamodel') {
-            Logger.error('Invalid node for data model editor', { node });
+            Logger.error(t('invalidNodeForDataModelEditor'), { node });
             return;
         }
         
@@ -255,7 +255,7 @@ class DiagramController {
         this.currentProject.addText(text);
         
         // Log text control creation
-        Logger.textControl('created', text, { x, y });
+        Logger.textControl(t('created'), text, { x, y });
         
         this.render();
     }

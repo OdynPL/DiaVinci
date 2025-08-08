@@ -108,12 +108,12 @@ class Logger {
      * Log canvas element drop with position
      */
     static canvasDrop(elementType, position, elementData = {}) {
-        const message = `Dropped ${elementType} at position (X: ${position.x}, Y: ${position.y})`;
+        const message = `${t('droppedElement')} ${elementType} ${t('atPosition')} (X: ${position.x}, Y: ${position.y})`;
         Logger.info(message, { elementType, position, elementData });
         
         // Special canvas drop logging to terminal
         if (Logger.terminalService) {
-            Logger.terminalService.addLine(`🎯 CANVAS DROP: ${elementType} → (X: ${position.x}, Y: ${position.y})`, 'canvas-drop');
+            Logger.terminalService.addLine(`🎯 ${t('canvasDrop').toUpperCase()}: ${elementType} → (X: ${position.x}, Y: ${position.y})`, 'canvas-drop');
         }
     }
 
@@ -121,11 +121,11 @@ class Logger {
      * Log text control creation
      */
     static textControl(action, textElement, position) {
-        const message = `Text control ${action}: "${textElement.label}" at (X: ${position.x}, Y: ${position.y})`;
+        const message = `${t('textControl')} ${action}: "${textElement.label}" ${t('atPosition')} (X: ${position.x}, Y: ${position.y})`;
         Logger.info(message, { action, textElement: textElement.label, position });
         
         if (Logger.terminalService) {
-            Logger.terminalService.addLine(`📝 TEXT CONTROL: ${action.toUpperCase()} "${textElement.label}" → (X: ${position.x}, Y: ${position.y})`, 'text-control');
+            Logger.terminalService.addLine(`📝 ${t('textControl').toUpperCase()}: ${action.toUpperCase()} "${textElement.label}" → (X: ${position.x}, Y: ${position.y})`, 'text-control');
         }
     }
 
@@ -133,11 +133,11 @@ class Logger {
      * Log element movement from one position to another
      */
     static elementMove(elementType, elementLabel, fromPosition, toPosition) {
-        const message = `Moved ${elementType} "${elementLabel}" from (X: ${fromPosition.x}, Y: ${fromPosition.y}) to (X: ${toPosition.x}, Y: ${toPosition.y})`;
+        const message = `${t('movedElement')} ${elementType} "${elementLabel}" ${t('fromPosition')} (X: ${fromPosition.x}, Y: ${fromPosition.y}) ${t('toPosition')} (X: ${toPosition.x}, Y: ${toPosition.y})`;
         Logger.info(message, { elementType, elementLabel, fromPosition, toPosition });
         
         if (Logger.terminalService) {
-            Logger.terminalService.addLine(`🔄 ELEMENT MOVE: ${elementType.toUpperCase()} "${elementLabel}" → From (X: ${fromPosition.x}, Y: ${fromPosition.y}) to (X: ${toPosition.x}, Y: ${toPosition.y})`, 'element-move');
+            Logger.terminalService.addLine(`🔄 ${t('elementMove').toUpperCase()}: ${elementType.toUpperCase()} "${elementLabel}" → ${t('fromPositionShort')} (X: ${fromPosition.x}, Y: ${fromPosition.y}) ${t('toPositionShort')} (X: ${toPosition.x}, Y: ${toPosition.y})`, 'element-move');
         }
     }
 
@@ -145,11 +145,11 @@ class Logger {
      * Log element modification (label change, property change, etc.)
      */
     static elementModify(elementType, elementLabel, modification, oldValue, newValue) {
-        const message = `Modified ${elementType} "${elementLabel}": ${modification} changed from "${oldValue}" to "${newValue}"`;
+        const message = `${t('modifiedElement')} ${elementType} "${elementLabel}": ${modification} ${t('changedFrom')} "${oldValue}" ${t('changedTo')} "${newValue}"`;
         Logger.info(message, { elementType, elementLabel, modification, oldValue, newValue });
         
         if (Logger.terminalService) {
-            Logger.terminalService.addLine(`✏️ ELEMENT MODIFY: ${elementType.toUpperCase()} "${elementLabel}" → ${modification}: "${oldValue}" → "${newValue}"`, 'element-modify');
+            Logger.terminalService.addLine(`✏️ ${t('elementModify').toUpperCase()}: ${elementType.toUpperCase()} "${elementLabel}" → ${modification}: "${oldValue}" → "${newValue}"`, 'element-modify');
         }
     }
 
@@ -158,13 +158,13 @@ class Logger {
      */
     static performance(label, startTime) {
         const duration = performance.now() - startTime;
-        Logger.debug(`Performance: ${label}`, { duration: `${duration.toFixed(2)}ms` });
+        Logger.debug(`${t('performance')}: ${label}`, { duration: `${duration.toFixed(2)}ms` });
     }
 
     /**
      * Log user action for debugging
      */
     static userAction(action, details = {}) {
-        Logger.info(`User Action: ${action}`, details);
+        Logger.info(`${t('userAction')}: ${action}`, details);
     }
 }

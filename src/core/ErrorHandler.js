@@ -13,21 +13,21 @@ class ErrorHandler {
     setupGlobalErrorHandlers() {
         // Handle unhandled promise rejections
         window.addEventListener('unhandledrejection', (event) => {
-            Logger.error('Unhandled promise rejection', event.reason, {
+            Logger.error(t('unhandledPromiseRejection'), event.reason, {
                 promise: event.promise
             });
-            this.handleError(event.reason, 'Unexpected error occurred');
+            this.handleError(event.reason, t('unexpectedErrorOccurred'));
             event.preventDefault();
         });
 
         // Handle uncaught errors
         window.addEventListener('error', (event) => {
-            Logger.error('Uncaught error', event.error, {
+            Logger.error(t('uncaughtError'), event.error, {
                 filename: event.filename,
                 lineno: event.lineno,
                 colno: event.colno
             });
-            this.handleError(event.error, 'Unexpected error occurred');
+            this.handleError(event.error, t('unexpectedErrorOccurred'));
         });
     }
 
@@ -35,7 +35,7 @@ class ErrorHandler {
      * Handle application errors with user notification
      */
     handleError(error, userMessage = null, context = {}) {
-        Logger.error('Application error', error, context);
+        Logger.error(t('applicationError'), error, context);
         
         if (this.notificationService && userMessage) {
             this.notificationService.error(userMessage);
@@ -45,11 +45,12 @@ class ErrorHandler {
     /**
      * Handle async operations with proper error handling
      */
-    async executeWithErrorHandling(asyncOperation, errorMessage = 'Operation failed') {
+    async executeWithErrorHandling(asyncOperation, errorMessage = null) {
+        const defaultErrorMessage = errorMessage || t('operationFailed');
         try {
             return await asyncOperation();
         } catch (error) {
-            this.handleError(error, errorMessage);
+            this.handleError(error, defaultErrorMessage);
             throw error; // Re-throw to allow caller to handle
         }
     }
@@ -57,11 +58,12 @@ class ErrorHandler {
     /**
      * Wrap sync operations with error handling
      */
-    executeSync(operation, errorMessage = 'Operation failed', defaultReturn = null) {
+    executeSync(operation, errorMessage = null, defaultReturn = null) {
+        const defaultErrorMessage = errorMessage || t('operationFailed');
         try {
             return operation();
         } catch (error) {
-            this.handleError(error, errorMessage);
+            this.handleError(error, defaultErrorMessage);
             return defaultReturn;
         }
     }
@@ -75,7 +77,7 @@ class ErrorHandler {
         );
         
         if (missing.length > 0) {
-            throw new Error(`Missing required parameters: ${missing.join(', ')}`);
+            throw new Error(`${t('missingRequiredParameters')}: ${missing.join(', ')}`);
         }
     }
 
@@ -86,7 +88,7 @@ class ErrorHandler {
         try {
             return JSON.parse(jsonString);
         } catch (error) {
-            Logger.warn('Failed to parse JSON', { jsonString, error: error.message });
+            Logger.warn(t('failedToParseJson'), { jsonString, error: error.message });
             return defaultValue;
         }
     }
@@ -98,7 +100,7 @@ class ErrorHandler {
         try {
             return JSON.stringify(object);
         } catch (error) {
-            Logger.warn('Failed to stringify JSON', { object, error: error.message });
+            Logger.warn(t('failedToStringifyJson'), { object, error: error.message });
             return defaultValue;
         }
     }
