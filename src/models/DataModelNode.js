@@ -10,6 +10,60 @@ class DataModelNode extends Node {
     }
 
     /**
+     * Get translation with fallback
+     */
+    getTranslation(key, ...params) {
+        if (typeof window !== 'undefined' && window.t) {
+            return window.t(key, ...params);
+        }
+        // Fallback for cases where translation system is not available
+        const fallbacks = {
+            modelNameRequired: 'Model name is required',
+            modelNameTooLong: 'Model name cannot exceed 50 characters',
+            modelMustHaveField: 'Model must have at least one field',
+            fixFieldValidationErrors: 'Please fix field validation errors before saving',
+            invalidNumberFormat: 'Invalid number format: "$1"',
+            invalidCurrencyFormat: 'Invalid currency format: "$1". Use format like "PLN 23" or "23"',
+            booleanValueRequired: 'Boolean value must be one of: $1',
+            invalidDateFormat: 'Invalid date format: "$1". Use YYYY-MM-DD or ISO format',
+            invalidEmailFormat: 'Invalid email format: "$1"',
+            invalidUrlFormat: 'Invalid URL format: "$1"',
+            invalidPhoneFormat: 'Invalid phone format: "$1". Use international format (+1234567890)',
+            invalidJsonObjectFormat: 'Invalid JSON object format: "$1"',
+            invalidJsonArrayFormat: 'Invalid JSON array format: "$1"',
+            valueNotValidJsonArray: 'Value must be a valid JSON array: "$1"',
+            invalidFileFormat: 'Invalid file format: "$1". Use filename with extension, data URL, or HTTP URL',
+            invalidJsonFormat: 'Invalid JSON format: "$1"',
+            invalidBase64Format: 'Invalid Base64 format: "$1"',
+            invalidIntegerFormat: 'Invalid integer format: "$1"',
+            invalidDecimalFormat: 'Invalid decimal format: "$1"',
+            invalidPercentageFormat: 'Invalid percentage: "$1". Must be 0-100 or 0%-100%',
+            invalidDurationFormat: 'Invalid duration format: "$1". Use formats like "1h 30m", "90min", "2:30", or ISO 8601',
+            invalidDateTimeFormat: 'Invalid datetime format: "$1". Use ISO format: YYYY-MM-DDTHH:mm:ss',
+            invalidTimeFormat: 'Invalid time format: "$1". Use HH:mm or HH:mm:ss format',
+            invalidTimestampFormat: 'Invalid timestamp: "$1". Must be a positive integer',
+            invalidIpv4Format: 'Invalid IPv4 address: "$1". Use format: 192.168.1.1',
+            invalidIpv6Format: 'Invalid IPv6 address: "$1"',
+            invalidMacFormat: 'Invalid MAC address: "$1". Use format: XX:XX:XX:XX:XX:XX or XX-XX-XX-XX-XX-XX',
+            invalidCreditCardFormat: 'Invalid credit card number: "$1". Must be 13-19 digits',
+            invalidIbanFormat: 'Invalid IBAN: "$1". Use format: CC22BBBBSSSSCCCCCCCCCCCC',
+            invalidCountryCodeFormat: 'Invalid country code: "$1". Use ISO 3166-1 alpha-2 format (e.g., US, GB, DE)',
+            invalidLanguageCodeFormat: 'Invalid language code: "$1". Use ISO 639-1 format (e.g., en, en-US, de-DE)',
+            invalidTimezoneFormat: 'Invalid timezone: "$1". Use IANA timezone format (e.g., America/New_York, Europe/London)'
+        };
+        let result = fallbacks[key] || key;
+        
+        // Simple parameter substitution for fallback
+        if (params.length > 0) {
+            params.forEach((param, index) => {
+                result = result.replace(`$${index + 1}`, param);
+            });
+        }
+        
+        return result;
+    }
+
+    /**
      * Generate unique field ID
      */
     _generateFieldId() {
@@ -78,6 +132,7 @@ class DataModelNode extends Node {
      */
     validateInitialValue(value, type) {
         const errors = [];
+        const t = this.getTranslation.bind(this);
         
         if (!value || value.trim() === '') {
             return errors; // Empty values are allowed
@@ -110,7 +165,7 @@ class DataModelNode extends Node {
         switch (type) {
             case 'Number':
                 if (isNaN(value) || isNaN(parseFloat(value))) {
-                    errors.push(`Invalid number format: "${value}"`);
+                    errors.push(t('invalidNumberFormat', value));
                 }
                 break;
                 
@@ -118,28 +173,28 @@ class DataModelNode extends Node {
                 // Handle currency format like "PLN 23" or just "23"
                 const currencyMatch = value.match(/^([A-Z]{3}\s+)?([0-9.]+)$/) || value.match(/^([0-9.]+)(\s+[A-Z]{3})?$/);
                 if (!currencyMatch && isNaN(parseFloat(value))) {
-                    errors.push(`Invalid currency format: "${value}". Use format like "PLN 23" or "23"`);
+                    errors.push(t('invalidCurrencyFormat', value));
                 }
                 break;
                 
             case 'Boolean':
                 const boolValues = ['true', 'false', '1', '0', 'yes', 'no'];
                 if (!boolValues.includes(value.toLowerCase())) {
-                    errors.push(`Boolean value must be one of: ${boolValues.join(', ')}`);
+                    errors.push(t('booleanValueRequired', boolValues.join(', ')));
                 }
                 break;
                 
             case 'Date':
                 const dateValue = new Date(value);
                 if (isNaN(dateValue.getTime())) {
-                    errors.push(`Invalid date format: "${value}". Use YYYY-MM-DD or ISO format`);
+                    errors.push(t('invalidDateFormat', value));
                 }
                 break;
                 
             case 'Email':
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (!emailRegex.test(value)) {
-                    errors.push(`Invalid email format: "${value}"`);
+                    errors.push(t('invalidEmailFormat', value));
                 }
                 break;
                 
@@ -147,14 +202,14 @@ class DataModelNode extends Node {
                 try {
                     new URL(value);
                 } catch {
-                    errors.push(`Invalid URL format: "${value}"`);
+                    errors.push(t('invalidUrlFormat', value));
                 }
                 break;
                 
             case 'Phone':
                 const phoneRegex = /^[+]?[1-9]?[0-9]{7,15}$/;
                 if (!phoneRegex.test(value.replace(/[\s\-\(\)]/g, ''))) {
-                    errors.push(`Invalid phone format: "${value}". Use international format (+1234567890)`);
+                    errors.push(t('invalidPhoneFormat', value));
                 }
                 break;
                 
@@ -162,7 +217,7 @@ class DataModelNode extends Node {
                 try {
                     JSON.parse(value);
                 } catch {
-                    errors.push(`Invalid JSON object format: "${value}"`);
+                    errors.push(t('invalidJsonObjectFormat', value));
                 }
                 break;
                 
@@ -170,10 +225,10 @@ class DataModelNode extends Node {
                 try {
                     const parsed = JSON.parse(value);
                     if (!Array.isArray(parsed)) {
-                        errors.push(`Value must be a valid JSON array: "${value}"`);
+                        errors.push(t('valueNotValidJsonArray', value));
                     }
                 } catch {
-                    errors.push(`Invalid JSON array format: "${value}"`);
+                    errors.push(t('invalidJsonArrayFormat', value));
                 }
                 break;
             
@@ -203,7 +258,7 @@ class DataModelNode extends Node {
             case 'Image':
                 // Basic filename validation
                 if (!/^[\w\-. ]+\.[a-zA-Z0-9]+$/.test(value) && !value.startsWith('data:') && !value.startsWith('http')) {
-                    errors.push(`Invalid file format: "${value}". Use filename with extension, data URL, or HTTP URL`);
+                    errors.push(t('invalidFileFormat', value));
                 }
                 break;
                 
@@ -211,34 +266,34 @@ class DataModelNode extends Node {
                 try {
                     JSON.parse(value);
                 } catch {
-                    errors.push(`Invalid JSON format: "${value}"`);
+                    errors.push(t('invalidJsonFormat', value));
                 }
                 break;
                 
             case 'Base64':
                 const base64Regex = /^[A-Za-z0-9+/]*={0,2}$/;
                 if (!base64Regex.test(value) || value.length % 4 !== 0) {
-                    errors.push(`Invalid Base64 format: "${value}"`);
+                    errors.push(t('invalidBase64Format', value));
                 }
                 break;
                 
             case 'Integer':
                 if (!Number.isInteger(parseFloat(value)) || isNaN(value)) {
-                    errors.push(`Invalid integer format: "${value}"`);
+                    errors.push(t('invalidIntegerFormat', value));
                 }
                 break;
                 
             case 'Float':
             case 'Decimal':
                 if (isNaN(value) || isNaN(parseFloat(value))) {
-                    errors.push(`Invalid decimal format: "${value}"`);
+                    errors.push(t('invalidDecimalFormat', value));
                 }
                 break;
                 
             case 'Percentage':
                 const numValue = parseFloat(value.replace('%', ''));
                 if (isNaN(numValue) || numValue < 0 || numValue > 100) {
-                    errors.push(`Invalid percentage: "${value}". Must be 0-100 or 0%-100%`);
+                    errors.push(t('invalidPercentageFormat', value));
                 }
                 break;
                 
@@ -246,49 +301,49 @@ class DataModelNode extends Node {
                 // Support formats like: 1h 30m, 90min, 2:30, PT1H30M
                 const durationRegex = /^(PT)?(\d+[DHMS])*$|^\d+:\d+$|^\d+\s*(h|m|s|min|hour|hours|minute|minutes|second|seconds)(\s*\d+\s*(m|s|min|minute|minutes|second|seconds))*$/i;
                 if (!durationRegex.test(value.replace(/\s+/g, ''))) {
-                    errors.push(`Invalid duration format: "${value}". Use formats like "1h 30m", "90min", "2:30", or ISO 8601`);
+                    errors.push(t('invalidDurationFormat', value));
                 }
                 break;
                 
             case 'DateTime':
                 const dateTimeValue = new Date(value);
                 if (isNaN(dateTimeValue.getTime()) && !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)) {
-                    errors.push(`Invalid datetime format: "${value}". Use ISO format: YYYY-MM-DDTHH:mm:ss`);
+                    errors.push(t('invalidDateTimeFormat', value));
                 }
                 break;
                 
             case 'Time':
                 const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$/;
                 if (!timeRegex.test(value)) {
-                    errors.push(`Invalid time format: "${value}". Use HH:mm or HH:mm:ss format`);
+                    errors.push(t('invalidTimeFormat', value));
                 }
                 break;
                 
             case 'Timestamp':
                 const timestamp = parseInt(value);
                 if (isNaN(timestamp) || timestamp < 0) {
-                    errors.push(`Invalid timestamp: "${value}". Must be a positive integer`);
+                    errors.push(t('invalidTimestampFormat', value));
                 }
                 break;
                 
             case 'IPv4':
                 const ipv4Regex = /^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$/;
                 if (!ipv4Regex.test(value)) {
-                    errors.push(`Invalid IPv4 address: "${value}". Use format: 192.168.1.1`);
+                    errors.push(t('invalidIpv4Format', value));
                 }
                 break;
                 
             case 'IPv6':
                 const ipv6Regex = /^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$/;
                 if (!ipv6Regex.test(value)) {
-                    errors.push(`Invalid IPv6 address: "${value}"`);
+                    errors.push(t('invalidIpv6Format', value));
                 }
                 break;
                 
             case 'MAC':
                 const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
                 if (!macRegex.test(value)) {
-                    errors.push(`Invalid MAC address: "${value}". Use format: XX:XX:XX:XX:XX:XX or XX-XX-XX-XX-XX-XX`);
+                    errors.push(t('invalidMacFormat', value));
                 }
                 break;
                 
@@ -296,28 +351,28 @@ class DataModelNode extends Node {
                 const ccRegex = /^[0-9]{13,19}$/;
                 const cleanValue = value.replace(/[\s-]/g, '');
                 if (!ccRegex.test(cleanValue)) {
-                    errors.push(`Invalid credit card number: "${value}". Must be 13-19 digits`);
+                    errors.push(t('invalidCreditCardFormat', value));
                 }
                 break;
                 
             case 'IBAN':
                 const ibanRegex = /^[A-Z]{2}[0-9]{2}[A-Z0-9]{4}[0-9]{7}([A-Z0-9]?){0,16}$/;
                 if (!ibanRegex.test(value.replace(/\s/g, ''))) {
-                    errors.push(`Invalid IBAN: "${value}". Use format: CC22BBBBSSSSCCCCCCCCCCCC`);
+                    errors.push(t('invalidIbanFormat', value));
                 }
                 break;
                 
             case 'Country Code':
                 const countryRegex = /^[A-Z]{2}$/;
                 if (!countryRegex.test(value)) {
-                    errors.push(`Invalid country code: "${value}". Use ISO 3166-1 alpha-2 format (e.g., US, GB, DE)`);
+                    errors.push(t('invalidCountryCodeFormat', value));
                 }
                 break;
                 
             case 'Language Code':
                 const langRegex = /^[a-z]{2}(-[A-Z]{2})?$/;
                 if (!langRegex.test(value)) {
-                    errors.push(`Invalid language code: "${value}". Use ISO 639-1 format (e.g., en, en-US, de-DE)`);
+                    errors.push(t('invalidLanguageCodeFormat', value));
                 }
                 break;
                 
@@ -326,7 +381,7 @@ class DataModelNode extends Node {
                 try {
                     Intl.DateTimeFormat(undefined, {timeZone: value});
                 } catch {
-                    errors.push(`Invalid timezone: "${value}". Use IANA timezone format (e.g., America/New_York, Europe/London)`);
+                    errors.push(t('invalidTimezoneFormat', value));
                 }
                 break;
         }
@@ -391,18 +446,20 @@ class DataModelNode extends Node {
      * Check if model is valid for saving
      */
     isValidForSave() {
+        const t = this.getTranslation.bind(this);
+        
         // Model name validation
         if (!this.label || this.label.trim() === '') {
             return {
                 valid: false,
-                error: 'Model name is required'
+                error: t('modelNameRequired')
             };
         }
         
         if (this.label.length > 50) {
             return {
                 valid: false,
-                error: 'Model name cannot exceed 50 characters'
+                error: t('modelNameTooLong')
             };
         }
         
@@ -410,7 +467,7 @@ class DataModelNode extends Node {
         if (this.fields.length === 0) {
             return {
                 valid: false,
-                error: 'Model must have at least one field'
+                error: t('modelMustHaveField')
             };
         }
         
@@ -419,7 +476,7 @@ class DataModelNode extends Node {
         if (validation.hasErrors) {
             return {
                 valid: false,
-                error: 'Please fix field validation errors before saving',
+                error: t('fixFieldValidationErrors'),
                 fieldErrors: validation.errors
             };
         }
