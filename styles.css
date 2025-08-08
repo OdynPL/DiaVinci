@@ -651,16 +651,26 @@ input[type="text"]:focus {
     background-color: #f3f4f6;
 }
 
+/* Language button text styles */
+.language-dropdown-trigger #current-lang {
+    color: white;
+    font-weight: bold;
+    font-size: 0.875rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Main button flag styles */
+.language-dropdown-trigger #current-flag {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
 .flag-icon {
-    font-size: 18px;
-    line-height: 1;
     display: inline-block;
-    font-family: "Segoe UI Emoji", "Noto Color Emoji", "Apple Color Emoji", sans-serif;
-    text-rendering: optimizeLegibility;
-    -webkit-font-feature-settings: "liga" on;
-    font-feature-settings: "liga" on;
-    min-width: 24px;
-    text-align: center;
+    vertical-align: middle;
 }
 
 /* Square flags for dropdown items */
@@ -672,8 +682,6 @@ input[type="text"]:focus {
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    font-size: 14px;
-    line-height: 1;
 }
 
 /* Hide/show emoji or SVG flags based on support */

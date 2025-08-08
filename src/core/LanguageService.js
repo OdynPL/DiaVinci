@@ -1744,27 +1744,17 @@ function updateLanguageButtons() {
     const currentFlag = document.getElementById('current-flag');
     const currentLang = document.getElementById('current-lang');
     
-    // Update the current flag in the dropdown button
+    // Update the current flag and language text in the dropdown button (always use SVG)
     if (currentFlag) {
-        // Check if we should use SVG fallback (if emoji flags are not supported)
-        if (document.body.classList.contains('no-emoji-flags')) {
-            // Use SVG flags
-            if (currentLanguage === 'en') {
-                currentFlag.innerHTML = '<img src="Resources/flags/gb-round.svg" alt="EN" width="24" height="24" style="vertical-align: middle;">';
-            } else if (currentLanguage === 'pl') {
-                currentFlag.innerHTML = '<img src="Resources/flags/pl-round.svg" alt="PL" width="24" height="24" style="vertical-align: middle;">';
-            } else if (currentLanguage === 'de') {
-                currentFlag.innerHTML = '<img src="Resources/flags/de-round.svg" alt="DE" width="24" height="24" style="vertical-align: middle;">';
-            }
-        } else {
-            // Use emoji flags
-            if (currentLanguage === 'en') {
-                currentFlag.textContent = 'ďż˝ďż˝';
-            } else if (currentLanguage === 'pl') {
-                currentFlag.textContent = 'đź‡µđź‡±';
-            } else if (currentLanguage === 'de') {
-                currentFlag.textContent = 'đź‡©đź‡Ş';
-            }
+        if (currentLanguage === 'en') {
+            currentFlag.src = 'Resources/flags/gb-round.svg';
+            currentFlag.alt = 'EN';
+        } else if (currentLanguage === 'pl') {
+            currentFlag.src = 'Resources/flags/pl-round.svg';
+            currentFlag.alt = 'PL';
+        } else if (currentLanguage === 'de') {
+            currentFlag.src = 'Resources/flags/de-round.svg';
+            currentFlag.alt = 'DE';
         }
     }
     
@@ -1836,8 +1826,8 @@ function initializeLanguage() {
     // Initial translation update
     updateTranslations();
     
-    // Check emoji support and update buttons after setup
-    checkEmojiFlagSupport();
+    // Update language buttons after setup (using SVG flags)
+    updateLanguageButtons();
 }
 
 // Check if emoji flags are supported and provide fallback
