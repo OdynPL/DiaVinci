@@ -353,14 +353,14 @@ class DiagramController {
      * Internal mouse down handling after edit completion
      */
     handleMouseDownInternal(e, x, y) {
-        Logger.debug('Mouse down internal', { x, y, ctrlKey: e.ctrlKey });
+        Logger.debug(t('mouseDownInternal'), { x, y, ctrlKey: e.ctrlKey });
 
         // Check if starting multi-selection (click on empty space with Ctrl)
         if (e.ctrlKey) {
             // Find element at position
             const node = this.currentProject.findNodeAtPosition(x, y);
             if (node) {
-                Logger.debug('Ctrl+click on node');
+                Logger.debug(t('ctrlClickOnNode'));
                 this.multiSelectionManager.toggleElementSelection(node, 'node');
                 this.render();
                 return;
@@ -368,7 +368,7 @@ class DiagramController {
 
             const text = this.currentProject.findTextAtPosition(x, y, this.ctx);
             if (text) {
-                Logger.debug('Ctrl+click on text');
+                Logger.debug(t('ctrlClickOnText'));
                 this.multiSelectionManager.toggleElementSelection(text, 'text');
                 this.render();
                 return;
@@ -377,7 +377,7 @@ class DiagramController {
             // Check for break point Ctrl+click
             const breakPointHit = this.breakPointService.findBreakPointAtPosition(this.currentProject.transitions, x, y);
             if (breakPointHit) {
-                Logger.debug('Ctrl+click on break point - add transition to selection');
+                Logger.debug(t('ctrlClickOnBreakPoint'));
                 this.multiSelectionManager.toggleElementSelection(breakPointHit.transition, 'transition');
                 this.render();
                 return;
@@ -385,7 +385,7 @@ class DiagramController {
 
             const transition = this.currentProject.findTransitionNearPosition(x, y);
             if (transition) {
-                Logger.debug('Ctrl+click on transition');
+                Logger.debug(t('ctrlClickOnTransition'));
                 this.multiSelectionManager.toggleElementSelection(transition, 'transition');
                 this.render();
                 return;
@@ -395,14 +395,14 @@ class DiagramController {
         // Check if we're clicking on a multi-selected element for group drag
         const clickedNode = this.currentProject.findNodeAtPosition(x, y);
         if (clickedNode && this.multiSelectionManager.isElementSelected(clickedNode, 'node')) {
-            Logger.debug('Group drag start - node');
+            Logger.debug(t('groupDragStartNode'));
             this.startGroupDragging(x, y);
             return;
         }
 
         const clickedText = this.currentProject.findTextAtPosition(x, y, this.ctx);
         if (clickedText && this.multiSelectionManager.isElementSelected(clickedText, 'text')) {
-            Logger.debug('Group drag start - text');
+            Logger.debug(t('groupDragStartText'));
             this.startGroupDragging(x, y);
             return;
         }
@@ -410,7 +410,7 @@ class DiagramController {
         // Standard single element handling
         const node = this.currentProject.findNodeAtPosition(x, y);
         if (node) {
-            Logger.debug('Single click on node - start dragging');
+            Logger.debug(t('singleClickOnNodeStartDragging'));
             this.multiSelectionManager.clearSelection();
             this.startDragging(node, 'node', x, y);
             return;
@@ -418,7 +418,7 @@ class DiagramController {
 
         const text = this.currentProject.findTextAtPosition(x, y, this.ctx);
         if (text) {
-            Logger.debug('Single click on text - start dragging');
+            Logger.debug(t('singleClickOnTextStartDragging'));
             this.multiSelectionManager.clearSelection();
             this.startDragging(text, 'text', x, y);
             return;
@@ -427,7 +427,7 @@ class DiagramController {
         // Check for break point click
         const breakPointHit = this.breakPointService.findBreakPointAtPosition(this.currentProject.transitions, x, y);
         if (breakPointHit) {
-            Logger.debug('Single click on break point - start dragging');
+            Logger.debug(t('singleClickOnBreakPointStartDragging'));
             this.multiSelectionManager.clearSelection();
             this.startDraggingBreakPoint(breakPointHit, x, y);
             return;
@@ -435,7 +435,7 @@ class DiagramController {
 
         const transition = this.currentProject.findTransitionNearPosition(x, y);
         if (transition) {
-            Logger.debug('Single click on transition');
+            Logger.debug(t('singleClickOnTransition'));
             this.multiSelectionManager.clearSelection();
             this.setSelection(transition, 'transition');
             // Don't start dragging immediately - wait for mouse move
@@ -448,7 +448,7 @@ class DiagramController {
             return;
         }
 
-        Logger.debug('Click on empty space - start rectangle selection');
+        Logger.debug(t('clickOnEmptySpaceStartRectangleSelection'));
         // Start selection rectangle
         this.multiSelectionManager.startSelection(x, y);
         this.clearSelection();
@@ -459,7 +459,7 @@ class DiagramController {
      * Start dragging element
      */
     startDragging(element, type, x, y) {
-        Logger.debug('Start dragging', { type, x, y, elementX: element.x, elementY: element.y });
+        Logger.debug(t('startDragging'), { type, x, y, elementX: element.x, elementY: element.y });
         this.dragState.isDragging = true;
         this.dragState.element = element;
         this.dragState.type = type;

@@ -93,7 +93,7 @@ class InputService {
             
             this.setupInput(input, transition, 'transition');
         } catch (error) {
-            Logger.error('Error showing transition input', error);
+            Logger.error(t('errorShowingTransitionInput'), error);
             if (this.errorHandler) {
                 this.errorHandler.handleError(error, 'Failed to show transition editor');
             }
@@ -104,10 +104,10 @@ class InputService {
      * Create input element
      */
     createInput(id, fontSize) {
-        Logger.debug('createInput called', { id, fontSize });
+        Logger.debug(t('createInputCalled'), { id, fontSize });
         let input = document.getElementById(id);
         if (!input) {
-            Logger.debug('Creating new input element');
+            Logger.debug(t('creatingNewInputElement'));
             input = document.createElement('input');
             input.type = 'text';
             input.id = id;
@@ -120,13 +120,13 @@ class InputService {
             input.style.transition = 'border-color 0.2s ease';
             document.body.appendChild(input);
         } else {
-            Logger.debug('Reusing existing input element');
+            Logger.debug(t('reusingExistingInputElement'));
         }
         
         input.style.fontSize = fontSize;
         input.style.display = 'block';
         
-        Logger.debug('Input element configured', { 
+        Logger.debug(t('inputElementConfigured'), { 
             id: input.id, 
             display: input.style.display,
             position: input.style.position,
@@ -140,7 +140,7 @@ class InputService {
      * Setup input event handlers
      */
     setupInput(input, element, type) {
-        Logger.debug('setupInput called', { type, elementLabel: element.label });
+        Logger.debug(t('setupInputCalled'), { type, elementLabel: element.label });
         this.activeInput = input;
         this.editingElement = element;
         
@@ -152,7 +152,7 @@ class InputService {
         }
         
         const handleComplete = () => {
-            Logger.debug('Input completed', { newValue: input.value.trim() });
+            Logger.debug(t('inputCompleted'), { newValue: input.value.trim() });
             if (this.editingElement) {
                 const rawValue = input.value.trim();
                 
@@ -162,7 +162,7 @@ class InputService {
                 // Validate the sanitized value
                 if (!InputValidator.validateLength(sanitizedValue, type)) {
                     const rules = InputValidator.getValidationRules(type);
-                    Logger.warn('Input too long, truncating', { 
+                    Logger.warn(t('inputTooLongTruncating'), { 
                         original: rawValue.length, 
                         maxLength: rules.maxLength,
                         type 
@@ -171,7 +171,7 @@ class InputService {
                 
                 // Only proceed if we have a valid value
                 if (sanitizedValue && sanitizedValue !== rawValue) {
-                    Logger.info('Input sanitized', { 
+                    Logger.info(t('inputSanitized'), { 
                         original: rawValue, 
                         sanitized: sanitizedValue,
                         type 
@@ -180,7 +180,7 @@ class InputService {
                 
                 if (sanitizedValue) {
                     if (type === 'node' || type === 'text') {
-                        Logger.debug('Setting label', { type, newValue: sanitizedValue });
+                        Logger.debug(t('settingLabel'), { type, newValue: sanitizedValue });
                         const oldLabel = this.editingElement.label;
                         this.editingElement.setLabel(sanitizedValue);
                         
@@ -189,7 +189,7 @@ class InputService {
                             Logger.elementModify(type, sanitizedValue, 'label', oldLabel, sanitizedValue);
                         }
                     } else if (type === 'transition') {
-                        Logger.debug('Setting transition label', { newValue: sanitizedValue });
+                        Logger.debug(t('settingTransitionLabel'), { newValue: sanitizedValue });
                         const oldLabel = this.editingElement.label;
                         this.editingElement.setLabel(sanitizedValue);
                         
@@ -268,7 +268,7 @@ class InputService {
      */
     hideInput() {
         if (this.activeInput) {
-            Logger.debug('Hiding active input', { inputId: this.activeInput.id });
+            Logger.debug(t('hidingActiveInput'), { inputId: this.activeInput.id });
             this.activeInput.style.display = 'none';
             this.activeInput = null;
         }
@@ -314,7 +314,7 @@ class InputService {
         
         this.activeInput = null;
         this.editingElement = null;
-        Logger.info('InputService destroyed');
+        Logger.info(t('inputServiceDestroyed'));
     }
 
     /**

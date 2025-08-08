@@ -42,7 +42,7 @@ class Project {
         );
         
         if (existingTransition) {
-            Logger.warn('Duplicate transition prevented', {
+            Logger.warn(t('duplicateTransitionPrevented'), {
                 from: transition.from ? transition.from.id : null,
                 to: transition.to ? transition.to.id : null,
                 existingLabel: existingTransition.label,
@@ -94,16 +94,16 @@ class Project {
      * Find text element at position
      */
     findTextAtPosition(x, y, ctx) {
-        Logger.debug('Looking for text at position', { x, y, textsCount: this.texts.length });
+        Logger.debug(t('lookingForTextAtPosition'), { x, y, textsCount: this.texts.length });
         const found = this.texts.find(text => {
             const contains = text.containsPoint(x, y, ctx);
             if (contains) {
-                Logger.debug('Found text element', { label: text.label, textX: text.x, textY: text.y });
+                Logger.debug(t('foundTextElement'), { label: text.label, textX: text.x, textY: text.y });
             }
             return contains;
         });
         if (!found) {
-            Logger.debug('No text found at position');
+            Logger.debug(t('noTextFoundAtPosition'));
         }
         return found;
     }
