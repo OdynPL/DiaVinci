@@ -39,7 +39,7 @@ class EventBus {
             try {
                 callback(...args);
             } catch (error) {
-                Logger.error('Error in event listener', error, { event });
+                Logger.error(t('errorInEventListener'), error, { event });
             }
         });
     }

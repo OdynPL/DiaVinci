@@ -174,7 +174,7 @@ class DataModelEditor {
      */
     open(node) {
         if (!node || node.type !== 'datamodel') {
-            Logger.error('Invalid node for data model editor', { node });
+            Logger.error(t('invalidNodeForDataModelEditor'), { node });
             return;
         }
 

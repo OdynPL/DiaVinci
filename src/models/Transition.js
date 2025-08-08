@@ -82,12 +82,12 @@ class Transition {
     getConnectionPoints() {
         // Validate that we have valid from and to nodes
         if (!this.from || !this.to) {
-            Logger.error('Transition missing from or to node', { from: this.from, to: this.to, transition: this });
+            Logger.error(t('transitionMissingFromOrToNode'), { from: this.from, to: this.to, transition: this });
             return { startX: 0, startY: 0, endX: 0, endY: 0 };
         }
         
         if (this.from.x === undefined || this.from.y === undefined || this.to.x === undefined || this.to.y === undefined) {
-            Logger.error('Transition nodes missing coordinates', { 
+            Logger.error(t('transitionNodesMissingCoordinates'), { 
                 from: { x: this.from.x, y: this.from.y, id: this.from.id },
                 to: { x: this.to.x, y: this.to.y, id: this.to.id },
                 transition: this 
@@ -285,7 +285,7 @@ class Transition {
     toggleStyle() {
         // Block style changes for IF transitions - they must stay as robot arms
         if (this.from.type === 'if' && (this.label === 'Step1' || this.label === 'Step2')) {
-            Logger.debug('Blocked style toggle for IF transition - robot arms cannot be modified', {
+            Logger.debug(t('blockedStyleToggleForIFTransition'), {
                 label: this.label,
                 fromType: this.from.type
             });
@@ -293,7 +293,7 @@ class Transition {
         }
         
         this.style = this.style === 'straight' ? 'curved' : 'straight';
-        Logger.debug('Transition style toggled', { style: this.style, label: this.label });
+        Logger.debug(t('transitionStyleToggled'), { style: this.style, label: this.label });
     }
 
     /**
@@ -302,7 +302,7 @@ class Transition {
     addBreakPoint(x, y) {
         // Block break points for IF transitions - they must stay as robot arms
         if (this.from.type === 'if' && (this.label === 'Step1' || this.label === 'Step2')) {
-            Logger.debug('Blocked break point for IF transition - robot arms cannot be modified', {
+            Logger.debug(t('blockedBreakPointForIFTransition'), {
                 label: this.label,
                 fromType: this.from.type
             });
@@ -312,7 +312,7 @@ class Transition {
         // Find the best position to insert the break point
         const insertIndex = this.findBreakPointInsertIndex(x, y);
         this.breakPoints.splice(insertIndex, 0, {x, y});
-        Logger.debug('Break point added', { x, y, totalPoints: this.breakPoints.length });
+        Logger.debug(t('breakPointAdded'), { x, y, totalPoints: this.breakPoints.length });
     }
 
     /**
@@ -362,7 +362,7 @@ class Transition {
         
         if (closestIndex !== -1 && minDistance < 15) {
             this.breakPoints.splice(closestIndex, 1);
-            Logger.debug('Break point removed', { index: closestIndex, remainingPoints: this.breakPoints.length });
+            Logger.debug(t('breakPointRemoved'), { index: closestIndex, remainingPoints: this.breakPoints.length });
             return true;
         }
         
@@ -396,6 +396,6 @@ class Transition {
      */
     clearBreakPoints() {
         this.breakPoints = [];
-        Logger.debug('All break points cleared', { label: this.label });
+        Logger.debug(t('allBreakPointsCleared'), { label: this.label });
     }
 }

@@ -271,7 +271,7 @@ class DiagramController {
         this.canvas.style.cursor = 'crosshair';
         this.canvas.classList.add('transition-drawing-mode');
         
-        Logger.info('Transition drawing mode started');
+        Logger.info(t('transitionDrawingModeStarted'));
     }
 
     /**
@@ -293,7 +293,7 @@ class DiagramController {
         this.clearSelection();
         this.render();
         
-        Logger.info('Transition drawing cancelled');
+        Logger.info(t('transitionDrawingCancelled'));
     }
 
     /**
@@ -315,7 +315,7 @@ class DiagramController {
         this.clearSelection();
         this.render();
         
-        Logger.info('Transition drawing completed');
+        Logger.info(t('transitionDrawingCompleted'));
     }
 
     /**
@@ -326,12 +326,12 @@ class DiagramController {
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
 
-        Logger.debug('Mouse down at', { x, y, ctrlKey: e.ctrlKey });
+        Logger.debug(t('mouseDownAt'), { x, y, ctrlKey: e.ctrlKey });
 
         // If we're currently editing and click somewhere else, complete the edit
         if (this.inputService.isEditing()) {
             const editingElement = this.inputService.getEditingElement();
-            Logger.debug('Currently editing - completing edit', { element: editingElement });
+            Logger.debug(t('currentlyEditingCompletingEdit'), { element: editingElement });
             
             // Force blur on active input to trigger save
             const activeInput = this.inputService.getActiveInput();

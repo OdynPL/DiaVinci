@@ -338,6 +338,25 @@ const translations = {
         failedToUpdateBreakPoints: "Failed to update break points",
         breakPointsUpdatedForGroupNodeMovement: "Break points updated for group node movement",
         errorUpdatingBreakPointsForMovedNodes: "Error updating break points for moved nodes",
+        
+        // EventBus and DiagramController translations
+        errorInEventListener: "Error in event listener",
+        diagramControllerInitialized: "DiagramController initialized",
+        transitionDrawingModeStarted: "Transition drawing mode started",
+        transitionDrawingCancelled: "Transition drawing cancelled",
+        transitionDrawingCompleted: "Transition drawing completed",
+        mouseDownAt: "Mouse down at",
+        currentlyEditingCompletingEdit: "Currently editing - completing edit",
+        
+        // Transition model translations
+        transitionMissingFromOrToNode: "Transition missing from or to node",
+        transitionNodesMissingCoordinates: "Transition nodes missing coordinates",
+        blockedStyleToggleForIFTransition: "Blocked style toggle for IF transition - robot arms cannot be modified",
+        transitionStyleToggled: "Transition style toggled",
+        blockedBreakPointForIFTransition: "Blocked break point for IF transition - robot arms cannot be modified",
+        breakPointAdded: "Break point added",
+        breakPointRemoved: "Break point removed",
+        allBreakPointsCleared: "All break points cleared",
         terminalClear: "Clear Terminal",
         terminalClose: "Close Terminal",
         terminalExport: "Export Logs",
@@ -931,6 +950,25 @@ const translations = {
         failedToUpdateBreakPoints: "Nie udało się zaktualizować punktów przerwania",
         breakPointsUpdatedForGroupNodeMovement: "Punkty przerwania zaktualizowane dla grupowego ruchu węzłów",
         errorUpdatingBreakPointsForMovedNodes: "Błąd podczas aktualizacji punktów przerwania dla przeniesionych węzłów",
+        
+        // EventBus and DiagramController translations
+        errorInEventListener: "Błąd w nasłuchiwaczu zdarzeń",
+        diagramControllerInitialized: "DiagramController zainicjalizowany",
+        transitionDrawingModeStarted: "Tryb rysowania przejść rozpoczęty",
+        transitionDrawingCancelled: "Rysowanie przejść anulowane",
+        transitionDrawingCompleted: "Rysowanie przejść zakończone",
+        mouseDownAt: "Mysz naciśnięta na",
+        currentlyEditingCompletingEdit: "Obecnie edytowane - kończenie edycji",
+        
+        // Transition model translations
+        transitionMissingFromOrToNode: "Przejście brakuje węzła źródłowego lub docelowego",
+        transitionNodesMissingCoordinates: "Węzłom przejścia brakuje współrzędnych",
+        blockedStyleToggleForIFTransition: "Zablokowano zmianę stylu dla przejścia IF - ramiona robota nie mogą być modyfikowane",
+        transitionStyleToggled: "Styl przejścia przełączony",
+        blockedBreakPointForIFTransition: "Zablokowano punkt przerwania dla przejścia IF - ramiona robota nie mogą być modyfikowane",
+        breakPointAdded: "Punkt przerwania dodany",
+        breakPointRemoved: "Punkt przerwania usunięty",
+        allBreakPointsCleared: "Wszystkie punkty przerwania wyczyszczone",
         
         // Terminal filter options
         allMessages: "Wszystkie Wiadomości",
