@@ -20,6 +20,9 @@ class DiagramController {
         // Initialize Data Model Editor
         this.dataModelEditor = new DataModelEditor(eventBus);
         
+        // Initialize C# Editor Service
+        this.csharpEditorService = new CSharpEditorService();
+        
         // Get terminal service for logging and commands
         this.terminalService = terminalService || window.terminalService;
         
@@ -137,6 +140,9 @@ class DiagramController {
             case 'datamodel':
                 this.createDataModelNode(x, y);
                 break;
+            case 'function':
+                this.createFunctionNode(x, y);
+                break;
             case 'text':
                 this.createText(x, y);
                 break;
@@ -236,6 +242,24 @@ class DiagramController {
     }
 
     /**
+     * Create Function node with C# editor
+     */
+    createFunctionNode(x, y) {
+        const node = NodeFactory.createFunctionNode(x, y, this.currentProject.functionCounter || 1);
+        this.currentProject.addNode(node);
+        
+        // Update function counter
+        this.currentProject.functionCounter = (this.currentProject.functionCounter || 1) + 1;
+        
+        // Update data model references for IntelliSense
+        this.updateFunctionNodeDataModelReferences(node);
+        
+        this.render();
+        
+        // Don't auto-open editor - user will double-click to open
+    }
+
+    /**
      * Open Data Model Editor
      */
     openDataModelEditor(node) {
@@ -245,6 +269,43 @@ class DiagramController {
         }
         
         this.dataModelEditor.open(node);
+    }
+
+    /**
+     * Open Function Editor with C# code editor
+     */
+    openFunctionEditor(node) {
+        if (!node || node.type !== 'function') {
+            Logger.error('Invalid node for Function editor', { node });
+            return;
+        }
+        
+        // Update data model references before opening editor
+        this.updateFunctionNodeDataModelReferences(node);
+        
+        // Open the built-in C# editor
+        this.csharpEditorService.openEditor(node);
+    }
+
+    /**
+     * Update function node with current data model references
+     */
+    updateFunctionNodeDataModelReferences(functionNode) {
+        if (!functionNode || functionNode.type !== 'function') return;
+        
+        // Get all data models in the project
+        const dataModels = this.currentProject.nodes.filter(node => node.type === 'datamodel');
+        
+        // Update function's data model references
+        functionNode.dataModelReferences = dataModels.map(dm => ({
+            id: dm.id,
+            label: dm.label,
+            fields: dm.fields || []
+        }));
+        
+        if (this.terminalService && dataModels.length > 0) {
+            this.terminalService.addLine(`🔗 Updated ${functionNode.label} with ${dataModels.length} data model references`, 'info');
+        }
     }
 
     /**
@@ -870,6 +931,13 @@ class DiagramController {
             // Special handling for DataModelNode
             if (node.type === 'datamodel') {
                 this.openDataModelEditor(node);
+                this.setSelection(node, 'node');
+                return;
+            }
+            
+            // Special handling for Function Node
+            if (node.type === 'function') {
+                this.openFunctionEditor(node);
                 this.setSelection(node, 'node');
                 return;
             }

@@ -193,6 +193,24 @@ class NodeFactory {
     }
 
     /**
+     * Create Function node with C# editor
+     */
+    static createFunctionNode(x, y, functionCounter) {
+        return new FunctionNode({
+            x, y,
+            id: Date.now(),
+            label: `Function ${functionCounter}`,
+            color: '#8B5CF6',
+            width: 200,
+            height: 150,
+            code: '',  // Start with empty code
+            returnType: 'void',
+            parameters: [],
+            usings: ['System', 'System.Collections.Generic']
+        });
+    }
+
+    /**
      * Get appropriate corners for each rotation - like rotating letter "C"
      */
     static getRotatedCorners(rotation) {

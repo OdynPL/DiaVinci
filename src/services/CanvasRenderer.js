@@ -26,7 +26,8 @@ class CanvasRenderer {
     renderNodes(nodes, multiSelectionManager) {
         multiSelectionManager = multiSelectionManager || null;
         nodes.forEach(node => {
-            if (node && node.x !== undefined && node.y !== undefined && node.r !== undefined) {
+            if (node && node.x !== undefined && node.y !== undefined && 
+                (node.r !== undefined || (node.width !== undefined && node.height !== undefined))) {
                 this.renderNode(node, multiSelectionManager);
             } else {
                 Logger.error(t('invalidNodeDetected'), null, { node });
@@ -799,6 +800,34 @@ class CanvasRenderer {
                 }
                 this.ctx.stroke();
                 
+            } else if (node.type === 'function') {
+                // Special handling for function nodes
+                // Fill with gradient background
+                const width = node.width || 200;
+                const height = node.height || 150;
+                const x = node.x - width/2;
+                const y = node.y - height/2;
+                
+                // Create gradient
+                const gradient = this.ctx.createLinearGradient(x, y, x, y + height);
+                gradient.addColorStop(0, '#ffffff');
+                gradient.addColorStop(1, '#f8f9fa');
+                this.ctx.fillStyle = gradient;
+                this.ctx.fill();
+                
+                // Draw border
+                if (isMultiSelected) {
+                    this.ctx.strokeStyle = '#4A90E2';
+                    this.ctx.lineWidth = 4;
+                } else if (isSelected) {
+                    this.ctx.strokeStyle = '#e6b800';
+                    this.ctx.lineWidth = 4;
+                } else {
+                    this.ctx.strokeStyle = node.color;
+                    this.ctx.lineWidth = 2;
+                }
+                this.ctx.stroke();
+                
             } else {
                 // Original handling for other node types
                 if (isMultiSelected) {
@@ -877,6 +906,34 @@ class CanvasRenderer {
             this.ctx.quadraticCurveTo(x, y, x + radius, y);
             this.ctx.closePath();
             this.ctx.restore();
+        } else if (node.type === 'function') {
+            // Draw rounded rectangle for function nodes
+            const width = node.width || 200;
+            const height = node.height || 150;
+            const x = node.x - width/2;
+            const y = node.y - height/2;
+            const radius = 8;
+            
+            // Draw shadow
+            this.ctx.save();
+            this.ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
+            this.ctx.shadowBlur = 10;
+            this.ctx.shadowOffsetX = 3;
+            this.ctx.shadowOffsetY = 3;
+            
+            // Draw rounded rectangle
+            this.ctx.beginPath();
+            this.ctx.moveTo(x + radius, y);
+            this.ctx.lineTo(x + width - radius, y);
+            this.ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            this.ctx.lineTo(x + width, y + height - radius);
+            this.ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            this.ctx.lineTo(x + radius, y + height);
+            this.ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            this.ctx.lineTo(x, y + radius);
+            this.ctx.quadraticCurveTo(x, y, x + radius, y);
+            this.ctx.closePath();
+            this.ctx.restore();
         } else {
             this.ctx.arc(node.x, node.y, node.r, 0, 2 * Math.PI);
         }
@@ -896,6 +953,9 @@ class CanvasRenderer {
         } else if (node.type === 'datamodel') {
             // Draw data model structure
             this.drawDataModelContent(node);
+        } else if (node.type === 'function') {
+            // Draw function node content
+            this.drawFunctionContent(node);
         } else {
             // For regular nodes, check if they're TRUE/FALSE nodes and render white text inside
             if (node.label === 'Step1' || node.label === 'Step2') {
@@ -1389,6 +1449,180 @@ class CanvasRenderer {
             'Credit Card': t('creditCardType')
         };
         return typeMap[type] || type;
+    }
+
+    /**
+     * Draw function node content with professional C# styling
+     */
+    drawFunctionContent(node) {
+        const width = node.width || 200;
+        const height = node.height || 150;
+        const x = node.x - width/2;
+        const y = node.y - height/2;
+        
+        // Draw main body with rounded corners
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.strokeStyle = node.color || '#8B5CF6';
+        this.ctx.lineWidth = 2;
+        this.roundRect(x, y, width, height, 8);
+        this.ctx.fill();
+        this.ctx.stroke();
+        
+        // Draw header area with gradient
+        const gradient = this.ctx.createLinearGradient(x, y, x, y + 35);
+        gradient.addColorStop(0, node.color || '#8B5CF6');
+        gradient.addColorStop(1, this.darkenColor(node.color || '#8B5CF6', 0.1));
+        this.ctx.fillStyle = gradient;
+        this.roundRect(x, y, width, 35, 8, true, false);
+        this.ctx.fill();
+        
+        // Draw function icon
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.font = 'bold 14px "Segoe UI", Arial, sans-serif';
+        this.ctx.textAlign = 'left';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText('{ }', x + 8, y + 17);
+        
+        // Draw function name
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.font = 'bold 13px "Segoe UI", Arial, sans-serif';
+        this.ctx.textAlign = 'left';
+        this.ctx.textBaseline = 'middle';
+        const funcName = node.label || 'Function';
+        this.ctx.fillText(funcName, x + 35, y + 17);
+        
+        // Draw code preview area with subtle background
+        this.ctx.fillStyle = '#f8fafc';
+        this.ctx.fillRect(x + 1, y + 35, width - 2, height - 60);
+        
+        // Draw border for code area
+        this.ctx.strokeStyle = '#e2e8f0';
+        this.ctx.lineWidth = 1;
+        this.ctx.strokeRect(x + 1, y + 35, width - 2, height - 60);
+        
+        // Draw code preview or placeholder
+        if (node.code && node.code.trim()) {
+            const lines = node.code.split('\n');
+            const previewLines = lines.slice(0, 5); // Show first 5 lines
+            
+            this.ctx.fillStyle = '#374151';
+            this.ctx.font = '10px "Fira Code", "Consolas", monospace';
+            this.ctx.textAlign = 'left';
+            this.ctx.textBaseline = 'top';
+            
+            previewLines.forEach((line, index) => {
+                const displayLine = line.length > 22 ? line.substring(0, 19) + '...' : line;
+                this.ctx.fillText(displayLine, x + 8, y + 42 + index * 13);
+            });
+            
+            // Show "..." if there are more lines
+            if (lines.length > 5) {
+                this.ctx.fillStyle = '#8B5CF6';
+                this.ctx.font = 'bold 10px "Segoe UI", Arial, sans-serif';
+                this.ctx.fillText('...', x + 8, y + 42 + 5 * 13);
+            }
+        } else {
+            // Show placeholder text with icon
+            this.ctx.fillStyle = '#9ca3af';
+            this.ctx.font = '12px "Segoe UI", Arial, sans-serif';
+            this.ctx.textAlign = 'center';
+            this.ctx.textBaseline = 'middle';
+            this.ctx.fillText('Double-click to add code', node.x, y + 65);
+            
+            // Draw code icon
+            this.ctx.fillStyle = '#d1d5db';
+            this.ctx.font = '20px "Segoe UI", Arial, sans-serif';
+            this.ctx.fillText('</>', node.x, y + 85);
+        }
+        
+        // Draw footer with professional styling
+        this.ctx.fillStyle = '#f1f5f9';
+        this.ctx.fillRect(x + 1, y + height - 25, width - 2, 24);
+        
+        // Draw footer border
+        this.ctx.strokeStyle = '#e2e8f0';
+        this.ctx.lineWidth = 1;
+        this.ctx.beginPath();
+        this.ctx.moveTo(x + 1, y + height - 25);
+        this.ctx.lineTo(x + width - 1, y + height - 25);
+        this.ctx.stroke();
+        
+        // Draw data model references count with icon
+        const dmCount = node.dataModelReferences ? node.dataModelReferences.length : 0;
+        this.ctx.fillStyle = '#6b7280';
+        this.ctx.font = '9px "Segoe UI", Arial, sans-serif';
+        this.ctx.textAlign = 'left';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText(`📊 ${dmCount} models`, x + 8, y + height - 13);
+        
+        // Draw function signature
+        const signature = node.getFunctionSignature ? node.getFunctionSignature() : 'void Execute()';
+        const shortSignature = signature.length > 18 ? signature.substring(0, 15) + '...' : signature;
+        this.ctx.fillStyle = '#6b7280';
+        this.ctx.font = '8px "Fira Code", "Consolas", monospace';
+        this.ctx.textAlign = 'right';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText(shortSignature, x + width - 8, y + height - 13);
+    }
+    
+    /**
+     * Helper method to darken a color
+     */
+    darkenColor(color, factor) {
+        // Simple color darkening - convert hex to RGB, darken, convert back
+        if (color.startsWith('#')) {
+            const hex = color.slice(1);
+            const r = parseInt(hex.slice(0, 2), 16);
+            const g = parseInt(hex.slice(2, 4), 16);
+            const b = parseInt(hex.slice(4, 6), 16);
+            
+            const newR = Math.floor(r * (1 - factor));
+            const newG = Math.floor(g * (1 - factor));
+            const newB = Math.floor(b * (1 - factor));
+            
+            return `rgb(${newR}, ${newG}, ${newB})`;
+        }
+        return color;
+    }
+    
+    /**
+     * Helper method to draw rounded rectangles
+     */
+    roundRect(x, y, width, height, radius, fillTop = false, fillBottom = false) {
+        this.ctx.beginPath();
+        
+        if (fillTop && !fillBottom) {
+            // Only top corners rounded
+            this.ctx.moveTo(x + radius, y);
+            this.ctx.lineTo(x + width - radius, y);
+            this.ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            this.ctx.lineTo(x + width, y + height);
+            this.ctx.lineTo(x, y + height);
+            this.ctx.lineTo(x, y + radius);
+            this.ctx.quadraticCurveTo(x, y, x + radius, y);
+        } else if (fillBottom && !fillTop) {
+            // Only bottom corners rounded
+            this.ctx.moveTo(x, y);
+            this.ctx.lineTo(x + width, y);
+            this.ctx.lineTo(x + width, y + height - radius);
+            this.ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            this.ctx.lineTo(x + radius, y + height);
+            this.ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            this.ctx.lineTo(x, y);
+        } else {
+            // All corners rounded (default)
+            this.ctx.moveTo(x + radius, y);
+            this.ctx.lineTo(x + width - radius, y);
+            this.ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            this.ctx.lineTo(x + width, y + height - radius);
+            this.ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            this.ctx.lineTo(x + radius, y + height);
+            this.ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            this.ctx.lineTo(x, y + radius);
+            this.ctx.quadraticCurveTo(x, y, x + radius, y);
+        }
+        
+        this.ctx.closePath();
     }
 
     /**

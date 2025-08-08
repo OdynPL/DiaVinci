@@ -135,6 +135,7 @@ class UIController {
             {id: 'stop', type: 'stop'},
             {id: 'if', type: 'if'},
             {id: 'datamodel', type: 'datamodel'},
+            {id: 'function', type: 'function'},
             {id: 'text', type: 'text'},
             {id: 'arrow-right', type: 'transition', transitionType: 'right'},
             {id: 'arrow-both', type: 'transition', transitionType: 'both'},

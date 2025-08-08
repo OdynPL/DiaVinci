@@ -2,12 +2,13 @@
  * Project model representing a complete diagram project
  */
 class Project {
-    constructor({name, nodes = [], transitions = [], texts = [], nodeCounter = 1, timestamp = null, isPrivate = false, passwordHash = null}) {
+    constructor({name, nodes = [], transitions = [], texts = [], nodeCounter = 1, functionCounter = 1, timestamp = null, isPrivate = false, passwordHash = null}) {
         this.name = name;
         this.nodes = nodes;
         this.transitions = transitions;
         this.texts = texts;
         this.nodeCounter = nodeCounter;
+        this.functionCounter = functionCounter;
         this.timestamp = timestamp || new Date().toISOString();
         this.version = '1.0';
         this.isPrivate = isPrivate;
@@ -21,6 +22,9 @@ class Project {
         this.nodes.push(node);
         if (node.type === 'node' || node.type === 'datamodel') {
             this.nodeCounter++;
+        }
+        if (node.type === 'function') {
+            this.functionCounter++;
         }
     }
 
