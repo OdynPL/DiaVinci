@@ -139,11 +139,21 @@ document.addEventListener('DOMContentLoaded', async function() {
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
         
-        Logger.info(t('appInitializedSuccessfully'));
+        // Ensure language service is loaded before using t()
+        if (typeof t === 'function') {
+            Logger.info(t('appInitializedSuccessfully'));
+        } else {
+            Logger.info('Application initialized successfully');
+        }
         
     } catch (error) {
-        Logger.error(t('errorInitializingApplication'), error);
-        alert(t('errorStartingApplication'));
+        if (typeof t === 'function') {
+            Logger.error(t('errorInitializingApplication'), error);
+            alert(t('errorStartingApplication'));
+        } else {
+            Logger.error('Error initializing application', error);
+            alert('Error starting application');
+        }
     }
 });
 

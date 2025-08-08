@@ -597,85 +597,125 @@ input[type="text"]:focus {
     }
 }
 
-/* Language Switcher Styles */
-.language-switcher {
+/* Language Switcher Dropdown Styles */
+.language-switcher-dropdown {
     position: relative;
 }
 
-.language-btn {
-    color: #94a3b8; /* slate-400 */
-    background-color: transparent;
-    border: none;
+.language-dropdown-trigger {
     cursor: pointer;
     user-select: none;
     transition: all 0.2s ease;
-}
-
-.language-btn:hover {
-    color: #e2e8f0; /* slate-200 */
-    background-color: rgba(71, 85, 105, 0.5); /* slate-600 with opacity */
-}
-
-.language-btn.active {
-    color: #ffffff;
-    background-color: #3b82f6; /* blue-500 */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.language-btn.active:hover {
-    background-color: #2563eb; /* blue-600 */
+.language-dropdown-trigger:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.language-dropdown-trigger:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.language-dropdown-menu {
+    position: absolute;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+    z-index: 1000;
+    animation: dropdownFadeIn 0.15s ease-out;
+}
+
+.language-dropdown-menu.hidden {
+    display: none;
+}
+
+.language-option {
+    border: none;
+    background: none;
+    cursor: pointer;
+    user-select: none;
+    text-align: left;
+    transition: background-color 0.15s ease;
+}
+
+.language-option:hover {
+    background-color: #f9fafb;
+}
+
+.language-option:active {
+    background-color: #f3f4f6;
 }
 
 .flag-icon {
-    font-size: 16px;
+    font-size: 18px;
     line-height: 1;
     display: inline-block;
-    margin-right: 4px;
     font-family: "Segoe UI Emoji", "Noto Color Emoji", "Apple Color Emoji", sans-serif;
     text-rendering: optimizeLegibility;
     -webkit-font-feature-settings: "liga" on;
     font-feature-settings: "liga" on;
-    min-width: 20px;
+    min-width: 24px;
     text-align: center;
 }
 
-/* Fallback for systems that don't support emoji flags */
-@supports not (font-family: "Segoe UI Emoji") {
-    .language-btn[id="lang-en"] .flag-icon {
-        background-image: url('Resources/flags/us.svg');
-        background-size: 20px 15px;
-        background-repeat: no-repeat;
-        background-position: center;
-        width: 20px;
-        height: 15px;
-        text-indent: -9999px;
-        overflow: hidden;
+/* Square flags for dropdown items */
+.square-flag {
+    width: 24px;
+    height: 18px;
+    border-radius: 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-size: 14px;
+    line-height: 1;
+}
+
+/* Hide/show emoji or SVG flags based on support */
+.no-emoji-flags .emoji-flag {
+    display: none;
+}
+
+.no-emoji-flags .svg-flag {
+    display: inline-flex !important;
+}
+
+.emoji-flag {
+    display: inline-flex;
+}
+
+.svg-flag {
+    display: none;
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
     }
-    
-    .language-btn[id="lang-pl"] .flag-icon {
-        background-image: url('Resources/flags/pl.svg');
-        background-size: 20px 15px;
-        background-repeat: no-repeat;
-        background-position: center;
-        width: 20px;
-        height: 15px;
-        text-indent: -9999px;
-        overflow: hidden;
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
 /* Responsive adjustments for language switcher */
 @media (max-width: 640px) {
-    .language-switcher {
-        padding: 6px;
-    }
-    
-    .language-btn {
-        padding: 6px 8px;
-        font-size: 12px;
+    .language-dropdown-trigger {
+        width: 40px;
+        height: 40px;
     }
     
     .flag-icon {
-        font-size: 12px;
+        font-size: 16px;
+    }
+    
+    .language-dropdown-menu {
+        min-width: 140px;
     }
 }

@@ -1,4 +1,4 @@
-// Language translations for DiaVinci
+﻿// Language translations for DiaVinci
 const translations = {
     en: {
         // Navigation
@@ -445,6 +445,9 @@ const translations = {
         elementMoves: "Element Moves",
         elementModifications: "Element Modifications",
         
+        // Language switcher
+        selectLanguage: "Select Language",
+        
         // Common
         yes: "Yes",
         no: "No",
@@ -495,8 +498,8 @@ const translations = {
         terminalInitialized: "Terminal Service initialized successfully.",
         canvasDropTracking: "Canvas drop tracking enabled - all drag & drop operations will be logged here.",
         typeHelpForCommands: "Type \"help\" for available commands.",
-        terminalHelpTitle: "🎯 DIAVINCI TERMINAL - Available Commands",
-        basicCommands: "🔧 BASIC COMMANDS:",
+        terminalHelpTitle: "đźŽŻ DIAVINCI TERMINAL - Available Commands",
+        basicCommands: "đź”§ BASIC COMMANDS:",
         helpCommand: "help          - Show this help message",
         clearCommand: "clear         - Clear terminal output", 
         statusCommand: "status        - Show system status",
@@ -505,7 +508,7 @@ const translations = {
         timeCommand: "time          - Show current time",
         historyCommand: "history       - Show command history",
         resetCommand: "reset         - Reset application state",
-        searchInspect: "🔍 SEARCH & INSPECT:",
+        searchInspect: "đź”Ť SEARCH & INSPECT:",
         findCommand: "find <id>     - Find element by ID",
         searchCommand: "search <text> - Search elements by label/name",
         inspectCommand: "inspect <id>  - Show detailed element info",
@@ -514,25 +517,25 @@ const translations = {
         listTextsCommand: "list texts    - List only text elements",
         listTransCommand: "list trans    - List only transitions",
         countCommand: "count         - Count all project elements",
-        analyticsCommands: "📊 ANALYTICS:",
+        analyticsCommands: "đź“Š ANALYTICS:",
         statsCommand: "stats         - Show detailed project stats",
         memoryCommand: "memory        - Show memory usage info",
         performanceCommand: "performance   - Show performance metrics",
         validateCommand: "validate      - Validate project integrity",
-        debuggingCommands: "🛠️ DEBUGGING:",
+        debuggingCommands: "đź› ď¸Ź DEBUGGING:",
         debugCommand: "debug on/off  - Toggle debug logging",
         debugProjectCommand: "debug project - Show project debug info",
         debugNodesCommand: "debug nodes   - Show all nodes with types",
         logsCommand: "logs <type>   - Filter logs by type",
         traceCommand: "trace <id>    - Trace element relationships",
         errorsCommand: "errors        - Show recent error logs",
-        dataModelCommands: "📋 DATA MODEL:",
+        dataModelCommands: "đź“‹ DATA MODEL:",
         fieldsCommand: "fields <id>   - List all fields of data model",
         fieldCommand: "field <id> <name> - Get field value from model",
         modelsCommand: "models        - List all data model nodes",
         quickFieldAccess: "ID.field_name - Quick field access (e.g., 123.name)",
-        tabAutocomplete: "💡 Use TAB after dot for autocomplete",
-        systemCommands: "⚙️ SYSTEM:",
+        tabAutocomplete: "đź’ˇ Use TAB after dot for autocomplete",
+        systemCommands: "âš™ď¸Ź SYSTEM:",
         configCommand: "config        - Show system configuration",
         backupCommand: "backup        - Create project backup",
         cleanupCommand: "cleanup       - Clean temporary data",
@@ -542,13 +545,13 @@ const translations = {
         failedToExport: "Failed to export logs:",
         functionFailed: "Function failed:",
         stackTrace: "Stack trace:",
-        availableFields: "💡 Available fields for element",
+        availableFields: "đź’ˇ Available fields for element",
         basicFields: "Basic:",
         nestedFields: "Nested:",
-        noFieldsMatch: "❌ No fields match",
-        elementNotFound: "❌ Element with ID not found.",
-        availableCompletions: "💡 Available completions:",
-        noCommandsMatch: "❌ No commands match",
+        noFieldsMatch: "âťŚ No fields match",
+        elementNotFound: "âťŚ Element with ID not found.",
+        availableCompletions: "đź’ˇ Available completions:",
+        noCommandsMatch: "âťŚ No commands match",
         moreFields: "more fields",
         andMoreFields: "... and",
         useFieldsToSeeAll: "Use \"fields",
@@ -690,9 +693,9 @@ const translations = {
         
         // Components
         components: "Komponenty",
-        nodes: "Węzły",
+        nodes: "WÄ™zĹ‚y",
         texts: "Teksty",
-        transitions: "Przejścia",
+        transitions: "PrzejĹ›cia",
         
         // Node types
         process: "Proces",
@@ -702,7 +705,7 @@ const translations = {
         data: "Dane",
         dataModel: "Model Danych",
         singleWay: "Droga Pojedyncza",
-        dualWay: "Droga Podwójna",
+        dualWay: "Droga PodwĂłjna",
         line: "Linia",
         
         // Bottom navigation
@@ -712,96 +715,96 @@ const translations = {
         exportImage: "Eksportuj Obraz",
         exportFile: "Eksportuj Plik",
         importFile: "Importuj Plik",
-        removeSelected: "Usuń Zaznaczone",
+        removeSelected: "UsuĹ„ Zaznaczone",
         save: "Zapisz",
         load: "Wczytaj",
-        clear: "Wyczyść Wszystko",
+        clear: "WyczyĹ›Ä‡ Wszystko",
         
         // Export options
         exportOptions: "Opcje Eksportu",
-        whiteBackground: "Białe Tło",
-        transparentBackground: "Przezroczyste Tło",
+        whiteBackground: "BiaĹ‚e TĹ‚o",
+        transparentBackground: "Przezroczyste TĹ‚o",
         
         // Save dialog
         saveProjectTitle: "Zapisz Projekt",
         projectName: "Nazwa Projektu",
         save: "Zapisz",
         cancel: "Anuluj",
-        enterProjectName: "Wprowadź nazwę projektu...",
+        enterProjectName: "WprowadĹş nazwÄ™ projektu...",
         saveAsPrivate: "Zapisz jako projekt prywatny",
         projectNameRequired: "Nazwa projektu jest wymagana",
-        passwordRequired: "Hasło jest wymagane dla projektów prywatnych",
-        projectPassword: "Hasło Projektu",
-        enterPasswordPlaceholder: "Wprowadź hasło dla projektu prywatnego...",
-        rememberPassword: "Zapamiętaj to hasło - nie można go odzyskać!",
+        passwordRequired: "HasĹ‚o jest wymagane dla projektĂłw prywatnych",
+        projectPassword: "HasĹ‚o Projektu",
+        enterPasswordPlaceholder: "WprowadĹş hasĹ‚o dla projektu prywatnego...",
+        rememberPassword: "ZapamiÄ™taj to hasĹ‚o - nie moĹĽna go odzyskaÄ‡!",
         
         // Project status messages
-        publicProjectSaved: "Projekt publiczny zapisany pomyślnie!",
-        privateProjectSaved: "Projekt prywatny zapisany pomyślnie!",
-        publicProjectLoaded: "Projekt publiczny wczytany pomyślnie!",
-        privateProjectLoaded: "Projekt prywatny wczytany pomyślnie!",
+        publicProjectSaved: "Projekt publiczny zapisany pomyĹ›lnie!",
+        privateProjectSaved: "Projekt prywatny zapisany pomyĹ›lnie!",
+        publicProjectLoaded: "Projekt publiczny wczytany pomyĹ›lnie!",
+        privateProjectLoaded: "Projekt prywatny wczytany pomyĹ›lnie!",
         newPublicProject: "Nowy projekt publiczny utworzony i zapisany!",
         newPrivateProject: "Nowy projekt prywatny utworzony i zapisany!",
         
         // Dialog titles and actions
         loadProjectTitle: "Wczytaj Projekt",
-        createNewProjectTitle: "Utwórz Nowy Projekt", 
-        deleteProjectTitle: "Usuń Projekt",
-        deleteAllProjectsTitle: "Usuń Wszystkie Projekty",
-        clearCurrentProjectTitle: "Wyczyść Obecny Projekt",
+        createNewProjectTitle: "UtwĂłrz Nowy Projekt", 
+        deleteProjectTitle: "UsuĹ„ Projekt",
+        deleteAllProjectsTitle: "UsuĹ„ Wszystkie Projekty",
+        clearCurrentProjectTitle: "WyczyĹ›Ä‡ Obecny Projekt",
         close: "Zamknij",
         load: "Wczytaj",
-        delete: "Usuń",
-        createProject: "Utwórz Projekt",
-        deleteProjectConfirm: "Czy na pewno chcesz usunąć projekt",
-        actionCannotBeUndone: "Ta akcja nie może zostać cofnięta.",
+        delete: "UsuĹ„",
+        createProject: "UtwĂłrz Projekt",
+        deleteProjectConfirm: "Czy na pewno chcesz usunÄ…Ä‡ projekt",
+        actionCannotBeUndone: "Ta akcja nie moĹĽe zostaÄ‡ cofniÄ™ta.",
         
         // Password dialog
-        enterPasswordTitle: "Wprowadź Hasło",
-        enterPasswordMessage: "Proszę wprowadzić hasło dla projektu:",
-        enterPasswordPlaceholder2: "Wprowadź hasło...",
+        enterPasswordTitle: "WprowadĹş HasĹ‚o",
+        enterPasswordMessage: "ProszÄ™ wprowadziÄ‡ hasĹ‚o dla projektu:",
+        enterPasswordPlaceholder2: "WprowadĹş hasĹ‚o...",
         unlock: "Odblokuj",
-        passwordCannotBeEmpty: "Hasło nie może być puste",
-        incorrectPassword: "Nieprawidłowe hasło. Spróbuj ponownie.",
-        confirm: "Potwierdź",
+        passwordCannotBeEmpty: "HasĹ‚o nie moĹĽe byÄ‡ puste",
+        incorrectPassword: "NieprawidĹ‚owe hasĹ‚o. SprĂłbuj ponownie.",
+        confirm: "PotwierdĹş",
         
         // Load dialog
-        noProjectsFound: "Nie znaleziono zapisanych projektów",
-        noProjectsMatchingSearch: "Nie znaleziono projektów pasujących do wyszukiwania",
-        clearAllProjectsConfirm: "Czy na pewno chcesz usunąć <strong>WSZYSTKIE</strong> zapisane projekty i wyczyścić płótno?<br><br><strong>Ta akcja nie może zostać cofnięta!</strong>",
-        createFirstDiagram: "Utwórz swój pierwszy diagram, aby rozpocząć",
+        noProjectsFound: "Nie znaleziono zapisanych projektĂłw",
+        noProjectsMatchingSearch: "Nie znaleziono projektĂłw pasujÄ…cych do wyszukiwania",
+        clearAllProjectsConfirm: "Czy na pewno chcesz usunÄ…Ä‡ <strong>WSZYSTKIE</strong> zapisane projekty i wyczyĹ›ciÄ‡ pĹ‚Ăłtno?<br><br><strong>Ta akcja nie moĹĽe zostaÄ‡ cofniÄ™ta!</strong>",
+        createFirstDiagram: "UtwĂłrz swĂłj pierwszy diagram, aby rozpoczÄ…Ä‡",
         
         // UI Controls and buttons
-        clearCanvas: "Wyczyść Płótno",
-        clearCanvasConfirm: "Czy na pewno chcesz wyczyścić wszystkie elementy z płótna?<br><br><strong>Ta akcja nie może zostać cofnięta.</strong>",
-        canvasClearedSuccessfully: "Płótno wyczyszczone pomyślnie!",
-        allProjectsClearedSuccessfully: "Wszystkie projekty i płótno wyczyszczone pomyślnie!",
-        whiteBackground: "białe tło",
-        transparentBackground: "przezroczyste tło", 
-        imageExportedSuccessfully: "Obraz wyeksportowany pomyślnie z",
-        projectExportedSuccessfully: "Projekt wyeksportowany pomyślnie!",
-        noContentToExport: "Brak treści do eksportu. Proszę najpierw utworzyć elementy.",
-        showGrid: "Pokaż Siatkę",
-        hideGrid: "Ukryj Siatkę",
-        showRulers: "Pokaż Linijki", 
+        clearCanvas: "WyczyĹ›Ä‡ PĹ‚Ăłtno",
+        clearCanvasConfirm: "Czy na pewno chcesz wyczyĹ›ciÄ‡ wszystkie elementy z pĹ‚Ăłtna?<br><br><strong>Ta akcja nie moĹĽe zostaÄ‡ cofniÄ™ta.</strong>",
+        canvasClearedSuccessfully: "PĹ‚Ăłtno wyczyszczone pomyĹ›lnie!",
+        allProjectsClearedSuccessfully: "Wszystkie projekty i pĹ‚Ăłtno wyczyszczone pomyĹ›lnie!",
+        whiteBackground: "biaĹ‚e tĹ‚o",
+        transparentBackground: "przezroczyste tĹ‚o", 
+        imageExportedSuccessfully: "Obraz wyeksportowany pomyĹ›lnie z",
+        projectExportedSuccessfully: "Projekt wyeksportowany pomyĹ›lnie!",
+        noContentToExport: "Brak treĹ›ci do eksportu. ProszÄ™ najpierw utworzyÄ‡ elementy.",
+        showGrid: "PokaĹĽ SiatkÄ™",
+        hideGrid: "Ukryj SiatkÄ™",
+        showRulers: "PokaĹĽ Linijki", 
         hideRulers: "Ukryj Linijki",
         noProjectLoaded: "Brak Wczytanego Projektu",
         
         // Error messages and dialogs
-        failedToExport: "Nie udało się wyeksportować projektu. Spróbuj ponownie.",
-        errorExportingImage: "Błąd podczas eksportowania obrazu. Spróbuj ponownie.",
-        errorExportingProject: "Błąd podczas eksportowania projektu. Spróbuj ponownie.",
-        errorImportingProject: "Błąd podczas importowania projektu. Sprawdź format pliku.",
-        incorrectPasswordImportCancelled: "Nieprawidłowe hasło. Import anulowany.",
+        failedToExport: "Nie udaĹ‚o siÄ™ wyeksportowaÄ‡ projektu. SprĂłbuj ponownie.",
+        errorExportingImage: "BĹ‚Ä…d podczas eksportowania obrazu. SprĂłbuj ponownie.",
+        errorExportingProject: "BĹ‚Ä…d podczas eksportowania projektu. SprĂłbuj ponownie.",
+        errorImportingProject: "BĹ‚Ä…d podczas importowania projektu. SprawdĹş format pliku.",
+        incorrectPasswordImportCancelled: "NieprawidĹ‚owe hasĹ‚o. Import anulowany.",
         importCancelled: "Import anulowany.",
-        clearCurrentProjectConfirm: "Tworzenie nowego projektu wyczyści bieżące płótno.<br><br>Czy chcesz kontynuować?",
+        clearCurrentProjectConfirm: "Tworzenie nowego projektu wyczyĹ›ci bieĹĽÄ…ce pĹ‚Ăłtno.<br><br>Czy chcesz kontynuowaÄ‡?",
         
         // Export dialog
         exportProject: "Eksportuj Projekt",
         exportAsLcpFile: "Eksportuj jako plik .lcp",
         exportImageMenu: "Eksportuj Obraz",
-        whiteBackgroundBtn: "Białe Tło",
-        transparentBackgroundBtn: "Przezroczyste Tło",
+        whiteBackgroundBtn: "BiaĹ‚e TĹ‚o",
+        transparentBackgroundBtn: "Przezroczyste TĹ‚o",
         
         custom: "Niestandardowy",
         private: "PRYWATNY",
@@ -811,138 +814,138 @@ const translations = {
         of: "z",
         
         // Data Model Editor
-        fieldSpecificErrors: "Błędy specyficzne dla pól:",
+        fieldSpecificErrors: "BĹ‚Ä™dy specyficzne dla pĂłl:",
         unnamedField: "Pole bez nazwy",
         unknownField: "Nieznane pole",
-        pleaseFixErrors: "Proszę naprawić te błędy przed zapisaniem.",
+        pleaseFixErrors: "ProszÄ™ naprawiÄ‡ te bĹ‚Ä™dy przed zapisaniem.",
         
         // Context Menu
-        nodeId: "ID Węzła",
+        nodeId: "ID WÄ™zĹ‚a",
         textId: "ID Tekstu",
-        transitionId: "ID Przejścia", 
+        transitionId: "ID PrzejĹ›cia", 
         dataModelId: "ID Modelu Danych",
         type: "Typ",
         label: "Etykieta",
         position: "Pozycja",
-        rotation: "Obrót",
+        rotation: "ObrĂłt",
         fields: "Pola",
         style: "Styl",
         copyIdToClipboard: "Kopiuj ID do schowka",
-        showInTerminal: "Pokaż w terminalu",
-        changeColor: "Zmień kolor",
+        showInTerminal: "PokaĹĽ w terminalu",
+        changeColor: "ZmieĹ„ kolor",
         editDataModel: "Edytuj model danych",
-        rotateClockwise: "Obróć w prawo",
-        rotateCounterClockwise: "Obróć w lewo",
+        rotateClockwise: "ObrĂłÄ‡ w prawo",
+        rotateCounterClockwise: "ObrĂłÄ‡ w lewo",
         convertToCurved: "Konwertuj na zakrzywione",
         convertToStraight: "Konwertuj na proste",
         
         // Data Model Editor specific
-        clickAddFieldToStart: "Kliknij \"Dodaj Pole\" aby rozpocząć pracę z modelem danych",
+        clickAddFieldToStart: "Kliknij \"Dodaj Pole\" aby rozpoczÄ…Ä‡ pracÄ™ z modelem danych",
         fieldNamePlaceholder: "Nazwa pola...",
         selectFieldType: "Wybierz typ pola...",
-        initialValuePlaceholder: "Wartość początkowa...",
-        deleteField: "Usuń pole",
-        moveUp: "Przenieś w górę",
-        moveDown: "Przenieś w dół", 
+        initialValuePlaceholder: "WartoĹ›Ä‡ poczÄ…tkowa...",
+        deleteField: "UsuĹ„ pole",
+        moveUp: "PrzenieĹ› w gĂłrÄ™",
+        moveDown: "PrzenieĹ› w dĂłĹ‚", 
         duplicateField: "Duplikuj pole",
         stringType: "Tekst",
         numberType: "Liczba",
-        booleanType: "Wartość logiczna",
+        booleanType: "WartoĹ›Ä‡ logiczna",
         dateType: "Data",
         emailType: "Email",
         urlType: "URL",
         phoneType: "Telefon",
         currencyType: "Waluta",
         countryCodeType: "Kod kraju",
-        languageCodeType: "Kod języka",
+        languageCodeType: "Kod jÄ™zyka",
         creditCardType: "Karta kredytowa",
         
         // Node labels
         nodeStart: "START",
         nodeStop: "STOP",
-        nodeIf: "JEŚLI",
-        nodeDefault: "Węzeł",
+        nodeIf: "JEĹšLI",
+        nodeDefault: "WÄ™zeĹ‚",
         labelTrue: "PRAWDA",
-        labelFalse: "FAŁSZ",
+        labelFalse: "FAĹSZ",
         labelStep1: "Krok1",
         labelStep2: "Krok2",
         
         // Data Model Editor placeholders
-        enterModelName: "Wprowadź nazwę modelu",
-        jsonSchemaWillAppear: "Schemat JSON pojawi się tutaj...",
+        enterModelName: "WprowadĹş nazwÄ™ modelu",
+        jsonSchemaWillAppear: "Schemat JSON pojawi siÄ™ tutaj...",
         describeModel: "Opisz co reprezentuje ten model...",
         fieldNamePlaceholder2: "nazwa_pola",
         
         // Data Model Editor interface
         editDataModel: "Edytuj Model Danych",
-        defineFieldsAndStructure: "Zdefiniuj pola i strukturę dla twojego modelu danych",
+        defineFieldsAndStructure: "Zdefiniuj pola i strukturÄ™ dla twojego modelu danych",
         modelName: "Nazwa Modelu",
         modelId: "ID Modelu",
         copyId: "Kopiuj ID",
         jsonSchema: "Schemat JSON",
         acceptJson: "Zaakceptuj JSON",
         copyJson: "Kopiuj JSON",
-        jsonEditInstructions: "Możesz edytować JSON poniżej lub wkleić własny schemat i kliknąć \"Zaakceptuj JSON\" aby zastosować zmiany",
+        jsonEditInstructions: "MoĹĽesz edytowaÄ‡ JSON poniĹĽej lub wkleiÄ‡ wĹ‚asny schemat i kliknÄ…Ä‡ \"Zaakceptuj JSON\" aby zastosowaÄ‡ zmiany",
         modelSettings: "Ustawienia Modelu",
         description: "Opis",
-        validationRules: "Reguły Walidacji",
+        validationRules: "ReguĹ‚y Walidacji",
         modelType: "Typ Modelu",
         requireAllFields: "Wymagaj wszystkie pola",
-        enableValidation: "Włącz walidację",
-        allowNullValues: "Zezwól na wartości null",
+        enableValidation: "WĹ‚Ä…cz walidacjÄ™",
+        allowNullValues: "ZezwĂłl na wartoĹ›ci null",
         entity: "Encja",
         dataTransferObject: "Obiekt Transferu Danych",
         viewModel: "Model Widoku",
         document: "Dokument",
-        validationErrors: "Błędy Walidacji",
+        validationErrors: "BĹ‚Ä™dy Walidacji",
         saveChanges: "Zapisz Zmiany",
         options: "Opcje",
-        noFieldsDefinedYet: "Nie zdefiniowano jeszcze żadnych pól",
+        noFieldsDefinedYet: "Nie zdefiniowano jeszcze ĹĽadnych pĂłl",
         selectValue: "Wybierz...",
         selectCountry: "Wybierz kraj...",
-        selectLanguage: "Wybierz język...",
-        selectTimezone: "Wybierz strefę czasową...",
+        selectLanguage: "Wybierz jÄ™zyk...",
+        selectTimezone: "Wybierz strefÄ™ czasowÄ…...",
         
         // Validation messages
-        validationErrorsInModel: "W tym modelu występują błędy walidacji:",
-        sureToCloseWithoutSaving: "Czy na pewno chcesz zamknąć bez zapisywania? Wszystkie zmiany zostaną utracone.",
+        validationErrorsInModel: "W tym modelu wystÄ™pujÄ… bĹ‚Ä™dy walidacji:",
+        sureToCloseWithoutSaving: "Czy na pewno chcesz zamknÄ…Ä‡ bez zapisywania? Wszystkie zmiany zostanÄ… utracone.",
         modelNameRequired: "Nazwa modelu jest wymagana",
-        modelNameTooLong: "Nazwa modelu nie może przekraczać 50 znaków",
-        securityViolation: "Naruszenie bezpieczeństwa:",
+        modelNameTooLong: "Nazwa modelu nie moĹĽe przekraczaÄ‡ 50 znakĂłw",
+        securityViolation: "Naruszenie bezpieczeĹ„stwa:",
         
         // JSON validation messages
-        errorGeneratingJson: "Błąd podczas generowania JSON:",
-        pleaseEnterJsonSchema: "Proszę wprowadzić schemat JSON do zaakceptowania",
-        jsonTooLarge: "Zawartość JSON jest zbyt duża. Maksymalny rozmiar to 100KB",
-        jsonTooDeep: "Struktura JSON jest zbyt głęboka. Maksymalna głębokość to 10 poziomów",
-        tooManyProperties: "Zbyt wiele właściwości. Maksimum to 100 pól na model",
-        invalidJson: "Nieprawidłowy JSON:",
-        jsonDangerousScript: "JSON zawiera potencjalnie niebezpieczną zawartość skryptu",
-        jsonDangerousSQL: "Wartości tekstowe JSON zawierają potencjalnie niebezpieczne wzorce SQL",
-        schemaMustBeObject: "Schemat musi być prawidłowym obiektem JSON",
-        schemaMustHaveProperties: "Schemat musi zawierać obiekt \"properties\"",
-        schemaMinimumOneProperty: "Schemat musi zawierać przynajmniej jedną właściwość",
-        fieldNamesCannotBeEmpty: "Nazwy pól nie mogą być puste",
-        fieldMustHaveType: "musi mieć typ",
-        fieldInvalidType: "ma nieprawidłowy typ:",
-        requiredMustBeArray: "\"required\" musi być tablicą",
-        requiredFieldNotFound: "Wymagane pole \"${field}\" nie znalezione we właściwościach",
+        errorGeneratingJson: "BĹ‚Ä…d podczas generowania JSON:",
+        pleaseEnterJsonSchema: "ProszÄ™ wprowadziÄ‡ schemat JSON do zaakceptowania",
+        jsonTooLarge: "ZawartoĹ›Ä‡ JSON jest zbyt duĹĽa. Maksymalny rozmiar to 100KB",
+        jsonTooDeep: "Struktura JSON jest zbyt gĹ‚Ä™boka. Maksymalna gĹ‚Ä™bokoĹ›Ä‡ to 10 poziomĂłw",
+        tooManyProperties: "Zbyt wiele wĹ‚aĹ›ciwoĹ›ci. Maksimum to 100 pĂłl na model",
+        invalidJson: "NieprawidĹ‚owy JSON:",
+        jsonDangerousScript: "JSON zawiera potencjalnie niebezpiecznÄ… zawartoĹ›Ä‡ skryptu",
+        jsonDangerousSQL: "WartoĹ›ci tekstowe JSON zawierajÄ… potencjalnie niebezpieczne wzorce SQL",
+        schemaMustBeObject: "Schemat musi byÄ‡ prawidĹ‚owym obiektem JSON",
+        schemaMustHaveProperties: "Schemat musi zawieraÄ‡ obiekt \"properties\"",
+        schemaMinimumOneProperty: "Schemat musi zawieraÄ‡ przynajmniej jednÄ… wĹ‚aĹ›ciwoĹ›Ä‡",
+        fieldNamesCannotBeEmpty: "Nazwy pĂłl nie mogÄ… byÄ‡ puste",
+        fieldMustHaveType: "musi mieÄ‡ typ",
+        fieldInvalidType: "ma nieprawidĹ‚owy typ:",
+        requiredMustBeArray: "\"required\" musi byÄ‡ tablicÄ…",
+        requiredFieldNotFound: "Wymagane pole \"${field}\" nie znalezione we wĹ‚aĹ›ciwoĹ›ciach",
         jsonAutoSynchronized: "JSON automatycznie zsynchronizowany z polami",
         jsonCopiedToClipboard: "JSON skopiowany do schowka",
         
         // Boolean values
         trueValue: "Prawda",
-        falseValue: "Fałsz",
+        falseValue: "FaĹ‚sz",
         
         // Load projects
         loadProjectTitle: "Wczytaj Projekt",
         recentProjects: "Ostatnie Projekty",
-        searchProjects: "Szukaj projektów...",
-        noProjectsFound: "Nie znaleziono projektów",
+        searchProjects: "Szukaj projektĂłw...",
+        noProjectsFound: "Nie znaleziono projektĂłw",
         projectCreated: "Utworzony",
         projectModified: "Zmodyfikowany",
         load: "Wczytaj",
-        delete: "Usuń",
+        delete: "UsuĹ„",
         
         // Data Model
         dataModelEditor: "Edytor Modelu Danych",
@@ -955,176 +958,179 @@ const translations = {
         required: "Wymagane",
         nullable: "Nullable",
         readOnly: "Tylko do Odczytu",
-        initialValue: "Wartość Początkowa",
+        initialValue: "WartoĹ›Ä‡ PoczÄ…tkowa",
         
         // Terminal
         terminal: "Terminal",
-        terminalToggle: "Przełącz Terminal",
-        terminalClear: "Wyczyść Terminal",
+        terminalToggle: "PrzeĹ‚Ä…cz Terminal",
+        terminalClear: "WyczyĹ›Ä‡ Terminal",
         terminalClose: "Zamknij Terminal",
         terminalExport: "Eksportuj Logi",
         
         // InputService translations
         inputServiceInitialized: "InputService zainicjalizowany",
-        errorShowingNodeInput: "Błąd podczas pokazywania wejścia węzła",
-        failedToShowNodeEditor: "Nie udało się pokazać edytora węzła",
-        showTextInputCalled: "showTextInput wywołane",
-        inputPositioning: "Pozycjonowanie wejścia",
-        inputSetupCompleted: "Konfiguracja wejścia zakończona",
-        errorShowingTextInput: "Błąd podczas pokazywania wejścia tekstowego",
+        errorShowingNodeInput: "BĹ‚Ä…d podczas pokazywania wejĹ›cia wÄ™zĹ‚a",
+        failedToShowNodeEditor: "Nie udaĹ‚o siÄ™ pokazaÄ‡ edytora wÄ™zĹ‚a",
+        showTextInputCalled: "showTextInput wywoĹ‚ane",
+        inputPositioning: "Pozycjonowanie wejĹ›cia",
+        inputSetupCompleted: "Konfiguracja wejĹ›cia zakoĹ„czona",
+        errorShowingTextInput: "BĹ‚Ä…d podczas pokazywania wejĹ›cia tekstowego",
         
         // GridService translations
         gridServiceInitialized: "GridService zainicjalizowany",
-        rulersToggled: "Linijki przełączone",
-        gridToggled: "Siatka przełączona",
+        rulersToggled: "Linijki przeĹ‚Ä…czone",
+        gridToggled: "Siatka przeĹ‚Ä…czona",
         gridSizeChanged: "Rozmiar siatki zmieniony",
-        gridSnapChanged: "Przyciąganie siatki zmienione",
+        gridSnapChanged: "PrzyciÄ…ganie siatki zmienione",
         smartGuidesChanged: "Inteligentne prowadnice zmienione",
         gridServiceDestroyed: "GridService zniszczony",
         
         // MultiSelectionManager translations
         multiSelectionManagerInitialized: "MultiSelectionManager zainicjalizowany",
-        selectionRectangleStarted: "Prostokąt zaznaczenia rozpoczęty",
-        errorStartingSelection: "Błąd podczas rozpoczynania zaznaczenia",
-        failedToStartSelection: "Nie udało się rozpocząć zaznaczenia",
-        endSelectionCalled: "endSelection wywołane",
-        selectionRect: "Prostokąt zaznaczenia",
-        nodeSelected: "Węzeł zaznaczony",
+        selectionRectangleStarted: "ProstokÄ…t zaznaczenia rozpoczÄ™ty",
+        errorStartingSelection: "BĹ‚Ä…d podczas rozpoczynania zaznaczenia",
+        failedToStartSelection: "Nie udaĹ‚o siÄ™ rozpoczÄ…Ä‡ zaznaczenia",
+        endSelectionCalled: "endSelection wywoĹ‚ane",
+        selectionRect: "ProstokÄ…t zaznaczenia",
+        nodeSelected: "WÄ™zeĹ‚ zaznaczony",
         textSelected: "Tekst zaznaczony",
-        transitionSelected: "Przejście zaznaczone",
-        selectionRectangleDeactivated: "Prostokąt zaznaczenia deaktywowany",
-        multiSelectionCompleted: "Wieloselekçja zakończona",
-        errorEndingSelection: "Błąd podczas kończenia zaznaczenia",
-        failedToCompleteSelection: "Nie udało się zakończyć zaznaczenia",
-        errorCheckingElementInRect: "Błąd podczas sprawdzania elementu w prostokącie",
-        errorCheckingTextInRect: "Błąd podczas sprawdzania tekstu w prostokącie",
-        errorCheckingTransitionInRect: "Błąd podczas sprawdzania przejścia w prostokącie",
-        groupDragStarted: "Grupowe przeciąganie rozpoczęte",
-        errorStartingGroupDrag: "Błąd podczas rozpoczynania grupowego przeciągania",
-        failedToStartGroupDrag: "Nie udało się rozpocząć grupowego przeciągania",
-        groupDragCompleted: "Grupowe przeciąganie zakończone",
+        transitionSelected: "PrzejĹ›cie zaznaczone",
+        selectionRectangleDeactivated: "ProstokÄ…t zaznaczenia deaktywowany",
+        multiSelectionCompleted: "WieloselekĂ§ja zakoĹ„czona",
+        errorEndingSelection: "BĹ‚Ä…d podczas koĹ„czenia zaznaczenia",
+        failedToCompleteSelection: "Nie udaĹ‚o siÄ™ zakoĹ„czyÄ‡ zaznaczenia",
+        errorCheckingElementInRect: "BĹ‚Ä…d podczas sprawdzania elementu w prostokÄ…cie",
+        errorCheckingTextInRect: "BĹ‚Ä…d podczas sprawdzania tekstu w prostokÄ…cie",
+        errorCheckingTransitionInRect: "BĹ‚Ä…d podczas sprawdzania przejĹ›cia w prostokÄ…cie",
+        groupDragStarted: "Grupowe przeciÄ…ganie rozpoczÄ™te",
+        errorStartingGroupDrag: "BĹ‚Ä…d podczas rozpoczynania grupowego przeciÄ…gania",
+        failedToStartGroupDrag: "Nie udaĹ‚o siÄ™ rozpoczÄ…Ä‡ grupowego przeciÄ…gania",
+        groupDragCompleted: "Grupowe przeciÄ…ganie zakoĹ„czone",
         elementDeselected: "Element odznaczony",
         elementSelected: "Element zaznaczony",
         selectionCleared: "Zaznaczenie wyczyszczone",
         
         // BreakPointService translations
         breakPointServiceInitialized: "BreakPointService zainicjalizowany",
-        errorFindingBreakPointAtPosition: "Błąd podczas wyszukiwania punktu przerwania na pozycji",
-        failedToFindBreakPoint: "Nie udało się znaleźć punktu przerwania",
+        errorFindingBreakPointAtPosition: "BĹ‚Ä…d podczas wyszukiwania punktu przerwania na pozycji",
+        failedToFindBreakPoint: "Nie udaĹ‚o siÄ™ znaleĹşÄ‡ punktu przerwania",
         breakPointMoved: "Punkt przerwania przeniesiony",
-        errorMovingBreakPoint: "Błąd podczas przenoszenia punktu przerwania",
-        failedToMoveBreakPoint: "Nie udało się przenieść punktu przerwania",
-        multipleBreakPointsMoved: "Wiele punktów przerwania przeniesionych",
-        errorMovingMultipleBreakPoints: "Błąd podczas przenoszenia wielu punktów przerwania",
-        failedToMoveBreakPoints: "Nie udało się przenieść punktów przerwania",
-        errorGettingSelectedBreakPoints: "Błąd podczas pobierania zaznaczonych punktów przerwania",
-        breakPointsUpdatedForNodeMovement: "Punkty przerwania zaktualizowane dla ruchu węzła",
-        errorUpdatingBreakPointsForMovedNode: "Błąd podczas aktualizacji punktów przerwania dla przeniesionego węzła",
-        failedToUpdateBreakPoints: "Nie udało się zaktualizować punktów przerwania",
-        breakPointsUpdatedForGroupNodeMovement: "Punkty przerwania zaktualizowane dla grupowego ruchu węzłów",
-        errorUpdatingBreakPointsForMovedNodes: "Błąd podczas aktualizacji punktów przerwania dla przeniesionych węzłów",
+        errorMovingBreakPoint: "BĹ‚Ä…d podczas przenoszenia punktu przerwania",
+        failedToMoveBreakPoint: "Nie udaĹ‚o siÄ™ przenieĹ›Ä‡ punktu przerwania",
+        multipleBreakPointsMoved: "Wiele punktĂłw przerwania przeniesionych",
+        errorMovingMultipleBreakPoints: "BĹ‚Ä…d podczas przenoszenia wielu punktĂłw przerwania",
+        failedToMoveBreakPoints: "Nie udaĹ‚o siÄ™ przenieĹ›Ä‡ punktĂłw przerwania",
+        errorGettingSelectedBreakPoints: "BĹ‚Ä…d podczas pobierania zaznaczonych punktĂłw przerwania",
+        breakPointsUpdatedForNodeMovement: "Punkty przerwania zaktualizowane dla ruchu wÄ™zĹ‚a",
+        errorUpdatingBreakPointsForMovedNode: "BĹ‚Ä…d podczas aktualizacji punktĂłw przerwania dla przeniesionego wÄ™zĹ‚a",
+        failedToUpdateBreakPoints: "Nie udaĹ‚o siÄ™ zaktualizowaÄ‡ punktĂłw przerwania",
+        breakPointsUpdatedForGroupNodeMovement: "Punkty przerwania zaktualizowane dla grupowego ruchu wÄ™zĹ‚Ăłw",
+        errorUpdatingBreakPointsForMovedNodes: "BĹ‚Ä…d podczas aktualizacji punktĂłw przerwania dla przeniesionych wÄ™zĹ‚Ăłw",
         
         // EventBus and DiagramController translations
-        errorInEventListener: "Błąd w nasłuchiwaczu zdarzeń",
+        errorInEventListener: "BĹ‚Ä…d w nasĹ‚uchiwaczu zdarzeĹ„",
         diagramControllerInitialized: "DiagramController zainicjalizowany",
-        transitionDrawingModeStarted: "Tryb rysowania przejść rozpoczęty",
-        transitionDrawingCancelled: "Rysowanie przejść anulowane",
-        transitionDrawingCompleted: "Rysowanie przejść zakończone",
-        mouseDownAt: "Mysz naciśnięta na",
-        currentlyEditingCompletingEdit: "Obecnie edytowane - kończenie edycji",
+        transitionDrawingModeStarted: "Tryb rysowania przejĹ›Ä‡ rozpoczÄ™ty",
+        transitionDrawingCancelled: "Rysowanie przejĹ›Ä‡ anulowane",
+        transitionDrawingCompleted: "Rysowanie przejĹ›Ä‡ zakoĹ„czone",
+        mouseDownAt: "Mysz naciĹ›niÄ™ta na",
+        currentlyEditingCompletingEdit: "Obecnie edytowane - koĹ„czenie edycji",
         
         // Transition model translations
-        transitionMissingFromOrToNode: "Przejście brakuje węzła źródłowego lub docelowego",
-        transitionNodesMissingCoordinates: "Węzłom przejścia brakuje współrzędnych",
-        blockedStyleToggleForIFTransition: "Zablokowano zmianę stylu dla przejścia IF - ramiona robota nie mogą być modyfikowane",
-        transitionStyleToggled: "Styl przejścia przełączony",
-        blockedBreakPointForIFTransition: "Zablokowano punkt przerwania dla przejścia IF - ramiona robota nie mogą być modyfikowane",
+        transitionMissingFromOrToNode: "PrzejĹ›cie brakuje wÄ™zĹ‚a ĹşrĂłdĹ‚owego lub docelowego",
+        transitionNodesMissingCoordinates: "WÄ™zĹ‚om przejĹ›cia brakuje wspĂłĹ‚rzÄ™dnych",
+        blockedStyleToggleForIFTransition: "Zablokowano zmianÄ™ stylu dla przejĹ›cia IF - ramiona robota nie mogÄ… byÄ‡ modyfikowane",
+        transitionStyleToggled: "Styl przejĹ›cia przeĹ‚Ä…czony",
+        blockedBreakPointForIFTransition: "Zablokowano punkt przerwania dla przejĹ›cia IF - ramiona robota nie mogÄ… byÄ‡ modyfikowane",
         breakPointAdded: "Punkt przerwania dodany",
-        breakPointRemoved: "Punkt przerwania usunięty",
+        breakPointRemoved: "Punkt przerwania usuniÄ™ty",
         allBreakPointsCleared: "Wszystkie punkty przerwania wyczyszczone",
         
         // Project model translations
-        duplicateTransitionPrevented: "Zapobieżono duplikatowi przejścia",
+        duplicateTransitionPrevented: "ZapobieĹĽono duplikatowi przejĹ›cia",
         lookingForTextAtPosition: "Szukanie tekstu na pozycji",
         foundTextElement: "Znaleziono element tekstowy",
         noTextFoundAtPosition: "Nie znaleziono tekstu na pozycji",
         
         // InputService translations
-        errorShowingTransitionInput: "Błąd podczas pokazywania wprowadzania przejścia",
-        createInputCalled: "createInput wywołane",
+        errorShowingTransitionInput: "BĹ‚Ä…d podczas pokazywania wprowadzania przejĹ›cia",
+        createInputCalled: "createInput wywoĹ‚ane",
         creatingNewInputElement: "Tworzenie nowego elementu wprowadzania",
-        reusingExistingInputElement: "Ponowne użycie istniejącego elementu wprowadzania",
+        reusingExistingInputElement: "Ponowne uĹĽycie istniejÄ…cego elementu wprowadzania",
         inputElementConfigured: "Element wprowadzania skonfigurowany",
-        setupInputCalled: "setupInput wywołane",
-        inputCompleted: "Wprowadzanie zakończone",
-        inputTooLongTruncating: "Wprowadzanie zbyt długie, skracanie",
+        setupInputCalled: "setupInput wywoĹ‚ane",
+        inputCompleted: "Wprowadzanie zakoĹ„czone",
+        inputTooLongTruncating: "Wprowadzanie zbyt dĹ‚ugie, skracanie",
         inputSanitized: "Wprowadzanie oczyszczone",
         settingLabel: "Ustawianie etykiety",
-        settingTransitionLabel: "Ustawianie etykiety przejścia",
+        settingTransitionLabel: "Ustawianie etykiety przejĹ›cia",
         hidingActiveInput: "Ukrywanie aktywnego wprowadzania",
         inputServiceDestroyed: "InputService zniszczone",
         
         // ExportService translations
-        errorInFallbackExport: "Błąd w eksporcie zapasowym",
+        errorInFallbackExport: "BĹ‚Ä…d w eksporcie zapasowym",
         
         // DiagramController debug translations
-        mouseDownInternal: "Wewnętrzne naciśnięcie myszy",
-        ctrlClickOnNode: "Ctrl+klik na węzeł",
+        mouseDownInternal: "WewnÄ™trzne naciĹ›niÄ™cie myszy",
+        ctrlClickOnNode: "Ctrl+klik na wÄ™zeĹ‚",
         ctrlClickOnText: "Ctrl+klik na tekst",
-        ctrlClickOnBreakPoint: "Ctrl+klik na punkt przerwania - dodaj przejście do selekcji",
-        ctrlClickOnTransition: "Ctrl+klik na przejście",
-        groupDragStartNode: "Start przeciągania grupy - węzeł",
-        groupDragStartText: "Start przeciągania grupy - tekst",
-        singleClickOnNodeStartDragging: "Pojedynczy klik na węzeł - start przeciągania",
-        singleClickOnTextStartDragging: "Pojedynczy klik na tekst - start przeciągania",
-        singleClickOnBreakPointStartDragging: "Pojedynczy klik na punkt przerwania - start przeciągania",
-        singleClickOnTransition: "Pojedynczy klik na przejście",
-        clickOnEmptySpaceStartRectangleSelection: "Klik na pustą przestrzeń - start prostokątnej selekcji",
-        startDragging: "Start przeciągania",
-        startDraggingBreakPoint: "Start przeciągania punktu przerwania",
-        startDraggingTransition: "Start przeciągania przejścia",
-        transitionStartNodeSelected: "Wybrano węzeł startowy przejścia",
-        transitionCancelledSameNodeClicked: "Przejście anulowane - ten sam węzeł kliknięty dwukrotnie",
-        doubleClickAt: "Podwójny klik na",
-        doubleClickOnNode: "Podwójny klik na węzeł",
-        doubleClickOnText: "Podwójny klik na tekst",
-        doubleClickOnTransition: "Podwójny klik na przejście",
-        rotatingIfNodeCounterClockwise: "Obracanie węzła IF przeciwnie do ruchu wskazówek zegara",
-        foundTransitionsForCounterClockwiseRotation: "Znaleziono przejścia dla obrotu przeciwnego do ruchu wskazówek",
-        missingTransitionsForIfCounterClockwiseRotation: "Brakujące przejścia dla obrotu IF przeciwnego do ruchu wskazówek",
-        blockingOptionsForIfTransition: "Blokowanie opcji dla przejścia IF - ramiona robota nie mogą być modyfikowane",
-        rotatingIfNode: "Obracanie węzła IF",
-        foundTransitionsForRotation: "Znaleziono przejścia dla obrotu",
-        missingTransitionsForIfRotation: "Brakujące przejścia dla obrotu IF",
-        transitionStyleToggled: "Przełączono styl przejścia",
-        breakPointAddedToTransition: "Dodano punkt przerwania do przejścia",
-        breakPointRemovedFromTransition: "Usunięto punkt przerwania z przejścia",
-        allBreakPointsClearedFromTransition: "Wszystkie punkty przerwania usunięte z przejścia",
-        startNodeIsNull: "StartNode jest null podczas próby utworzenia przejścia",
-        transitionCreatedSuccessfully: "Przejście utworzone pomyślnie",
-        transitionCreationFailedOrDuplicate: "Utworzenie przejścia nie powiodło się lub wykryto duplikat",
-        cannotCreateTransitionInvalidNodes: "Nie można utworzyć przejścia - nieprawidłowe węzły",
-        transitionAlreadyExistsBetweenNodes: "Przejście już istnieje między tymi węzłami",
+        ctrlClickOnBreakPoint: "Ctrl+klik na punkt przerwania - dodaj przejĹ›cie do selekcji",
+        ctrlClickOnTransition: "Ctrl+klik na przejĹ›cie",
+        groupDragStartNode: "Start przeciÄ…gania grupy - wÄ™zeĹ‚",
+        groupDragStartText: "Start przeciÄ…gania grupy - tekst",
+        singleClickOnNodeStartDragging: "Pojedynczy klik na wÄ™zeĹ‚ - start przeciÄ…gania",
+        singleClickOnTextStartDragging: "Pojedynczy klik na tekst - start przeciÄ…gania",
+        singleClickOnBreakPointStartDragging: "Pojedynczy klik na punkt przerwania - start przeciÄ…gania",
+        singleClickOnTransition: "Pojedynczy klik na przejĹ›cie",
+        clickOnEmptySpaceStartRectangleSelection: "Klik na pustÄ… przestrzeĹ„ - start prostokÄ…tnej selekcji",
+        startDragging: "Start przeciÄ…gania",
+        startDraggingBreakPoint: "Start przeciÄ…gania punktu przerwania",
+        startDraggingTransition: "Start przeciÄ…gania przejĹ›cia",
+        transitionStartNodeSelected: "Wybrano wÄ™zeĹ‚ startowy przejĹ›cia",
+        transitionCancelledSameNodeClicked: "PrzejĹ›cie anulowane - ten sam wÄ™zeĹ‚ klikniÄ™ty dwukrotnie",
+        doubleClickAt: "PodwĂłjny klik na",
+        doubleClickOnNode: "PodwĂłjny klik na wÄ™zeĹ‚",
+        doubleClickOnText: "PodwĂłjny klik na tekst",
+        doubleClickOnTransition: "PodwĂłjny klik na przejĹ›cie",
+        rotatingIfNodeCounterClockwise: "Obracanie wÄ™zĹ‚a IF przeciwnie do ruchu wskazĂłwek zegara",
+        foundTransitionsForCounterClockwiseRotation: "Znaleziono przejĹ›cia dla obrotu przeciwnego do ruchu wskazĂłwek",
+        missingTransitionsForIfCounterClockwiseRotation: "BrakujÄ…ce przejĹ›cia dla obrotu IF przeciwnego do ruchu wskazĂłwek",
+        blockingOptionsForIfTransition: "Blokowanie opcji dla przejĹ›cia IF - ramiona robota nie mogÄ… byÄ‡ modyfikowane",
+        rotatingIfNode: "Obracanie wÄ™zĹ‚a IF",
+        foundTransitionsForRotation: "Znaleziono przejĹ›cia dla obrotu",
+        missingTransitionsForIfRotation: "BrakujÄ…ce przejĹ›cia dla obrotu IF",
+        transitionStyleToggled: "PrzeĹ‚Ä…czono styl przejĹ›cia",
+        breakPointAddedToTransition: "Dodano punkt przerwania do przejĹ›cia",
+        breakPointRemovedFromTransition: "UsuniÄ™to punkt przerwania z przejĹ›cia",
+        allBreakPointsClearedFromTransition: "Wszystkie punkty przerwania usuniÄ™te z przejĹ›cia",
+        startNodeIsNull: "StartNode jest null podczas prĂłby utworzenia przejĹ›cia",
+        transitionCreatedSuccessfully: "PrzejĹ›cie utworzone pomyĹ›lnie",
+        transitionCreationFailedOrDuplicate: "Utworzenie przejĹ›cia nie powiodĹ‚o siÄ™ lub wykryto duplikat",
+        cannotCreateTransitionInvalidNodes: "Nie moĹĽna utworzyÄ‡ przejĹ›cia - nieprawidĹ‚owe wÄ™zĹ‚y",
+        transitionAlreadyExistsBetweenNodes: "PrzejĹ›cie juĹĽ istnieje miÄ™dzy tymi wÄ™zĹ‚ami",
         
         // Additional DiagramController debug translations
-        startDraggingBreakPoint: "Start przeciągania punktu przerwania",
+        startDraggingBreakPoint: "Start przeciÄ…gania punktu przerwania",
         elementEditedEventReceived: "Otrzymano zdarzenie edycji elementu",
         dataModelUpdatedEventReceived: "Otrzymano zdarzenie aktualizacji modelu danych",
-        breakPointMovedEventReceived: "Otrzymano zdarzenie przesunięcia punktu przerwania",
-        multipleBreakPointsMovedEventReceived: "Otrzymano zdarzenie przesunięcia wielu punktów przerwania",
+        breakPointMovedEventReceived: "Otrzymano zdarzenie przesuniÄ™cia punktu przerwania",
+        multipleBreakPointsMovedEventReceived: "Otrzymano zdarzenie przesuniÄ™cia wielu punktĂłw przerwania",
         autoSavedToNamedProject: "Auto-zapisano do nazwanego projektu",
         autoSaveTriggeredAfterModification: "Auto-zapis uruchomiony po modyfikacji",
         
         // Terminal filter options
-        allMessages: "Wszystkie Wiadomości",
-        errorsOnly: "Tylko Błędy",
-        warningsOnly: "Tylko Ostrzeżenia", 
+        allMessages: "Wszystkie WiadomoĹ›ci",
+        errorsOnly: "Tylko BĹ‚Ä™dy",
+        warningsOnly: "Tylko OstrzeĹĽenia", 
         infoOnly: "Tylko Informacje",
         debugOnly: "Tylko Debug",
-        canvasDrops: "Upuszczenia na Płótno",
+        canvasDrops: "Upuszczenia na PĹ‚Ăłtno",
         textControls: "Kontrolki Tekstu",
-        elementMoves: "Przesunięcia Elementów",
-        elementModifications: "Modyfikacje Elementów",
+        elementMoves: "PrzesuniÄ™cia ElementĂłw",
+        elementModifications: "Modyfikacje ElementĂłw",
+        
+        // Language switcher
+        selectLanguage: "Wybierz JÄ™zyk",
         
         // Common
         yes: "Tak",
@@ -1132,7 +1138,7 @@ const translations = {
         ok: "OK",
         close: "Zamknij",
         edit: "Edytuj",
-        remove: "Usuń",
+        remove: "UsuĹ„",
         duplicate: "Duplikuj",
         search: "Szukaj",
         filterText: "Filtruj tekst...",
@@ -1140,157 +1146,157 @@ const translations = {
         // Tooltips
         englishFlag: "Angielski",
         polishFlag: "Polski",
-        basicNodeTooltip: "Podstawowy węzeł - przeciągnij na kanwę aby dodać element procesu",
+        basicNodeTooltip: "Podstawowy wÄ™zeĹ‚ - przeciÄ…gnij na kanwÄ™ aby dodaÄ‡ element procesu",
         textElementTooltip: "Element tekstowy - dodaje etykiety i opisy do diagramu",
-        startPointTooltip: "Punkt startowy procesu - oznacza początek diagramu",
-        endPointTooltip: "Punkt końcowy procesu - oznacza zakończenie diagramu",
-        logicalConditionTooltip: "Warunek logiczny - umożliwia rozgałęzienie procesu na podstawie decyzji",
-        dataModelTooltip: "Model danych - definiuje strukturę danych z polami i typami",
-        singleConnectionTooltip: "Połączenie jednostronne - tworzy strzałkę w jednym kierunku",
-        dualConnectionTooltip: "Połączenie dwustronne - tworzy strzałki w obu kierunkach",
-        straightLineTooltip: "Prosta linia - łączy elementy bez strzałki",
-        toggleGridTooltip: "Włącz/wyłącz siatkę pomocniczą na kanwie",
-        toggleRulersTooltip: "Włącz/wyłącz linijki pomiarowe na kanwie",
-        canvasTooltip: "Kanwa do rysowania - przeciągnij komponenty z lewego panelu, kliknij aby zaznaczyć, dwuklik aby edytować",
-        clearAllProjectsTooltip: "Usuń wszystkie zapisane projekty z listy",
-        searchProjectsTooltip: "Wpisz nazwę projektu aby go znaleźć na liście",
-        toggleTerminalTooltip: "Pokaż/ukryj terminal konsoli",
-        removeSelectedTooltip: "Usuń zaznaczone elementy z diagramu",
-        newProjectTooltip: "Utwórz nowy projekt - czyści kanwę i rozpoczyna od zera",
-        saveProjectTooltip: "Zapisz aktualny projekt w przeglądarce",
+        startPointTooltip: "Punkt startowy procesu - oznacza poczÄ…tek diagramu",
+        endPointTooltip: "Punkt koĹ„cowy procesu - oznacza zakoĹ„czenie diagramu",
+        logicalConditionTooltip: "Warunek logiczny - umoĹĽliwia rozgaĹ‚Ä™zienie procesu na podstawie decyzji",
+        dataModelTooltip: "Model danych - definiuje strukturÄ™ danych z polami i typami",
+        singleConnectionTooltip: "PoĹ‚Ä…czenie jednostronne - tworzy strzaĹ‚kÄ™ w jednym kierunku",
+        dualConnectionTooltip: "PoĹ‚Ä…czenie dwustronne - tworzy strzaĹ‚ki w obu kierunkach",
+        straightLineTooltip: "Prosta linia - Ĺ‚Ä…czy elementy bez strzaĹ‚ki",
+        toggleGridTooltip: "WĹ‚Ä…cz/wyĹ‚Ä…cz siatkÄ™ pomocniczÄ… na kanwie",
+        toggleRulersTooltip: "WĹ‚Ä…cz/wyĹ‚Ä…cz linijki pomiarowe na kanwie",
+        canvasTooltip: "Kanwa do rysowania - przeciÄ…gnij komponenty z lewego panelu, kliknij aby zaznaczyÄ‡, dwuklik aby edytowaÄ‡",
+        clearAllProjectsTooltip: "UsuĹ„ wszystkie zapisane projekty z listy",
+        searchProjectsTooltip: "Wpisz nazwÄ™ projektu aby go znaleĹşÄ‡ na liĹ›cie",
+        toggleTerminalTooltip: "PokaĹĽ/ukryj terminal konsoli",
+        removeSelectedTooltip: "UsuĹ„ zaznaczone elementy z diagramu",
+        newProjectTooltip: "UtwĂłrz nowy projekt - czyĹ›ci kanwÄ™ i rozpoczyna od zera",
+        saveProjectTooltip: "Zapisz aktualny projekt w przeglÄ…darce",
         loadProjectTooltip: "Wczytaj zapisany projekt z pliku",
-        clearCanvasTooltip: "Wyczyść całą kanwę - usuń wszystkie elementy",
+        clearCanvasTooltip: "WyczyĹ›Ä‡ caĹ‚Ä… kanwÄ™ - usuĹ„ wszystkie elementy",
         exportImageTooltip: "Eksportuj diagram jako obraz PNG",
         exportFileTooltip: "Eksportuj projekt jako plik JSON",
         importFileTooltip: "Importuj projekt z pliku JSON",
-        resizeTerminalTooltip: "Przeciągnij aby zmienić wysokość terminala",
-        filterMessagesByTextTooltip: "Filtruj wiadomości według tekstu",
-        filterMessagesByTypeTooltip: "Filtruj wiadomości według typu",
+        resizeTerminalTooltip: "PrzeciÄ…gnij aby zmieniÄ‡ wysokoĹ›Ä‡ terminala",
+        filterMessagesByTextTooltip: "Filtruj wiadomoĹ›ci wedĹ‚ug tekstu",
+        filterMessagesByTypeTooltip: "Filtruj wiadomoĹ›ci wedĹ‚ug typu",
         exportLogsTooltip: "Eksportuj logi do pliku",
-        clearTerminalTooltip: "Wyczyść terminal",
+        clearTerminalTooltip: "WyczyĹ›Ä‡ terminal",
         closeTerminalTooltip: "Zamknij terminal",
-        enterCommandTooltip: "Wpisz komendę i naciśnij Enter",
-        typeCommandPlaceholder: "Wpisz komendę...",
+        enterCommandTooltip: "Wpisz komendÄ™ i naciĹ›nij Enter",
+        typeCommandPlaceholder: "Wpisz komendÄ™...",
         
         // Terminal messages
-        terminalInitialized: "Serwis terminala został pomyślnie zainicjalizowany.",
-        canvasDropTracking: "Śledzenie upuszczania na płótno włączone - wszystkie operacje przeciągnij i upuść będą tutaj logowane.",
-        typeHelpForCommands: "Wpisz \"help\" aby zobaczyć dostępne komendy.",
-        terminalHelpTitle: "🎯 TERMINAL DIAVINCI - Dostępne Komendy",
-        basicCommands: "🔧 PODSTAWOWE KOMENDY:",
-        helpCommand: "help          - Pokaż tę wiadomość pomocy",
-        clearCommand: "clear         - Wyczyść output terminala",
-        statusCommand: "status        - Pokaż status systemu",
+        terminalInitialized: "Serwis terminala zostaĹ‚ pomyĹ›lnie zainicjalizowany.",
+        canvasDropTracking: "Ĺšledzenie upuszczania na pĹ‚Ăłtno wĹ‚Ä…czone - wszystkie operacje przeciÄ…gnij i upuĹ›Ä‡ bÄ™dÄ… tutaj logowane.",
+        typeHelpForCommands: "Wpisz \"help\" aby zobaczyÄ‡ dostÄ™pne komendy.",
+        terminalHelpTitle: "đźŽŻ TERMINAL DIAVINCI - DostÄ™pne Komendy",
+        basicCommands: "đź”§ PODSTAWOWE KOMENDY:",
+        helpCommand: "help          - PokaĹĽ tÄ™ wiadomoĹ›Ä‡ pomocy",
+        clearCommand: "clear         - WyczyĹ›Ä‡ output terminala",
+        statusCommand: "status        - PokaĹĽ status systemu",
         exportCommand: "export        - Eksportuj logi do pliku",
-        versionCommand: "version       - Pokaż wersję aplikacji",
-        timeCommand: "time          - Pokaż aktualny czas",
-        historyCommand: "history       - Pokaż historię komend",
+        versionCommand: "version       - PokaĹĽ wersjÄ™ aplikacji",
+        timeCommand: "time          - PokaĹĽ aktualny czas",
+        historyCommand: "history       - PokaĹĽ historiÄ™ komend",
         resetCommand: "reset         - Resetuj stan aplikacji",
-        searchInspect: "🔍 SZUKANIE I INSPEKCJA:",
-        findCommand: "find <id>     - Znajdź element po ID",
-        searchCommand: "search <text> - Szukaj elementów po etykiecie/nazwie",
-        inspectCommand: "inspect <id>  - Pokaż szczegółowe info o elemencie",
+        searchInspect: "đź”Ť SZUKANIE I INSPEKCJA:",
+        findCommand: "find <id>     - ZnajdĹş element po ID",
+        searchCommand: "search <text> - Szukaj elementĂłw po etykiecie/nazwie",
+        inspectCommand: "inspect <id>  - PokaĹĽ szczegĂłĹ‚owe info o elemencie",
         listElementsCommand: "list elements - Listuj wszystkie elementy z ID",
-        listNodesCommand: "list nodes    - Listuj tylko węzły",
+        listNodesCommand: "list nodes    - Listuj tylko wÄ™zĹ‚y",
         listTextsCommand: "list texts    - Listuj tylko elementy tekstowe",
-        listTransCommand: "list trans    - Listuj tylko przejścia",
+        listTransCommand: "list trans    - Listuj tylko przejĹ›cia",
         countCommand: "count         - Policz wszystkie elementy projektu",
-        analyticsCommands: "📊 ANALITYKA:",
-        statsCommand: "stats         - Pokaż szczegółowe statystyki projektu",
-        memoryCommand: "memory        - Pokaż informacje o użyciu pamięci",
-        performanceCommand: "performance   - Pokaż metryki wydajności",
-        validateCommand: "validate      - Zwaliduj integralność projektu",
-        debuggingCommands: "🛠️ DEBUGOWANIE:",
-        debugCommand: "debug on/off  - Przełącz logowanie debug",
-        debugProjectCommand: "debug project - Pokaż info debug projektu",
-        debugNodesCommand: "debug nodes   - Pokaż wszystkie węzły z typami",
+        analyticsCommands: "đź“Š ANALITYKA:",
+        statsCommand: "stats         - PokaĹĽ szczegĂłĹ‚owe statystyki projektu",
+        memoryCommand: "memory        - PokaĹĽ informacje o uĹĽyciu pamiÄ™ci",
+        performanceCommand: "performance   - PokaĹĽ metryki wydajnoĹ›ci",
+        validateCommand: "validate      - Zwaliduj integralnoĹ›Ä‡ projektu",
+        debuggingCommands: "đź› ď¸Ź DEBUGOWANIE:",
+        debugCommand: "debug on/off  - PrzeĹ‚Ä…cz logowanie debug",
+        debugProjectCommand: "debug project - PokaĹĽ info debug projektu",
+        debugNodesCommand: "debug nodes   - PokaĹĽ wszystkie wÄ™zĹ‚y z typami",
         logsCommand: "logs <type>   - Filtruj logi po typie",
-        traceCommand: "trace <id>    - Śledź relacje elementu",
-        errorsCommand: "errors        - Pokaż ostatnie logi błędów",
-        dataModelCommands: "📋 MODEL DANYCH:",
+        traceCommand: "trace <id>    - ĹšledĹş relacje elementu",
+        errorsCommand: "errors        - PokaĹĽ ostatnie logi bĹ‚Ä™dĂłw",
+        dataModelCommands: "đź“‹ MODEL DANYCH:",
         fieldsCommand: "fields <id>   - Listuj wszystkie pola modelu danych",
-        fieldCommand: "field <id> <name> - Pobierz wartość pola z modelu",
-        modelsCommand: "models        - Listuj wszystkie węzły modelu danych",
-        quickFieldAccess: "ID.nazwa_pola - Szybki dostęp do pola (np. 123.name)",
-        tabAutocomplete: "💡 Użyj TAB po kropce dla autouzupełniania",
-        systemCommands: "⚙️ SYSTEM:",
-        configCommand: "config        - Pokaż konfigurację systemu",
-        backupCommand: "backup        - Utwórz kopię zapasową projektu",
-        cleanupCommand: "cleanup       - Oczyść dane tymczasowe",
-        pingCommand: "ping          - Testuj responsywność systemu",
+        fieldCommand: "field <id> <name> - Pobierz wartoĹ›Ä‡ pola z modelu",
+        modelsCommand: "models        - Listuj wszystkie wÄ™zĹ‚y modelu danych",
+        quickFieldAccess: "ID.nazwa_pola - Szybki dostÄ™p do pola (np. 123.name)",
+        tabAutocomplete: "đź’ˇ UĹĽyj TAB po kropce dla autouzupeĹ‚niania",
+        systemCommands: "âš™ď¸Ź SYSTEM:",
+        configCommand: "config        - PokaĹĽ konfiguracjÄ™ systemu",
+        backupCommand: "backup        - UtwĂłrz kopiÄ™ zapasowÄ… projektu",
+        cleanupCommand: "cleanup       - OczyĹ›Ä‡ dane tymczasowe",
+        pingCommand: "ping          - Testuj responsywnoĹ›Ä‡ systemu",
         logsExported: "Logi wyeksportowane do",
-        entriesCount: "wpisów",
-        failedToExport: "Nie udało się wyeksportować logów:",
-        functionFailed: "Funkcja nie powiodła się:",
-        stackTrace: "Ślad stosu:",
-        availableFields: "💡 Dostępne pola dla elementu",
+        entriesCount: "wpisĂłw",
+        failedToExport: "Nie udaĹ‚o siÄ™ wyeksportowaÄ‡ logĂłw:",
+        functionFailed: "Funkcja nie powiodĹ‚a siÄ™:",
+        stackTrace: "Ĺšlad stosu:",
+        availableFields: "đź’ˇ DostÄ™pne pola dla elementu",
         basicFields: "Podstawowe:",
-        nestedFields: "Zagnieżdżone:",
-        noFieldsMatch: "❌ Żadne pola nie pasują do",
-        elementNotFound: "❌ Element o ID nie został znaleziony.",
-        availableCompletions: "💡 Dostępne uzupełnienia:",
-        noCommandsMatch: "❌ Żadne komendy nie pasują do",
-        moreFields: "więcej pól",
+        nestedFields: "ZagnieĹĽdĹĽone:",
+        noFieldsMatch: "âťŚ Ĺ»adne pola nie pasujÄ… do",
+        elementNotFound: "âťŚ Element o ID nie zostaĹ‚ znaleziony.",
+        availableCompletions: "đź’ˇ DostÄ™pne uzupeĹ‚nienia:",
+        noCommandsMatch: "âťŚ Ĺ»adne komendy nie pasujÄ… do",
+        moreFields: "wiÄ™cej pĂłl",
         andMoreFields: "... i",
-        useFieldsToSeeAll: "Użyj \"fields",
-        toSeeAllFields: "\" aby zobaczyć wszystkie pola",
+        useFieldsToSeeAll: "UĹĽyj \"fields",
+        toSeeAllFields: "\" aby zobaczyÄ‡ wszystkie pola",
         field: "pole",
         fields: "pola",
         
         // DataModelNode validation messages
         fieldNameRequired: "Nazwa pola jest wymagana",
-        fieldNameDangerous: "Nazwa pola zawiera potencjalnie niebezpieczną treść",
-        fieldNameFormat: "Nazwa pola musi zaczynać się od litery lub podkreślenia i zawierać tylko litery, cyfry i podkreślenia",
-        fieldNameTooLong: "Nazwa pola nie może przekraczać 25 znaków",
+        fieldNameDangerous: "Nazwa pola zawiera potencjalnie niebezpiecznÄ… treĹ›Ä‡",
+        fieldNameFormat: "Nazwa pola musi zaczynaÄ‡ siÄ™ od litery lub podkreĹ›lenia i zawieraÄ‡ tylko litery, cyfry i podkreĹ›lenia",
+        fieldNameTooLong: "Nazwa pola nie moĹĽe przekraczaÄ‡ 25 znakĂłw",
         fieldNameSqlPatterns: "Nazwa pola zawiera potencjalnie niebezpieczne wzorce SQL",
-        fieldNameReserved: "Nazwa pola nie może być słowem zastrzeżonym",
-        valueDangerousScript: "Wartość zawiera potencjalnie niebezpieczną treść skryptu",
-        valueDangerousSql: "Wartość zawiera potencjalnie niebezpieczne wzorce SQL",
-        valueTooLong: "Wartość jest za długa (maksymalnie 1000 znaków)",
-        fieldNameMustBeUnique: "Nazwa pola musi być unikalna",
-        fieldNameCannotBeEmpty: "Nazwa pola nie może być pusta",
-        fieldNameAlreadyInUse: "Nazwa pola '$1' jest już używana",
+        fieldNameReserved: "Nazwa pola nie moĹĽe byÄ‡ sĹ‚owem zastrzeĹĽonym",
+        valueDangerousScript: "WartoĹ›Ä‡ zawiera potencjalnie niebezpiecznÄ… treĹ›Ä‡ skryptu",
+        valueDangerousSql: "WartoĹ›Ä‡ zawiera potencjalnie niebezpieczne wzorce SQL",
+        valueTooLong: "WartoĹ›Ä‡ jest za dĹ‚uga (maksymalnie 1000 znakĂłw)",
+        fieldNameMustBeUnique: "Nazwa pola musi byÄ‡ unikalna",
+        fieldNameCannotBeEmpty: "Nazwa pola nie moĹĽe byÄ‡ pusta",
+        fieldNameAlreadyInUse: "Nazwa pola '$1' jest juĹĽ uĹĽywana",
         
         // Validation error messages
-        invalidUuidFormat: "Nieprawidłowy format UUID: '$1'. Użyj formatu: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        passwordTooShort: "Hasło musi mieć co najmniej 6 znaków",
-        invalidColorFormat: "Nieprawidłowy format koloru: '$1'. Użyj hex (#ff0000), nazwy koloru lub rgb/rgba",
+        invalidUuidFormat: "NieprawidĹ‚owy format UUID: '$1'. UĹĽyj formatu: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        passwordTooShort: "HasĹ‚o musi mieÄ‡ co najmniej 6 znakĂłw",
+        invalidColorFormat: "NieprawidĹ‚owy format koloru: '$1'. UĹĽyj hex (#ff0000), nazwy koloru lub rgb/rgba",
         
         // Messages
-        projectSaved: "Projekt zapisany pomyślnie",
-        projectLoaded: "Projekt wczytany pomyślnie",
-        projectDeleted: "Projekt usunięty pomyślnie",
-        imageExported: "Obraz wyeksportowany pomyślnie",
-        fileExported: "Plik wyeksportowany pomyślnie",
-        fileImported: "Plik zaimportowany pomyślnie",
+        projectSaved: "Projekt zapisany pomyĹ›lnie",
+        projectLoaded: "Projekt wczytany pomyĹ›lnie",
+        projectDeleted: "Projekt usuniÄ™ty pomyĹ›lnie",
+        imageExported: "Obraz wyeksportowany pomyĹ›lnie",
+        fileExported: "Plik wyeksportowany pomyĹ›lnie",
+        fileImported: "Plik zaimportowany pomyĹ›lnie",
         
         // Errors
-        errorSaving: "Błąd podczas zapisywania projektu",
-        errorLoading: "Błąd podczas wczytywania projektu",
-        errorDeleting: "Błąd podczas usuwania projektu",
-        errorExporting: "Błąd podczas eksportowania",
-        errorImporting: "Błąd podczas importowania pliku",
-        invalidFile: "Nieprawidłowy format pliku",
+        errorSaving: "BĹ‚Ä…d podczas zapisywania projektu",
+        errorLoading: "BĹ‚Ä…d podczas wczytywania projektu",
+        errorDeleting: "BĹ‚Ä…d podczas usuwania projektu",
+        errorExporting: "BĹ‚Ä…d podczas eksportowania",
+        errorImporting: "BĹ‚Ä…d podczas importowania pliku",
+        invalidFile: "NieprawidĹ‚owy format pliku",
         
         // Application initialization
-        appInitializedSuccessfully: "Aplikacja DiaVinci została pomyślnie zainicjalizowana!",
-        errorInitializingApplication: "Błąd podczas inicjalizacji aplikacji",
-        errorStartingApplication: "Błąd uruchamiania aplikacji. Proszę odświeżyć stronę.",
+        appInitializedSuccessfully: "Aplikacja DiaVinci zostaĹ‚a pomyĹ›lnie zainicjalizowana!",
+        errorInitializingApplication: "BĹ‚Ä…d podczas inicjalizacji aplikacji",
+        errorStartingApplication: "BĹ‚Ä…d uruchamiania aplikacji. ProszÄ™ odĹ›wieĹĽyÄ‡ stronÄ™.",
         
         // Error handling
-        unhandledPromiseRejection: "Nieobsługiwane odrzucenie obietnicy",
-        uncaughtError: "Nieprzechwycony błąd",
-        unexpectedErrorOccurred: "Wystąpił nieoczekiwany błąd",
-        applicationError: "Błąd aplikacji",
-        operationFailed: "Operacja nie powiodła się",
-        missingRequiredParameters: "Brakuje wymaganych parametrów",
-        failedToParseJson: "Nie udało się sparsować JSON",
-        failedToStringifyJson: "Nie udało się przekształcić JSON",
+        unhandledPromiseRejection: "NieobsĹ‚ugiwane odrzucenie obietnicy",
+        uncaughtError: "Nieprzechwycony bĹ‚Ä…d",
+        unexpectedErrorOccurred: "WystÄ…piĹ‚ nieoczekiwany bĹ‚Ä…d",
+        applicationError: "BĹ‚Ä…d aplikacji",
+        operationFailed: "Operacja nie powiodĹ‚a siÄ™",
+        missingRequiredParameters: "Brakuje wymaganych parametrĂłw",
+        failedToParseJson: "Nie udaĹ‚o siÄ™ sparsowaÄ‡ JSON",
+        failedToStringifyJson: "Nie udaĹ‚o siÄ™ przeksztaĹ‚ciÄ‡ JSON",
         
         // Logger messages
         droppedElement: "Upuszczono",
         atPosition: "na pozycji",
-        canvasDrop: "Upuszczenie na Płótno",
+        canvasDrop: "Upuszczenie na PĹ‚Ăłtno",
         textControl: "Kontrolka tekstu",
         movedElement: "Przeniesiono",
         fromPosition: "z",
@@ -1302,67 +1308,351 @@ const translations = {
         changedTo: "na",
         elementMove: "Przeniesienie Elementu",
         elementModify: "Modyfikacja Elementu",
-        performance: "Wydajność",
-        userAction: "Akcja Użytkownika",
+        performance: "WydajnoĹ›Ä‡",
+        userAction: "Akcja UĹĽytkownika",
         
         // Storage Service messages
         storageServiceInitialized: "StorageService zainicjalizowany",
-        failedToSaveProject: "Nie udało się zapisać projektu",
-        projectSavedSuccessfully: "Projekt zapisany pomyślnie",
-        errorSavingProject: "Błąd podczas zapisywania projektu",
-        projectNotFound: "Projekt nie został znaleziony",
-        errorLoadingProject: "Błąd podczas wczytywania projektu",
-        errorGettingProjects: "Błąd podczas pobierania projektów",
-        errorDeletingProject: "Błąd podczas usuwania projektu",
-        errorClearingProjects: "Błąd podczas czyszczenia projektów",
-        autoSaveCompleted: "Autozapis zakończony",
-        untitled: "Bez tytułu",
-        autoSaveFailed: "Autozapis nie powiódł się",
-        failedToLoadAutoSave: "Nie udało się wczytać autozapisu",
-        errorExportingProject: "Błąd podczas eksportowania projektu",
-        invalidProjectFileFormat: "Nieprawidłowy format pliku projektu",
-        errorReadingFile: "Błąd podczas odczytu pliku",
+        failedToSaveProject: "Nie udaĹ‚o siÄ™ zapisaÄ‡ projektu",
+        projectSavedSuccessfully: "Projekt zapisany pomyĹ›lnie",
+        errorSavingProject: "BĹ‚Ä…d podczas zapisywania projektu",
+        projectNotFound: "Projekt nie zostaĹ‚ znaleziony",
+        errorLoadingProject: "BĹ‚Ä…d podczas wczytywania projektu",
+        errorGettingProjects: "BĹ‚Ä…d podczas pobierania projektĂłw",
+        errorDeletingProject: "BĹ‚Ä…d podczas usuwania projektu",
+        errorClearingProjects: "BĹ‚Ä…d podczas czyszczenia projektĂłw",
+        autoSaveCompleted: "Autozapis zakoĹ„czony",
+        untitled: "Bez tytuĹ‚u",
+        autoSaveFailed: "Autozapis nie powiĂłdĹ‚ siÄ™",
+        failedToLoadAutoSave: "Nie udaĹ‚o siÄ™ wczytaÄ‡ autozapisu",
+        errorExportingProject: "BĹ‚Ä…d podczas eksportowania projektu",
+        invalidProjectFileFormat: "NieprawidĹ‚owy format pliku projektu",
+        errorReadingFile: "BĹ‚Ä…d podczas odczytu pliku",
         
         // Canvas Renderer messages
         canvasRendererInitialized: "CanvasRenderer zainicjalizowany",
-        invalidNodeDetected: "Wykryto nieprawidłowy węzeł",
-        canvasRender: "Renderowanie Płótna",
-        errorRenderingCanvas: "Błąd podczas renderowania płótna",
-        invalidTransitionDetected: "Wykryto nieprawidłowe przejście",
-        invalidConnectionPoints: "Nieprawidłowe punkty połączenia",
-        errorRenderingTransition: "Błąd podczas renderowania przejścia",
-        errorRenderingNode: "Błąd podczas renderowania węzła",
-        invalidTextElementDetected: "Wykryto nieprawidłowy element tekstowy",
-        errorRenderingText: "Błąd podczas renderowania tekstu",
-        failedToRenderDiagram: "Nie udało się renderować diagramu",
+        invalidNodeDetected: "Wykryto nieprawidĹ‚owy wÄ™zeĹ‚",
+        canvasRender: "Renderowanie PĹ‚Ăłtna",
+        errorRenderingCanvas: "BĹ‚Ä…d podczas renderowania pĹ‚Ăłtna",
+        invalidTransitionDetected: "Wykryto nieprawidĹ‚owe przejĹ›cie",
+        invalidConnectionPoints: "NieprawidĹ‚owe punkty poĹ‚Ä…czenia",
+        errorRenderingTransition: "BĹ‚Ä…d podczas renderowania przejĹ›cia",
+        errorRenderingNode: "BĹ‚Ä…d podczas renderowania wÄ™zĹ‚a",
+        invalidTextElementDetected: "Wykryto nieprawidĹ‚owy element tekstowy",
+        errorRenderingText: "BĹ‚Ä…d podczas renderowania tekstu",
+        failedToRenderDiagram: "Nie udaĹ‚o siÄ™ renderowaÄ‡ diagramu",
         
         // Terminal Service messages
-        terminalElementsNotFoundInDOM: "Elementy terminala nie zostały znalezione w DOM",
-        scrollToBottomTerminalContentNotFound: "ScrollToBottom: Element zawartości terminala nie został znaleziony",
+        terminalElementsNotFoundInDOM: "Elementy terminala nie zostaĹ‚y znalezione w DOM",
+        scrollToBottomTerminalContentNotFound: "ScrollToBottom: Element zawartoĹ›ci terminala nie zostaĹ‚ znaleziony",
         unknownCommand: "Nieznana komenda",
-        invalidSyntax: "Nieprawidłowa składnia",
-        elementNotFound: "Element nie został znaleziony",
-        invalidId: "Nieprawidłowe ID",
-        fieldNotFound: "Pole nie zostało znalezione",
-        noElementsFound: "Nie znaleziono elementów w tym projekcie",
-        invalidLogType: "Nieprawidłowy typ logu",
+        invalidSyntax: "NieprawidĹ‚owa skĹ‚adnia",
+        elementNotFound: "Element nie zostaĹ‚ znaleziony",
+        invalidId: "NieprawidĹ‚owe ID",
+        fieldNotFound: "Pole nie zostaĹ‚o znalezione",
+        noElementsFound: "Nie znaleziono elementĂłw w tym projekcie",
+        invalidLogType: "NieprawidĹ‚owy typ logu",
         
         // Export Service messages
         exportServiceInitialized: "ExportService zainicjalizowany",
-        exportImageStarted: "Rozpoczęto eksport obrazu",
+        exportImageStarted: "RozpoczÄ™to eksport obrazu",
         noProjectProvidedForExport: "Nie podano projektu do eksportu",
-        failedToGet2DContextForExportCanvas: "Nie udało się uzyskać kontekstu 2D dla kanwy eksportu",
+        failedToGet2DContextForExportCanvas: "Nie udaĹ‚o siÄ™ uzyskaÄ‡ kontekstu 2D dla kanwy eksportu",
         exportCanvasCreated: "Kanwa eksportu utworzona",
-        fileSystemAccessApiFailed: "API dostępu do systemu plików nie powiodło się, przełączanie na zapasową metodę",
-        exportCancelledByUser: "Eksport anulowany przez użytkownika",
-        usingFallbackSaveMethod: "Używanie zapasowej metody zapisu",
+        fileSystemAccessApiFailed: "API dostÄ™pu do systemu plikĂłw nie powiodĹ‚o siÄ™, przeĹ‚Ä…czanie na zapasowÄ… metodÄ™",
+        exportCancelledByUser: "Eksport anulowany przez uĹĽytkownika",
+        usingFallbackSaveMethod: "UĹĽywanie zapasowej metody zapisu",
         exportImage: "Eksport Obrazu",
-        imageExportCompleted: "Eksport obrazu zakończony",
-        failedToExportImage: "Nie udało się wyeksportować obrazu",
+        imageExportCompleted: "Eksport obrazu zakoĹ„czony",
+        failedToExportImage: "Nie udaĹ‚o siÄ™ wyeksportowaÄ‡ obrazu",
         
         // UI Controller messages
-        exportImageError: "Błąd eksportu obrazu",
-        exportError: "Błąd eksportu"
+        exportImageError: "BĹ‚Ä…d eksportu obrazu",
+        exportError: "BĹ‚Ä…d eksportu"
+    },
+    
+    de: {
+        // Navigation
+        title: "DiaVinci",
+        
+        // Components
+        components: "Komponenten",
+        nodes: "Knoten",
+        texts: "Texte", 
+        transitions: "ĂśbergĂ¤nge",
+        
+        // Node types
+        process: "Prozess",
+        start: "Start",
+        stop: "Stopp", 
+        decision: "Entscheidung",
+        data: "Daten",
+        dataModel: "Datenmodell",
+        singleWay: "Einweg",
+        dualWay: "Zweiweg", 
+        line: "Linie",
+        
+        // Bottom navigation
+        newProject: "Neues Projekt",
+        saveProject: "Projekt Speichern",
+        loadProject: "Projekt Laden",
+        exportImage: "Bild Exportieren",
+        exportFile: "Datei Exportieren",
+        importFile: "Datei Importieren",
+        removeSelected: "AusgewĂ¤hlte Entfernen",
+        save: "Speichern",
+        load: "Laden", 
+        clear: "Alles LĂ¶schen",
+        
+        // Export options
+        exportOptions: "Export-Optionen",
+        whiteBackground: "WeiĂźer Hintergrund",
+        transparentBackground: "Transparenter Hintergrund",
+        
+        // Save dialog
+        saveProjectTitle: "Projekt Speichern",
+        projectName: "Projektname",
+        save: "Speichern",
+        cancel: "Abbrechen",
+        enterProjectName: "Projektname eingeben...",
+        saveAsPrivate: "Als privates Projekt speichern",
+        projectNameRequired: "Projektname ist erforderlich",
+        passwordRequired: "Passwort ist fĂĽr private Projekte erforderlich",
+        projectPassword: "Projekt-Passwort",
+        enterPassword: "Passwort eingeben...",
+        confirmPassword: "Passwort bestĂ¤tigen",
+        passwordsDoNotMatch: "PasswĂ¶rter stimmen nicht ĂĽberein",
+        
+        // Load dialog
+        loadProjectTitle: "Projekt Laden",
+        selectProject: "Projekt auswĂ¤hlen",
+        projectList: "Projektliste",
+        noProjectsFound: "Keine Projekte gefunden",
+        enterPasswordForProject: "Passwort fĂĽr Projekt eingeben",
+        incorrectPassword: "Falsches Passwort",
+        
+        // Import/Export
+        importSuccess: "Datei erfolgreich importiert",
+        importError: "Fehler beim Importieren der Datei",
+        exportSuccess: "Datei erfolgreich exportiert",
+        exportError: "Fehler beim Exportieren der Datei",
+        invalidFileFormat: "UngĂĽltiges Dateiformat",
+        fileNotSelected: "Keine Datei ausgewĂ¤hlt",
+        
+        // Canvas operations
+        zoomIn: "VergrĂ¶Ăźern",
+        zoomOut: "Verkleinern",
+        resetZoom: "Zoom zurĂĽcksetzen",
+        fitToScreen: "An Bildschirm anpassen",
+        
+        // Node operations
+        editNode: "Knoten bearbeiten",
+        deleteNode: "Knoten lĂ¶schen",
+        duplicateNode: "Knoten duplizieren",
+        nodeText: "Knotentext",
+        nodeColor: "Knotenfarbe",
+        
+        // Transition operations
+        editTransition: "Ăśbergang bearbeiten",
+        deleteTransition: "Ăśbergang lĂ¶schen",
+        transitionText: "Ăśbergangstext",
+        transitionColor: "Ăśbergangsfarbe",
+        
+        // Grid operations
+        showGrid: "Raster anzeigen",
+        hideGrid: "Raster ausblenden",
+        snapToGrid: "Am Raster ausrichten",
+        gridSize: "RastergrĂ¶Ăźe",
+        
+        // Validation messages
+        invalidNodeType: "UngĂĽltiger Knotentyp",
+        nodeOutOfBounds: "Knoten auĂźerhalb der Grenzen",
+        invalidTransition: "UngĂĽltiger Ăśbergang",
+        circularDependency: "ZirkulĂ¤re AbhĂ¤ngigkeit erkannt",
+        
+        // Error messages
+        genericError: "Ein unerwarteter Fehler ist aufgetreten",
+        networkError: "Netzwerkfehler",
+        fileReadError: "Fehler beim Lesen der Datei",
+        fileWriteError: "Fehler beim Schreiben der Datei",
+        storageError: "Speicherfehler",
+        renderError: "Render-Fehler",
+        
+        // Success messages
+        projectSaved: "Projekt gespeichert",
+        projectLoaded: "Projekt geladen",
+        changesSaved: "Ă„nderungen gespeichert",
+        operationCompleted: "Operation abgeschlossen",
+        
+        // UI elements
+        yes: "Ja",
+        no: "Nein",
+        ok: "OK",
+        apply: "Anwenden",
+        reset: "ZurĂĽcksetzen",
+        close: "SchlieĂźen",
+        back: "ZurĂĽck",
+        next: "Weiter",
+        finish: "Fertig",
+        
+        // Tooltips
+        selectLanguage: "Sprache auswĂ¤hlen",
+        dragToMove: "Zum Bewegen ziehen",
+        clickToEdit: "Zum Bearbeiten klicken",
+        doubleClickToEdit: "Doppelklick zum Bearbeiten",
+        rightClickForOptions: "Rechtsklick fĂĽr Optionen",
+        
+        // Context menu
+        contextMenu: "KontextmenĂĽ",
+        copy: "Kopieren",
+        paste: "EinfĂĽgen",
+        cut: "Ausschneiden",
+        undo: "RĂĽckgĂ¤ngig",
+        redo: "Wiederholen",
+        selectAll: "Alles auswĂ¤hlen",
+        
+        // Multi-selection
+        multipleItemsSelected: "Mehrere Elemente ausgewĂ¤hlt",
+        selectionCleared: "Auswahl aufgehoben",
+        itemsDeleted: "Elemente gelĂ¶scht",
+        
+        // Terminal messages
+        terminalReady: "Terminal bereit",
+        commandExecuted: "Befehl ausgefĂĽhrt",
+        commandFailed: "Befehl fehlgeschlagen",
+        
+        // Storage messages
+        storageQuotaExceeded: "Speicherplatz ĂĽberschritten",
+        storageFull: "Speicher voll",
+        dataCorrupted: "Daten beschĂ¤digt",
+        backupCreated: "Backup erstellt",
+        backupRestored: "Backup wiederhergestellt",
+        
+        // Validation
+        required: "Erforderlich",
+        invalid: "UngĂĽltig",
+        tooShort: "Zu kurz",
+        tooLong: "Zu lang",
+        mustBeNumber: "Muss eine Zahl sein",
+        mustBeEmail: "Muss eine E-Mail-Adresse sein",
+        
+        // Auto-save
+        autoSaveEnabled: "Automatisches Speichern aktiviert",
+        autoSaveDisabled: "Automatisches Speichern deaktiviert",
+        autoSaving: "Automatisches Speichern...",
+        
+        // Debug messages
+        debugMode: "Debug-Modus",
+        debugEnabled: "Debug aktiviert",
+        debugDisabled: "Debug deaktiviert",
+        debugInfo: "Debug-Info",
+        
+        // Performance
+        performanceOptimized: "Leistung optimiert",
+        memoryUsage: "Speicherverbrauch",
+        renderTime: "Render-Zeit",
+        
+        // Accessibility
+        accessibilityMode: "Barrierefreiheitsmodus",
+        highContrast: "Hoher Kontrast",
+        largeText: "GroĂźer Text",
+        screenReader: "Bildschirmleser",
+        
+        // Keyboard shortcuts
+        keyboardShortcuts: "TastenkĂĽrzel",
+        shortcut: "KĂĽrzel",
+        action: "Aktion",
+        
+        // Help and support
+        help: "Hilfe",
+        documentation: "Dokumentation",
+        support: "Support",
+        feedback: "Feedback",
+        reportBug: "Fehler melden",
+        
+        // Version info
+        version: "Version",
+        build: "Build",
+        lastUpdate: "Letztes Update",
+        
+        // Logger messages
+        log: "Protokoll",
+        logLevel: "Protokollstufe",
+        logMessage: "Protokollnachricht",
+        logError: "Protokollfehler",
+        logWarning: "Protokollwarnung",
+        logInfo: "Protokollinfo",
+        logDebug: "Protokoll-Debug",
+        logTrace: "Protokoll-Trace",
+        
+        // Event system
+        eventFired: "Ereignis ausgelĂ¶st",
+        eventHandled: "Ereignis behandelt",
+        eventError: "Ereignisfehler",
+        
+        // Canvas renderer
+        canvasInitialized: "Canvas initialisiert",
+        canvasCleared: "Canvas geleert",
+        canvasRendered: "Canvas gerendert",
+        renderingStarted: "Rendering gestartet",
+        renderingCompleted: "Rendering abgeschlossen",
+        
+        // Input service
+        inputProcessed: "Eingabe verarbeitet",
+        keyPressed: "Taste gedrĂĽckt",
+        mouseClicked: "Maus geklickt",
+        dragStarted: "Ziehen gestartet",
+        dragEnded: "Ziehen beendet",
+        
+        // Grid service
+        gridEnabled: "Raster aktiviert",
+        gridDisabled: "Raster deaktiviert",
+        snapEnabled: "Ausrichtung aktiviert",
+        snapDisabled: "Ausrichtung deaktiviert",
+        
+        // Export service
+        exportStarted: "Export gestartet",
+        exportCompleted: "Export abgeschlossen",
+        exportFailed: "Export fehlgeschlagen",
+        canvasNotFound: "Canvas nicht gefunden",
+        canvasEmpty: "Canvas ist leer",
+        exportCancelled: "Export abgebrochen",
+        
+        // Terminal service
+        terminalInitialized: "Terminal initialisiert",
+        commandAdded: "Befehl hinzugefĂĽgt",
+        historyCleared: "Verlauf geleert",
+        commandNotFound: "Befehl nicht gefunden",
+        
+        // Breakpoint service
+        breakpointAdded: "Haltepunkt hinzugefĂĽgt",
+        breakpointRemoved: "Haltepunkt entfernt",
+        breakpointHit: "Haltepunkt erreicht",
+        
+        // Storage service with auto-save
+        autoSaved: "Automatisch gespeichert",
+        
+        // More storage and export messages
+        savedToIndexedDB: "In IndexedDB gespeichert",
+        loadedFromIndexedDB: "Aus IndexedDB geladen",
+        indexedDBError: "IndexedDB-Fehler",
+        localStorageFallback: "LocalStorage-Fallback",
+        creatingExportCanvas: "Export-Canvas wird erstellt",
+        settingExportCanvasSize: "Export-Canvas-GrĂ¶Ăźe wird gesetzt",
+        noElementsToExport: "Keine Elemente zum Exportieren",
+        renderingElementsForExport: "Elemente fĂĽr Export werden gerendert",
+        failedToGet2DContextForExportCanvas: "2D-Kontext fĂĽr Export-Canvas konnte nicht abgerufen werden",
+        exportCanvasCreated: "Export-Canvas erstellt",
+        fileSystemAccessApiFailed: "Dateisystem-Zugriffs-API fehlgeschlagen, wechsle zur Fallback-Methode",
+        exportCancelledByUser: "Export vom Benutzer abgebrochen",
+        usingFallbackSaveMethod: "Verwende Fallback-Speichermethode",
+        exportImage: "Bild Exportieren",
+        imageExportCompleted: "Bildexport abgeschlossen",
+        failedToExportImage: "Bildexport fehlgeschlagen",
+        
+        // UI Controller messages
+        exportImageError: "Bildexport-Fehler",
+        exportError: "Export-Fehler"
     }
 };
 
@@ -1449,15 +1739,45 @@ function switchLanguage(lang) {
     }
 }
 
-// Update language button states
+// Update language button states and current flag
 function updateLanguageButtons() {
-    const buttons = document.querySelectorAll('.language-btn');
-    buttons.forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.id === `lang-${currentLanguage}`) {
-            btn.classList.add('active');
+    const currentFlag = document.getElementById('current-flag');
+    const currentLang = document.getElementById('current-lang');
+    
+    // Update the current flag in the dropdown button
+    if (currentFlag) {
+        // Check if we should use SVG fallback (if emoji flags are not supported)
+        if (document.body.classList.contains('no-emoji-flags')) {
+            // Use SVG flags
+            if (currentLanguage === 'en') {
+                currentFlag.innerHTML = '<img src="Resources/flags/gb-round.svg" alt="EN" width="24" height="24" style="vertical-align: middle;">';
+            } else if (currentLanguage === 'pl') {
+                currentFlag.innerHTML = '<img src="Resources/flags/pl-round.svg" alt="PL" width="24" height="24" style="vertical-align: middle;">';
+            } else if (currentLanguage === 'de') {
+                currentFlag.innerHTML = '<img src="Resources/flags/de-round.svg" alt="DE" width="24" height="24" style="vertical-align: middle;">';
+            }
+        } else {
+            // Use emoji flags
+            if (currentLanguage === 'en') {
+                currentFlag.textContent = 'ďż˝ďż˝';
+            } else if (currentLanguage === 'pl') {
+                currentFlag.textContent = 'đź‡µđź‡±';
+            } else if (currentLanguage === 'de') {
+                currentFlag.textContent = 'đź‡©đź‡Ş';
+            }
         }
-    });
+    }
+    
+    // Update the language code text
+    if (currentLang) {
+        if (currentLanguage === 'en') {
+            currentLang.textContent = 'EN';
+        } else if (currentLanguage === 'pl') {
+            currentLang.textContent = 'PL';
+        } else if (currentLanguage === 'de') {
+            currentLang.textContent = 'DE';
+        }
+    }
 }
 
 // Initialize language system
@@ -1468,21 +1788,56 @@ function initializeLanguage() {
     // Check if emoji flags are supported, if not use SVG fallback
     checkEmojiFlagSupport();
     
-    // Setup language switcher buttons
+    // Setup language switcher dropdown
+    const dropdownBtn = document.getElementById('language-dropdown-btn');
+    const dropdown = document.getElementById('language-dropdown');
     const enBtn = document.getElementById('lang-en');
     const plBtn = document.getElementById('lang-pl');
+    const currentFlag = document.getElementById('current-flag');
     
+    // Toggle dropdown on button click
+    if (dropdownBtn && dropdown) {
+        dropdownBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdown.classList.toggle('hidden');
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!dropdownBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+    }
+    
+    // Language selection handlers
     if (enBtn) {
-        enBtn.addEventListener('click', () => switchLanguage('en'));
+        enBtn.addEventListener('click', () => {
+            switchLanguage('en');
+            dropdown.classList.add('hidden');
+        });
     }
     
     if (plBtn) {
-        plBtn.addEventListener('click', () => switchLanguage('pl'));
+        plBtn.addEventListener('click', () => {
+            switchLanguage('pl');
+            dropdown.classList.add('hidden');
+        });
+    }
+    
+    const deBtn = document.getElementById('lang-de');
+    if (deBtn) {
+        deBtn.addEventListener('click', () => {
+            switchLanguage('de');
+            dropdown.classList.add('hidden');
+        });
     }
     
     // Initial translation update
     updateTranslations();
-    updateLanguageButtons();
+    
+    // Check emoji support and update buttons after setup
+    checkEmojiFlagSupport();
 }
 
 // Check if emoji flags are supported and provide fallback
@@ -1491,10 +1846,10 @@ function checkEmojiFlagSupport() {
     const ctx = canvas.getContext('2d');
     canvas.width = canvas.height = 1;
     
-    // Try to draw US flag emoji
+    // Try to draw GB flag emoji
     ctx.textBaseline = 'top';
     ctx.font = '32px Arial';
-    ctx.fillText('🇺🇸', 0, 0);
+    ctx.fillText('', 0, 0);
     
     // If the emoji is not supported, it will render as two separate characters
     // In that case, we'll use SVG flags
@@ -1505,18 +1860,11 @@ function checkEmojiFlagSupport() {
         // Emoji flags not supported, use SVG fallback
         document.body.classList.add('no-emoji-flags');
         
-        // Replace emoji with SVG images
-        const enFlag = document.querySelector('#lang-en .flag-icon');
-        const plFlag = document.querySelector('#lang-pl .flag-icon');
-        
-        if (enFlag) {
-            enFlag.innerHTML = '<img src="Resources/flags/us.svg" alt="EN" width="20" height="15" style="vertical-align: middle;">';
-        }
-        
-        if (plFlag) {
-            plFlag.innerHTML = '<img src="Resources/flags/pl.svg" alt="PL" width="20" height="15" style="vertical-align: middle;">';
-        }
+        // Replace emoji with SVG images in dropdown options - now handled by CSS classes
     }
+    
+    // Update the main dropdown button flag after determining emoji support
+    updateLanguageButtons();
 }
 
 // Initialize when DOM is loaded
@@ -1536,3 +1884,4 @@ window.LanguageService = {
 
 // Make t() available globally for convenience
 window.t = t;
+

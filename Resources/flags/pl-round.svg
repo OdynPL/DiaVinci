@@ -1,0 +1,21 @@
+<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="circle">
+      <circle cx="12" cy="12" r="12"/>
+    </clipPath>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="12" cy="12" r="12" fill="white"/>
+  
+  <!-- Polish flag within circle -->
+  <g clip-path="url(#circle)">
+    <!-- White top half -->
+    <rect x="0" y="0" width="24" height="12" fill="white"/>
+    <!-- Red bottom half -->
+    <rect x="0" y="12" width="24" height="12" fill="#DC143C"/>
+  </g>
+  
+  <!-- Circle border -->
+  <circle cx="12" cy="12" r="12" fill="none" stroke="#E5E5E5" stroke-width="0.5"/>
+</svg>
