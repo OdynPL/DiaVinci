@@ -9,7 +9,7 @@ class NodeFactory {
         return new Node({
             x, y, r: 30,
             id: Date.now(),
-            label: `Node ${nodeCounter}`,
+            label: `${t('nodeDefault')} ${nodeCounter}`,
             color: '#b3d1ff',
             type: 'node'
         });
@@ -48,7 +48,7 @@ class NodeFactory {
         const ifNode = new Node({
             x, y, r: 35,
             id: Date.now(),
-            label: 'IF',
+            label: t('nodeIf'),
             color: '#f39c12',
             type: 'if',
             rotation: 90  // Start in vertical position with arms down
@@ -89,7 +89,7 @@ class NodeFactory {
             y: step1Y,
             r: 30,
             id: Date.now() + 1,
-            label: 'Step1',
+            label: t('labelStep1'),
             color: '#27ae60',
             type: 'node'
         });
@@ -99,7 +99,7 @@ class NodeFactory {
             y: step2Y,
             r: 30,
             id: Date.now() + 2,
-            label: 'Step2',
+            label: t('labelStep2'),
             color: '#e74c3c',
             type: 'node'
         });
@@ -118,7 +118,7 @@ class NodeFactory {
         const trueTransition = new Transition({
             from: ifNode,
             to: trueNode,
-            label: 'Step1',
+            label: t('labelStep1'),
             type: 'right',
             fromCorner: corners.step1
         });
@@ -126,7 +126,7 @@ class NodeFactory {
         const falseTransition = new Transition({
             from: ifNode,
             to: falseNode,
-            label: 'Step2',
+            label: t('labelStep2'),
             type: 'right',
             fromCorner: corners.step2
         });
@@ -175,7 +175,7 @@ class NodeFactory {
         return new DataModelNode({
             x, y, r: 40,
             id: Date.now(),
-            label: 'Data Model',
+            label: t('dataModel'),
             color: '#8e44ad',
             type: 'datamodel',
             fields: [
