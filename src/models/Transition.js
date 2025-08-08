@@ -4,10 +4,10 @@
 class Transition {
     static _idCounter = 0; // Static counter for unique IDs
     
-    constructor({from, to, label = 'relation', type = 'right', fromCorner = null, style = 'straight', breakPoints = [], id = null}) {
+    constructor({from, to, label = null, type = 'right', fromCorner = null, style = 'straight', breakPoints = [], id = null}) {
         this.from = from; // Node instance
         this.to = to; // Node instance
-        this.label = label;
+        this.label = label || (typeof window !== 'undefined' && window.t ? window.t('defaultTransitionLabel') : 'relation');
         this.type = type; // 'right', 'both', 'line'
         this.fromCorner = fromCorner; // 'top', 'bottom', 'left', 'right' for IF nodes
         this.style = style; // 'straight', 'curved'
@@ -240,6 +240,16 @@ class Transition {
      */
     setLabel(label) {
         this.label = label;
+    }
+
+    /**
+     * Get translated display label
+     */
+    getDisplayLabel() {
+        if (this.label === 'relation' && typeof window !== 'undefined' && window.t) {
+            return window.t('defaultTransitionLabel');
+        }
+        return this.label;
     }
 
     /**

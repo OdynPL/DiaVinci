@@ -2763,7 +2763,7 @@ class TerminalService {
      */
     traceElementRelationships(id) {
         if (!id) {
-            this.addLine('❌ Please provide an element ID. Usage: trace <id>', 'error');
+            this.addLine(`❌ ${window.t('provideElementId')}`, 'error');
             return;
         }
 
@@ -2778,7 +2778,7 @@ class TerminalService {
         }
         
         if (!currentProject) {
-            this.addLine('❌ No active project found.', 'error');
+            this.addLine(`❌ ${window.t('noActiveProject')}`, 'error');
             return;
         }
 
@@ -2794,16 +2794,16 @@ class TerminalService {
         );
 
         if (!targetElement) {
-            this.addLine(`❌ Element with ID "${id}" not found.`, 'error');
+            this.addLine(`❌ ${window.t('elementNotFound', id)}`, 'error');
             return;
         }
 
         this.addLine('', 'info');
-        this.addLine(`🔍 Tracing Element ${id}`, 'info');
+        this.addLine(`🔍 ${window.t('tracingElement', id)}`, 'info');
         this.addLine('─'.repeat(30), 'info');
 
         // Show element info
-        this.addLine(`🎯 Target: ${targetElement.elementType} "${targetElement.label || 'Unnamed'}"`, 'success');
+        this.addLine(`🎯 ${window.t('targetElement', targetElement.elementType, targetElement.label || 'Unnamed')}`, 'success');
         
 
         // Find incoming transitions (if target is a node)
@@ -2812,13 +2812,13 @@ class TerminalService {
                 t.to && (t.to.id === targetElement.id || t.to.id === parseInt(targetElement.id))
             );
             
-            this.addLine(`📥 Incoming Transitions (${incomingTransitions.length}):`, 'info');
+            this.addLine(`📥 ${window.t('incomingTransitions', incomingTransitions.length)}`, 'info');
             if (incomingTransitions.length === 0) {
-                this.addLine('   No incoming transitions found.', 'warning');
+                this.addLine(`   ${window.t('noIncomingTransitions')}`, 'warning');
             } else {
                 incomingTransitions.forEach((trans, index) => {
                     const fromLabel = trans.from?.label || trans.from?.id || 'Unknown';
-                    this.addLine(`   ${index + 1}. From: "${fromLabel}" (ID: ${trans.from?.id})`, 'info');
+                    this.addLine(`   ${window.t('incomingTransitionFrom', index + 1, fromLabel, trans.from?.id)}`, 'info');
                 });
             }
 
@@ -2828,24 +2828,24 @@ class TerminalService {
             );
             
             
-            this.addLine(`📤 Outgoing Transitions (${outgoingTransitions.length}):`, 'info');
+            this.addLine(`📤 ${window.t('outgoingTransitions', outgoingTransitions.length)}`, 'info');
             if (outgoingTransitions.length === 0) {
-                this.addLine('   No outgoing transitions found.', 'warning');
+                this.addLine(`   ${window.t('noOutgoingTransitions')}`, 'warning');
             } else {
                 outgoingTransitions.forEach((trans, index) => {
                     const toLabel = trans.to?.label || trans.to?.id || 'Unknown';
-                    this.addLine(`   ${index + 1}. To: "${toLabel}" (ID: ${trans.to?.id})`, 'info');
+                    this.addLine(`   ${window.t('outgoingTransitionTo', index + 1, toLabel, trans.to?.id)}`, 'info');
                 });
             }
         }
 
         // If target is a transition, show source and target
         if (targetElement.elementType === 'Transition') {
-            this.addLine('🔗 Transition Details:', 'info');
-            this.addLine(`   📤 From: "${targetElement.from?.label || 'Unknown'}" (ID: ${targetElement.from?.id})`, 'info');
-            this.addLine(`   📥 To: "${targetElement.to?.label || 'Unknown'}" (ID: ${targetElement.to?.id})`, 'info');
+            this.addLine(`🔗 ${window.t('transitionDetails')}`, 'info');
+            this.addLine(`   📤 ${window.t('transitionFrom', targetElement.from?.label || 'Unknown', targetElement.from?.id)}`, 'info');
+            this.addLine(`   📥 ${window.t('transitionTo', targetElement.to?.label || 'Unknown', targetElement.to?.id)}`, 'info');
             if (targetElement.condition) {
-                this.addLine(`   ⚡ Condition: ${targetElement.condition}`, 'info');
+                this.addLine(`   ⚡ ${window.t('transitionCondition', targetElement.condition)}`, 'info');
             }
         }
 

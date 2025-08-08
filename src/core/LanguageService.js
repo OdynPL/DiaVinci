@@ -10,6 +10,9 @@ const translations = {
         texts: "Texts", 
         transitions: "Transitions",
         
+        // Default labels
+        defaultTransitionLabel: "relation",
+        
         // Node types
         process: "Process",
         start: "Start",
@@ -529,6 +532,23 @@ const translations = {
         logsCommand: "logs <type>   - Filter logs by type",
         traceCommand: "trace <id>    - Trace element relationships",
         errorsCommand: "errors        - Show recent error logs",
+        
+        // Trace relationships messages
+        provideElementId: "Please provide an element ID. Usage: trace <id>",
+        noActiveProject: "No active project found.",
+        elementNotFound: "Element with ID \"$1\" not found.",
+        tracingElement: "Tracing Element $1",
+        targetElement: "Target: $1 \"$2\"",
+        incomingTransitions: "Incoming Transitions ($1):",
+        noIncomingTransitions: "No incoming transitions found.",
+        incomingTransitionFrom: "$1. From: \"$2\" (ID: $3)",
+        outgoingTransitions: "Outgoing Transitions ($1):",
+        noOutgoingTransitions: "No outgoing transitions found.",
+        outgoingTransitionTo: "$1. To: \"$2\" (ID: $3)",
+        transitionDetails: "Transition Details:",
+        transitionFrom: "From: \"$1\" (ID: $2)",
+        transitionTo: "To: \"$1\" (ID: $2)",
+        transitionCondition: "Condition: $1",
         dataModelCommands: "đz“‹ DATA MODEL:",
         fieldsCommand: "fields <id>   - List all fields of data model",
         fieldCommand: "field <id> <name> - Get field value from model",
@@ -968,6 +988,9 @@ const translations = {
         nodes: "Wezly",
         texts: "Teksty",
         transitions: "Przejscia",
+        
+        // Default labels
+        defaultTransitionLabel: "relacja",
         
         // Node types
         process: "Proces",
@@ -1485,6 +1508,23 @@ const translations = {
         logsCommand: "logs <type>   - Filtruj logi po typie",
         traceCommand: "trace <id>    - Sledz relacje elementu",
         errorsCommand: "errors        - Pokaz ostatnie logi bledow",
+        
+        // Trace relationships messages
+        provideElementId: "Podaj ID elementu. Uzycie: trace <id>",
+        noActiveProject: "Nie znaleziono aktywnego projektu.",
+        elementNotFound: "Element o ID \"$1\" nie znaleziony.",
+        tracingElement: "Sledze Element $1",
+        targetElement: "Cel: $1 \"$2\"",
+        incomingTransitions: "Przejscia Przychodzace ($1):",
+        noIncomingTransitions: "Nie znaleziono przejsc przychodzacych.",
+        incomingTransitionFrom: "$1. Z: \"$2\" (ID: $3)",
+        outgoingTransitions: "Przejscia Wychodzace ($1):",
+        noOutgoingTransitions: "Nie znaleziono przejsc wychodzacych.",
+        outgoingTransitionTo: "$1. Do: \"$2\" (ID: $3)",
+        transitionDetails: "Szczegoly Przejscia:",
+        transitionFrom: "Z: \"$1\" (ID: $2)",
+        transitionTo: "Do: \"$1\" (ID: $2)",
+        transitionCondition: "Warunek: $1",
         dataModelCommands: "MODEL DANYCH:",
         fieldsCommand: "fields <id>   - Listuj wszystkie pola modelu danych",
         fieldCommand: "field <id> <name> - Pobierz wartosci pola z modelu",
@@ -1923,7 +1963,10 @@ const translations = {
         components: "Komponenten",
         nodes: "Knoten",
         texts: "Texte", 
-        transitions: "ĂsbergĂ¤nge",
+        transitions: "Übergänge",
+        
+        // Default labels
+        defaultTransitionLabel: "Beziehung",
         
         // Node types
         process: "Prozess",
@@ -2802,6 +2845,23 @@ const translations = {
         logsCommand: "logs <type>   - Logs nach Typ filtern",
         traceCommand: "trace <id>    - Element-Beziehungen verfolgen",
         errorsCommand: "errors        - Aktuelle Fehler-Logs anzeigen",
+        
+        // Trace relationships messages
+        provideElementId: "Bitte Element-ID angeben. Verwendung: trace <id>",
+        noActiveProject: "Kein aktives Projekt gefunden.",
+        elementNotFound: "Element mit ID \"$1\" nicht gefunden.",
+        tracingElement: "Verfolge Element $1",
+        targetElement: "Ziel: $1 \"$2\"",
+        incomingTransitions: "Eingehende Übergänge ($1):",
+        noIncomingTransitions: "Keine eingehenden Übergänge gefunden.",
+        incomingTransitionFrom: "$1. Von: \"$2\" (ID: $3)",
+        outgoingTransitions: "Ausgehende Übergänge ($1):",
+        noOutgoingTransitions: "Keine ausgehenden Übergänge gefunden.",
+        outgoingTransitionTo: "$1. Nach: \"$2\" (ID: $3)",
+        transitionDetails: "Übergangs-Details:",
+        transitionFrom: "Von: \"$1\" (ID: $2)",
+        transitionTo: "Nach: \"$1\" (ID: $2)",
+        transitionCondition: "Bedingung: $1",
         dataModelCommands: "📋 DATENMODELL:",
         fieldsCommand: "fields <id>   - Alle Felder des Datenmodells auflisten",
         fieldCommand: "field <id> <name> - Feldwert aus Modell abrufen",

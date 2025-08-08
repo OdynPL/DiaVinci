@@ -705,13 +705,14 @@ class CanvasRenderer {
         this.ctx.textBaseline = 'bottom';
         
         // Add background for better visibility
-        const textWidth = this.ctx.measureText(transition.label).width;
+        const displayText = transition.getDisplayLabel();
+        const textWidth = this.ctx.measureText(displayText).width;
         this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
         this.ctx.fillRect(-textWidth/2 - 2, -15, textWidth + 4, 16);
         
         // Draw the text
         this.ctx.fillStyle = '#333';
-        this.ctx.fillText(transition.label, 0, 0);
+        this.ctx.fillText(displayText, 0, 0);
         this.ctx.restore();
     }
 
