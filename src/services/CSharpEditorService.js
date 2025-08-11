@@ -350,7 +350,6 @@ class CSharpEditorService {
             pointer-events: none;
             z-index: 1;
             overflow: hidden;
-            display: none;
         `;
 
         // Create textarea for editing
@@ -369,10 +368,11 @@ class CSharpEditorService {
             font-size: 14px;
             line-height: 1.6;
             background: transparent;
-            color: #374151;
+            color: #1e293b;
+            caret-color: #3b82f6;
             z-index: 2;
-            white-space: pre-wrap;
-            overflow-y: auto;
+            overflow: auto;
+            tab-size: 4;
         `;
 
         // Set initial code with Data Models integration
@@ -387,14 +387,29 @@ class CSharpEditorService {
         this.updateSyntaxHighlighting();
 
         // Event listeners
-        this.editorTextarea.addEventListener('input', () => {
+        this.editorTextarea.addEventListener('input', (e) => {
             this.updateLineNumbers();
             this.updateSyntaxHighlighting();
+            this.checkForAutoFormat(e);
         });
 
         this.editorTextarea.addEventListener('scroll', () => {
             this.syntaxContainer.scrollTop = this.editorTextarea.scrollTop;
             lineNumbers.scrollTop = this.editorTextarea.scrollTop;
+        });
+
+        // Tab support and IntelliSense
+        this.editorTextarea.addEventListener('keydown', (e) => {
+            this.handleKeydown(e);
+        });
+
+        // IntelliSense popup management
+        this.editorTextarea.addEventListener('keyup', (e) => {
+            this.handleIntelliSense(e);
+        });
+
+        this.editorTextarea.addEventListener('blur', () => {
+            this.hideIntelliSense();
         });
 
         // Assemble editor
@@ -441,35 +456,481 @@ class CSharpEditorService {
     }
 
     /**
-     * Highlight C# syntax
+     * Highlight C# syntax with advanced patterns
      */
     highlightCSharpSyntax(code) {
-        // Keywords
-        const keywords = ['public', 'private', 'protected', 'internal', 'static', 'void', 'int', 'string', 'bool', 'double', 'float', 'char', 'var', 'if', 'else', 'for', 'while', 'do', 'switch', 'case', 'break', 'continue', 'return', 'new', 'this', 'base', 'class', 'interface', 'namespace', 'using', 'try', 'catch', 'finally', 'throw', 'async', 'await'];
+        // Escape HTML characters first
+        let highlighted = code
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
         
-        // Apply highlighting
-        let highlighted = code;
+        // C# Keywords with different categories
+        const keywords = ['public', 'private', 'protected', 'internal', 'static', 'void', 'int', 'string', 'bool', 'double', 'float', 'char', 'var', 'if', 'else', 'for', 'while', 'do', 'switch', 'case', 'break', 'continue', 'return', 'new', 'this', 'base', 'class', 'interface', 'namespace', 'using', 'try', 'catch', 'finally', 'throw', 'async', 'await', 'const', 'readonly', 'override', 'virtual', 'abstract', 'sealed'];
+        const types = ['object', 'decimal', 'byte', 'sbyte', 'short', 'ushort', 'uint', 'long', 'ulong', 'DateTime', 'TimeSpan', 'Guid', 'List', 'Dictionary', 'Array', 'IEnumerable', 'Task'];
+        const controlFlow = ['if', 'else', 'for', 'foreach', 'while', 'do', 'switch', 'case', 'default', 'break', 'continue', 'goto', 'return'];
+        const modifiers = ['public', 'private', 'protected', 'internal', 'static', 'readonly', 'const', 'override', 'virtual', 'abstract', 'sealed', 'async'];
         
-        // Keywords
-        keywords.forEach(keyword => {
+        // Apply highlighting in order of precedence
+        
+        // 1. Multi-line comments
+        highlighted = highlighted.replace(/\/\*[\s\S]*?\*\//g, '<span style="color: #6B7280; font-style: italic;">$&</span>');
+        
+        // 2. Single-line comments
+        highlighted = highlighted.replace(/\/\/.*$/gm, '<span style="color: #6B7280; font-style: italic;">$&</span>');
+        
+        // 3. Strings (various types)
+        highlighted = highlighted.replace(/"([^"\\]|\\.)*"/g, '<span style="color: #059669; font-weight: 500;">$&</span>');
+        highlighted = highlighted.replace(/'([^'\\]|\\.)*'/g, '<span style="color: #059669; font-weight: 500;">$&</span>');
+        highlighted = highlighted.replace(/@"([^"]|"")*"/g, '<span style="color: #059669; font-weight: 500;">$&</span>');
+        
+        // 4. Numbers (integers, floats, hex)
+        highlighted = highlighted.replace(/\b0x[0-9A-Fa-f]+\b/g, '<span style="color: #7C2D12;">$&</span>'); // Hex
+        highlighted = highlighted.replace(/\b\d+(\.\d+)?[fFdDmM]?\b/g, '<span style="color: #EA580C;">$&</span>'); // Numbers
+        
+        // 5. Preprocessor directives
+        highlighted = highlighted.replace(/^#.*$/gm, '<span style="color: #7C3AED; font-weight: bold;">$&</span>');
+        
+        // 6. Attributes
+        highlighted = highlighted.replace(/\[[\w\s,=()".]*\]/g, '<span style="color: #DB2777; font-weight: 500;">$&</span>');
+        
+        // 7. Types and classes (PascalCase identifiers)
+        highlighted = highlighted.replace(/\b[A-Z][a-zA-Z0-9]*(?=\s*[<\[\s]|\s*\w|\s*$)/g, '<span style="color: #0284C7; font-weight: 600;">$&</span>');
+        
+        // 8. Keywords by category
+        modifiers.forEach(keyword => {
             const regex = new RegExp(`\\b${keyword}\\b`, 'g');
             highlighted = highlighted.replace(regex, `<span style="color: #7C3AED; font-weight: bold;">${keyword}</span>`);
         });
         
-        // Strings
-        highlighted = highlighted.replace(/"([^"\\]|\\.)*"/g, '<span style="color: #059669;">$&</span>');
+        controlFlow.forEach(keyword => {
+            const regex = new RegExp(`\\b${keyword}\\b`, 'g');
+            highlighted = highlighted.replace(regex, `<span style="color: #DC2626; font-weight: bold;">${keyword}</span>`);
+        });
         
-        // Comments
-        highlighted = highlighted.replace(/\/\/.*$/gm, '<span style="color: #6B7280; font-style: italic;">$&</span>');
-        highlighted = highlighted.replace(/\/\*[\s\S]*?\*\//g, '<span style="color: #6B7280; font-style: italic;">$&</span>');
+        types.forEach(keyword => {
+            const regex = new RegExp(`\\b${keyword}\\b`, 'g');
+            highlighted = highlighted.replace(regex, `<span style="color: #0284C7; font-weight: 600;">${keyword}</span>`);
+        });
         
-        // Methods/Functions
-        highlighted = highlighted.replace(/\b(\w+)(?=\s*\()/g, '<span style="color: #DC2626; font-weight: normal;">$1</span>');
+        keywords.forEach(keyword => {
+            if (!modifiers.includes(keyword) && !controlFlow.includes(keyword) && !types.includes(keyword)) {
+                const regex = new RegExp(`\\b${keyword}\\b`, 'g');
+                highlighted = highlighted.replace(regex, `<span style="color: #7C3AED; font-weight: bold;">${keyword}</span>`);
+            }
+        });
         
-        // Numbers (only standalone numbers, not in function names)
-        highlighted = highlighted.replace(/\b\d+(\.\d+)?\b/g, '<span style="color: #EA580C;">$&</span>');
+        // 9. Method calls and function names
+        highlighted = highlighted.replace(/\b(\w+)(?=\s*\()/g, '<span style="color: #BE185D; font-weight: 500;">$1</span>');
+        
+        // 10. Properties and fields (after dot notation)
+        highlighted = highlighted.replace(/\.(\w+)(?!\s*\()/g, '.<span style="color: #059669; font-weight: 500;">$1</span>');
+        
+        // 11. Operators
+        highlighted = highlighted.replace(/(\+\+|--|==|!=|<=|>=|&&|\|\||=>|\?\?|\?\.|[+\-*/%=<>!&|^~?:])/g, '<span style="color: #78716C; font-weight: bold;">$1</span>');
+        
+        // 12. Brackets and parentheses
+        highlighted = highlighted.replace(/([{}[\]()])/g, '<span style="color: #64748B; font-weight: bold;">$1</span>');
         
         return highlighted;
+    }
+
+    /**
+     * Handle keydown events for Tab support and special keys
+     */
+    handleKeydown(e) {
+        // Tab handling for indentation
+        if (e.key === 'Tab') {
+            e.preventDefault();
+            const start = this.editorTextarea.selectionStart;
+            const end = this.editorTextarea.selectionEnd;
+            const value = this.editorTextarea.value;
+            
+            if (e.shiftKey) {
+                // Shift+Tab: Remove indentation
+                this.handleUnindent(start, end);
+            } else {
+                // Tab: Add indentation
+                this.handleIndent(start, end);
+            }
+            return;
+        }
+
+        // Enter for auto-formatting
+        if (e.key === 'Enter') {
+            setTimeout(() => {
+                this.handleAutoIndent();
+            }, 0);
+        }
+
+        // IntelliSense trigger on Ctrl+Space
+        if (e.ctrlKey && e.key === ' ') {
+            e.preventDefault();
+            this.showIntelliSense();
+        }
+
+        // Escape to hide IntelliSense
+        if (e.key === 'Escape') {
+            this.hideIntelliSense();
+        }
+    }
+
+    /**
+     * Handle indentation (Tab)
+     */
+    handleIndent(start, end) {
+        const value = this.editorTextarea.value;
+        const selectedText = value.substring(start, end);
+        
+        if (selectedText.includes('\n')) {
+            // Multi-line selection: indent each line
+            const lines = selectedText.split('\n');
+            const indentedLines = lines.map(line => '    ' + line);
+            const newText = indentedLines.join('\n');
+            
+            this.editorTextarea.value = value.substring(0, start) + newText + value.substring(end);
+            this.editorTextarea.selectionStart = start;
+            this.editorTextarea.selectionEnd = start + newText.length;
+        } else {
+            // Single line or cursor: insert tab
+            this.editorTextarea.value = value.substring(0, start) + '    ' + value.substring(end);
+            this.editorTextarea.selectionStart = this.editorTextarea.selectionEnd = start + 4;
+        }
+        
+        this.updateLineNumbers();
+        this.updateSyntaxHighlighting();
+    }
+
+    /**
+     * Handle unindentation (Shift+Tab)
+     */
+    handleUnindent(start, end) {
+        const value = this.editorTextarea.value;
+        const selectedText = value.substring(start, end);
+        
+        if (selectedText.includes('\n')) {
+            // Multi-line selection: unindent each line
+            const lines = selectedText.split('\n');
+            const unindentedLines = lines.map(line => {
+                if (line.startsWith('    ')) {
+                    return line.substring(4);
+                } else if (line.startsWith('\t')) {
+                    return line.substring(1);
+                }
+                return line;
+            });
+            const newText = unindentedLines.join('\n');
+            
+            this.editorTextarea.value = value.substring(0, start) + newText + value.substring(end);
+            this.editorTextarea.selectionStart = start;
+            this.editorTextarea.selectionEnd = start + newText.length;
+        } else {
+            // Single line: remove indentation at cursor
+            const lineStart = value.lastIndexOf('\n', start - 1) + 1;
+            const lineText = value.substring(lineStart, value.indexOf('\n', start));
+            
+            if (lineText.startsWith('    ')) {
+                this.editorTextarea.value = value.substring(0, lineStart) + lineText.substring(4) + value.substring(lineStart + lineText.length);
+                this.editorTextarea.selectionStart = this.editorTextarea.selectionEnd = start - 4;
+            } else if (lineText.startsWith('\t')) {
+                this.editorTextarea.value = value.substring(0, lineStart) + lineText.substring(1) + value.substring(lineStart + lineText.length);
+                this.editorTextarea.selectionStart = this.editorTextarea.selectionEnd = start - 1;
+            }
+        }
+        
+        this.updateLineNumbers();
+        this.updateSyntaxHighlighting();
+    }
+
+    /**
+     * Handle auto-indentation after Enter
+     */
+    handleAutoIndent() {
+        const start = this.editorTextarea.selectionStart;
+        const value = this.editorTextarea.value;
+        
+        // Find current line start
+        const lineStart = value.lastIndexOf('\n', start - 2) + 1;
+        const currentLineEnd = value.indexOf('\n', start - 1);
+        const currentLine = value.substring(lineStart, currentLineEnd === -1 ? value.length : currentLineEnd);
+        
+        // Calculate indentation
+        const indentMatch = currentLine.match(/^(\s*)/);
+        let indent = indentMatch ? indentMatch[1] : '';
+        
+        // Add extra indentation for certain patterns
+        if (currentLine.trim().endsWith('{') || currentLine.trim().endsWith(':')) {
+            indent += '    ';
+        }
+        
+        // Insert indentation
+        if (indent) {
+            this.editorTextarea.value = value.substring(0, start) + indent + value.substring(start);
+            this.editorTextarea.selectionStart = this.editorTextarea.selectionEnd = start + indent.length;
+            
+            this.updateLineNumbers();
+            this.updateSyntaxHighlighting();
+        }
+    }
+
+    /**
+     * Check for auto-formatting triggers
+     */
+    checkForAutoFormat(e) {
+        const value = this.editorTextarea.value;
+        const cursor = this.editorTextarea.selectionStart;
+        
+        // Auto-format on closing brace
+        if (e.inputType === 'insertText' && e.data === '}') {
+            setTimeout(() => {
+                this.autoFormatClosingBrace(cursor - 1);
+            }, 0);
+        }
+    }
+
+    /**
+     * Auto-format closing brace indentation
+     */
+    autoFormatClosingBrace(bracePosition) {
+        const value = this.editorTextarea.value;
+        const lineStart = value.lastIndexOf('\n', bracePosition - 1) + 1;
+        const lineEnd = value.indexOf('\n', bracePosition);
+        const line = value.substring(lineStart, lineEnd === -1 ? value.length : lineEnd);
+        
+        // Check if line only contains whitespace and the closing brace
+        if (line.trim() === '}') {
+            // Find matching opening brace indentation
+            let braceCount = 1;
+            let pos = bracePosition - 1;
+            
+            while (pos >= 0 && braceCount > 0) {
+                if (value[pos] === '}') braceCount++;
+                if (value[pos] === '{') braceCount--;
+                pos--;
+            }
+            
+            if (braceCount === 0) {
+                // Found matching opening brace
+                const openLineStart = value.lastIndexOf('\n', pos) + 1;
+                const openLineEnd = value.indexOf('\n', pos + 1);
+                const openLine = value.substring(openLineStart, openLineEnd === -1 ? value.length : openLineEnd);
+                const openIndent = openLine.match(/^(\s*)/)[1];
+                
+                // Replace current line with proper indentation
+                const newLine = openIndent + '}';
+                this.editorTextarea.value = value.substring(0, lineStart) + newLine + value.substring(lineEnd === -1 ? value.length : lineEnd);
+                this.editorTextarea.selectionStart = this.editorTextarea.selectionEnd = lineStart + newLine.length;
+                
+                this.updateLineNumbers();
+                this.updateSyntaxHighlighting();
+            }
+        }
+    }
+
+    /**
+     * Handle IntelliSense triggers
+     */
+    handleIntelliSense(e) {
+        // Show IntelliSense on dot after identifier
+        if (e.key === '.') {
+            setTimeout(() => {
+                this.showIntelliSense();
+            }, 100);
+        }
+        
+        // Hide IntelliSense on certain keys
+        if (['Escape', 'Enter', ' '].includes(e.key)) {
+            this.hideIntelliSense();
+        }
+    }
+
+    /**
+     * Show IntelliSense suggestions
+     */
+    showIntelliSense() {
+        if (!this.currentProject) return;
+        
+        const cursor = this.editorTextarea.selectionStart;
+        const value = this.editorTextarea.value;
+        const beforeCursor = value.substring(0, cursor);
+        
+        // Check if we're after a dot
+        const dotMatch = beforeCursor.match(/(\w+)\.$/);
+        if (!dotMatch) return;
+        
+        const variableName = dotMatch[1];
+        const suggestions = this.getIntelliSenseSuggestions(variableName);
+        
+        if (suggestions.length > 0) {
+            this.showIntelliSensePopup(suggestions, cursor);
+        }
+    }
+
+    /**
+     * Get IntelliSense suggestions based on context
+     */
+    getIntelliSenseSuggestions(variableName) {
+        const suggestions = [];
+        
+        // Get connected Data Models
+        const connectedModels = this.currentFunctionNode.getConnectedDataModels(this.currentProject);
+        
+        // Check if variable matches a Data Model
+        const matchingModel = connectedModels.find(model => 
+            model.label.toLowerCase() === variableName.toLowerCase() ||
+            model.label.replace(/\s+/g, '').toLowerCase() === variableName.toLowerCase()
+        );
+        
+        if (matchingModel && matchingModel.schema && matchingModel.schema.properties) {
+            // Add properties from Data Model
+            Object.keys(matchingModel.schema.properties).forEach(prop => {
+                const property = matchingModel.schema.properties[prop];
+                suggestions.push({
+                    text: prop,
+                    type: property.type || 'string',
+                    description: property.description || `Property from ${matchingModel.label}`
+                });
+            });
+        }
+        
+        // Add common C# suggestions
+        const commonSuggestions = [
+            { text: 'ToString()', type: 'method', description: 'Returns a string representation' },
+            { text: 'Equals()', type: 'method', description: 'Determines equality' },
+            { text: 'GetHashCode()', type: 'method', description: 'Returns hash code' }
+        ];
+        
+        suggestions.push(...commonSuggestions);
+        
+        return suggestions;
+    }
+
+    /**
+     * Show IntelliSense popup
+     */
+    showIntelliSensePopup(suggestions, cursor) {
+        this.hideIntelliSense(); // Remove existing popup
+        
+        // Calculate position
+        const textareaRect = this.editorTextarea.getBoundingClientRect();
+        const textBeforeCursor = this.editorTextarea.value.substring(0, cursor);
+        const lines = textBeforeCursor.split('\n');
+        const currentLine = lines[lines.length - 1];
+        const lineHeight = 22; // Line height in pixels
+        
+        // Create popup
+        this.intelliSensePopup = document.createElement('div');
+        this.intelliSensePopup.style.cssText = `
+            position: absolute;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 13px;
+            min-width: 250px;
+        `;
+        
+        // Position popup
+        const top = (lines.length - 1) * lineHeight + 35;
+        const left = Math.min(currentLine.length * 8.5 + 70, textareaRect.width - 270);
+        this.intelliSensePopup.style.top = `${top}px`;
+        this.intelliSensePopup.style.left = `${left}px`;
+        
+        // Add suggestions
+        suggestions.forEach((suggestion, index) => {
+            const item = document.createElement('div');
+            item.style.cssText = `
+                padding: 8px 12px;
+                cursor: pointer;
+                border-bottom: 1px solid #f1f5f9;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                transition: background 0.1s;
+            `;
+            
+            if (index === 0) {
+                item.style.background = '#f8fafc';
+            }
+            
+            item.onmouseover = () => {
+                // Clear other selections
+                Array.from(this.intelliSensePopup.children).forEach(child => {
+                    child.style.background = 'white';
+                });
+                item.style.background = '#f8fafc';
+            };
+            
+            item.onclick = () => {
+                this.insertIntelliSenseSuggestion(suggestion.text, cursor);
+                this.hideIntelliSense();
+            };
+            
+            // Type icon
+            const typeIcon = document.createElement('span');
+            typeIcon.textContent = suggestion.type === 'method' ? '⚙️' : '📝';
+            typeIcon.style.cssText = 'font-size: 12px;';
+            
+            // Suggestion text
+            const textSpan = document.createElement('span');
+            textSpan.textContent = suggestion.text;
+            textSpan.style.cssText = 'font-weight: 600; color: #1e293b;';
+            
+            // Type badge
+            const typeBadge = document.createElement('span');
+            typeBadge.textContent = suggestion.type;
+            typeBadge.style.cssText = `
+                background: #e2e8f0;
+                color: #64748b;
+                padding: 2px 6px;
+                border-radius: 4px;
+                font-size: 10px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-left: auto;
+            `;
+            
+            item.appendChild(typeIcon);
+            item.appendChild(textSpan);
+            item.appendChild(typeBadge);
+            this.intelliSensePopup.appendChild(item);
+        });
+        
+        // Add to editor container
+        this.editorContainer.appendChild(this.intelliSensePopup);
+        
+        // Handle keyboard navigation
+        this.intelliSenseIndex = 0;
+        this.intelliSenseSuggestions = suggestions;
+    }
+
+    /**
+     * Insert IntelliSense suggestion
+     */
+    insertIntelliSenseSuggestion(text, cursorPos) {
+        const value = this.editorTextarea.value;
+        this.editorTextarea.value = value.substring(0, cursorPos) + text + value.substring(cursorPos);
+        this.editorTextarea.selectionStart = this.editorTextarea.selectionEnd = cursorPos + text.length;
+        
+        this.updateLineNumbers();
+        this.updateSyntaxHighlighting();
+        this.editorTextarea.focus();
+    }
+
+    /**
+     * Hide IntelliSense popup
+     */
+    hideIntelliSense() {
+        if (this.intelliSensePopup) {
+            this.intelliSensePopup.remove();
+            this.intelliSensePopup = null;
+            this.intelliSenseIndex = -1;
+            this.intelliSenseSuggestions = [];
+        }
     }
 
     /**
@@ -1210,53 +1671,159 @@ class CSharpEditorService {
      */
     generateInitialCodeWithDataModels() {
         if (!this.currentProject) {
-            return 'public void Execute()\n{\n    // Your code here\n    Console.WriteLine("Hello World!");\n}';
+            return `using System;
+using System.Collections.Generic;
+using System.Linq;
+
+public void Execute()
+{
+    // Your code here
+    // 💡 Tip: Connect Data Models to get IntelliSense support!
+    Console.WriteLine("Hello World!");
+}`;
         }
 
         const connectedModels = this.currentFunctionNode.getConnectedDataModels(this.currentProject);
         
         if (connectedModels.length === 0) {
-            return `public void Execute()
+            return `using System;
+using System.Collections.Generic;
+using System.Linq;
+
+public void Execute()
 {
     // Your code here
-    // 💡 Tip: Connect Data Models to access their classes automatically!
+    // 💡 Tip: Connect Data Models to access their properties with IntelliSense!
+    // 🔗 Draw connections from this Function to Data Models to see examples
+    
     Console.WriteLine("Hello World!");
 }`;
         }
 
         // Generate code with connected Data Models examples
-        let code = `public void Execute()
+        let code = `using System;
+using System.Collections.Generic;
+using System.Linq;
+
+public void Execute()
 {
     // 🗃️ Connected Data Models (${connectedModels.length}):
+    // ✨ IntelliSense enabled! Type variable name + dot to see properties
+    
 `;
 
         connectedModels.forEach((model, index) => {
             const className = model.label.replace(/\s+/g, ''); // Remove spaces for class name
             const variableName = className.charAt(0).toLowerCase() + className.slice(1);
             
-            code += `    // ${index + 1}. ${model.label}\n`;
-            code += `    var ${variableName} = new ${className}();\n`;
+            code += `    // ${index + 1}. ${model.label} Data Model\n`;
+            code += `    var ${variableName} = new ${className}()\n    {\n`;
             
-            if (model.fields && model.fields.length > 0) {
-                // Show examples of setting fields
-                const firstField = model.fields[0];
-                const fieldName = firstField.name;
-                const exampleValue = this.getExampleValue(firstField.type);
+            if (model.schema && model.schema.properties) {
+                // Show examples using schema properties
+                const properties = Object.keys(model.schema.properties);
+                const maxProps = Math.min(3, properties.length); // Show up to 3 properties
                 
-                code += `    ${variableName}.${fieldName} = ${exampleValue}; // ${firstField.type}\n`;
+                properties.slice(0, maxProps).forEach((propName, propIndex) => {
+                    const property = model.schema.properties[propName];
+                    const exampleValue = this.getExampleValueForSchema(property.type, propName);
+                    const comma = propIndex < maxProps - 1 ? ',' : '';
+                    
+                    code += `        ${propName} = ${exampleValue}${comma} // ${property.type || 'object'}\n`;
+                });
                 
-                if (model.fields.length > 1) {
-                    code += `    // ... and ${model.fields.length - 1} more field${model.fields.length > 2 ? 's' : ''}\n`;
+                if (properties.length > 3) {
+                    code += `        // ... and ${properties.length - 3} more properties\n`;
+                }
+            } else if (model.fields && model.fields.length > 0) {
+                // Fallback to fields
+                const maxFields = Math.min(3, model.fields.length);
+                model.fields.slice(0, maxFields).forEach((field, fieldIndex) => {
+                    const exampleValue = this.getExampleValue(field.type);
+                    const comma = fieldIndex < maxFields - 1 ? ',' : '';
+                    
+                    code += `        ${field.name} = ${exampleValue}${comma} // ${field.type}\n`;
+                });
+                
+                if (model.fields.length > 3) {
+                    code += `        // ... and ${model.fields.length - 3} more fields\n`;
+                }
+            } else {
+                code += `        // Configure properties here - use dot notation for IntelliSense\n`;
+            }
+            
+            code += `    };\n\n`;
+            
+            // Add usage examples
+            if (model.schema && model.schema.properties) {
+                const firstProp = Object.keys(model.schema.properties)[0];
+                if (firstProp) {
+                    code += `    // IntelliSense example: ${variableName}. <- Type dot to see all properties!\n`;
+                    code += `    Console.WriteLine($"${model.label}: {${variableName}.${firstProp}}");\n\n`;
                 }
             }
-            code += `\n`;
         });
 
-        code += `    // Your business logic here
-    Console.WriteLine($"Processing {connectedModels.length} data model${connectedModels.length !== 1 ? 's' : ''}");
+        code += `    // 🚀 Your business logic here
+    // Use Ctrl+Space for IntelliSense suggestions
+    // Use Tab for auto-completion after typing a dot
+    
+    var results = ProcessData(${connectedModels.map(m => {
+            const className = m.label.replace(/\s+/g, '');
+            return className.charAt(0).toLowerCase() + className.slice(1);
+        }).join(', ')});
+    
+    Console.WriteLine($"Processed {connectedModels.length} data model${connectedModels.length !== 1 ? 's' : ''} successfully!");
+}
+
+private dynamic ProcessData(${connectedModels.map(m => {
+            const className = m.label.replace(/\s+/g, '');
+            return `${className} ${className.charAt(0).toLowerCase() + className.slice(1)}`;
+        }).join(', ')})
+{
+    // Implement your data processing logic here
+    return new { Status = "Success", Timestamp = DateTime.Now };
 }`;
 
         return code;
+    }
+
+    /**
+     * Get example value for schema-based properties
+     */
+    getExampleValueForSchema(type, propName) {
+        const lowerPropName = propName.toLowerCase();
+        
+        switch (type) {
+            case 'string':
+                if (lowerPropName.includes('email')) return '"user@example.com"';
+                if (lowerPropName.includes('name')) return '"John Doe"';
+                if (lowerPropName.includes('phone')) return '"+1-234-567-8900"';
+                if (lowerPropName.includes('address')) return '"123 Main St"';
+                if (lowerPropName.includes('id')) return '"ABC123"';
+                return '"Sample text"';
+            
+            case 'number':
+            case 'integer':
+                if (lowerPropName.includes('age')) return '25';
+                if (lowerPropName.includes('price') || lowerPropName.includes('cost') || lowerPropName.includes('amount')) return '99.99m';
+                if (lowerPropName.includes('quantity') || lowerPropName.includes('count')) return '10';
+                return '42';
+            
+            case 'boolean':
+                if (lowerPropName.includes('active') || lowerPropName.includes('enabled')) return 'true';
+                if (lowerPropName.includes('deleted') || lowerPropName.includes('hidden')) return 'false';
+                return 'true';
+            
+            case 'array':
+                return 'new List<string> { "item1", "item2" }';
+            
+            case 'object':
+                return 'new { }';
+            
+            default:
+                return 'null';
+        }
     }
 
     /**

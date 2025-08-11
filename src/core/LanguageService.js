@@ -575,6 +575,15 @@ const translations = {
         modelsCommand: "models        - List all data model nodes",
         quickFieldAccess: "ID.field_name - Quick field access (e.g., 123.name)",
         tabAutocomplete: " Use TAB after dot for autocomplete",
+        
+        // Code Editor
+        intelliSenseTooltip: "💡 IntelliSense: Press Ctrl+Space for suggestions",
+        intelliSenseProperty: "Property from",
+        intelliSenseMethod: "Method",
+        copyIdToClipboard: "Copy ID to clipboard",
+        syntaxHighlighting: "Syntax highlighting enabled",
+        autoFormatting: "Auto-formatting enabled",
+        tabSupport: "Tab indentation supported",
         systemCommands: "âš™ď¸z SYSTEM:",
         configCommand: "config        - Show system configuration",
         backupCommand: "backup        - Create project backup",
@@ -1609,6 +1618,15 @@ const translations = {
         modelsCommand: "models        - Listuj wszystkie wezly modelu danych",
         quickFieldAccess: "ID.nazwa_pola - Szybki dostep do pola (np. 123.name)",
         tabAutocomplete: "Uzyj TAB po kropce dla autouzupelniania",
+        
+        // Edytor Kodu
+        intelliSenseTooltip: "💡 IntelliSense: Nacisnij Ctrl+Spacja dla podpowiedzi",
+        intelliSenseProperty: "Właściwość z",
+        intelliSenseMethod: "Metoda",
+        copyIdToClipboard: "Kopiuj ID do schowka",
+        syntaxHighlighting: "Kolorowanie składni włączone",
+        autoFormatting: "Auto-formatowanie włączone",
+        tabSupport: "Wcięcia Tab obsługiwane",
         systemCommands: "SYSTEM:",
         configCommand: "config        - Pokaz konfiguracje systemu",
         backupCommand: "backup        - Utworz kopie zapasowa projektu",

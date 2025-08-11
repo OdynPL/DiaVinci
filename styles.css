@@ -727,3 +727,118 @@ input[type="text"]:focus {
         min-width: 140px;
     }
 }
+
+/* Editor and Modal Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modalIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Code Editor Specific Styles */
+.code-editor-container {
+    position: relative;
+    font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+}
+
+.code-editor-container .syntax-highlight {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 1;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow: hidden;
+}
+
+.code-editor-container textarea {
+    background: transparent;
+    color: rgba(30, 41, 59, 0.8);
+    caret-color: #3b82f6;
+    z-index: 2;
+    outline: none;
+    border: none;
+    resize: none;
+    font-family: inherit;
+    tab-size: 4;
+}
+
+.code-editor-container .line-numbers {
+    background: #f8fafc;
+    border-right: 1px solid #e2e8f0;
+    color: #64748b;
+    font-family: inherit;
+    user-select: none;
+    text-align: right;
+    padding-right: 8px;
+}
+
+/* IntelliSense popup styling */
+.intellisense-popup {
+    position: absolute;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    max-height: 200px;
+    overflow-y: auto;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.intellisense-popup .item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.1s;
+}
+
+.intellisense-popup .item:hover,
+.intellisense-popup .item.selected {
+    background: #f8fafc;
+}
+
+.intellisense-popup .item:last-child {
+    border-bottom: none;
+}
+
+.intellisense-popup .type-icon {
+    font-size: 12px;
+    width: 16px;
+    text-align: center;
+}
+
+.intellisense-popup .suggestion-text {
+    font-weight: 600;
+    color: #1e293b;
+    flex: 1;
+}
+
+.intellisense-popup .type-badge {
+    background: #e2e8f0;
+    color: #64748b;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
