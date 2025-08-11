@@ -2,13 +2,16 @@
  * C# Editor Service with modern, light theme and function name editing
  */
 class CSharpEditorService {
-    constructor() {
+    constructor(eventBus = null) {
+        this.eventBus = eventBus;
         this.currentFunctionNode = null;
         this.overlay = null;
         this.editorContainer = null;
         this.editorTextarea = null;
         this.syntaxContainer = null;
         this.dataModelsButton = null;
+        this.transitionAddedListener = null;
+        this.transitionRemovedListener = null;
     }
 
     /**
@@ -29,6 +32,19 @@ class CSharpEditorService {
         
         // Update counter after creating UI
         this.updateDataModelCounter();
+        
+        // Listen for transition events to update counter in real-time
+        if (this.eventBus) {
+            this.transitionAddedListener = () => {
+                setTimeout(() => this.updateDataModelCounter(), 100);
+            };
+            this.transitionRemovedListener = () => {
+                setTimeout(() => this.updateDataModelCounter(), 100);
+            };
+            
+            this.eventBus.on('transition.added', this.transitionAddedListener);
+            this.eventBus.on('transition.removed', this.transitionRemovedListener);
+        }
     }
 
     /**
@@ -102,11 +118,15 @@ class CSharpEditorService {
             padding: 8px 12px;
             font-size: 16px;
             font-weight: 600;
-            min-width: 300px;
-            width: 300px;
+            min-width: 500px;
+            width: 500px;
         `;
         
         functionNameInput.addEventListener('change', () => {
+            this.currentFunctionNode.label = functionNameInput.value;
+        });
+        
+        functionNameInput.addEventListener('input', () => {
             this.currentFunctionNode.label = functionNameInput.value;
         });
 
@@ -472,21 +492,38 @@ class CSharpEditorService {
     }
 
     /**
-     * Save the code
+     * Save the code and function name
      */
     saveCode() {
         if (this.currentFunctionNode && this.editorTextarea) {
+            // Save code
             this.currentFunctionNode.updateCode(this.editorTextarea.value);
             this.currentFunctionNode.lastEditTime = new Date();
-            console.log('Code saved successfully');
+            
+            // Save function name from input field
+            const nameInput = this.overlay.querySelector('input[type="text"]');
+            if (nameInput && nameInput.value.trim()) {
+                this.currentFunctionNode.label = nameInput.value.trim();
+                this.currentFunctionNode.name = nameInput.value.trim();
+            }
+            
+            console.log('Code and function name saved successfully');
+            console.log('Function name:', this.currentFunctionNode.label);
             
             // Show success feedback
-            const saveButton = document.querySelector('button[textContent="💾 Save"]');
-            if (saveButton) {
-                const originalText = saveButton.textContent;
-                saveButton.textContent = '✅ Saved';
+            const buttons = this.overlay.querySelectorAll('button');
+            let saveBtn = null;
+            buttons.forEach(btn => {
+                if (btn.textContent.includes('Save')) {
+                    saveBtn = btn;
+                }
+            });
+            
+            if (saveBtn) {
+                const originalText = saveBtn.textContent;
+                saveBtn.textContent = '✅ Saved';
                 setTimeout(() => {
-                    saveButton.textContent = originalText;
+                    saveBtn.textContent = originalText;
                 }, 1500);
             }
         }
@@ -496,6 +533,16 @@ class CSharpEditorService {
      * Close the editor
      */
     closeEditor() {
+        // Remove event listeners
+        if (this.eventBus) {
+            if (this.transitionAddedListener) {
+                this.eventBus.off('transition.added', this.transitionAddedListener);
+            }
+            if (this.transitionRemovedListener) {
+                this.eventBus.off('transition.removed', this.transitionRemovedListener);
+            }
+        }
+        
         if (this.overlay) {
             document.body.removeChild(this.overlay);
             this.overlay = null;
@@ -504,6 +551,8 @@ class CSharpEditorService {
             this.syntaxContainer = null;
             this.dataModelsButton = null;
             this.currentFunctionNode = null;
+            this.transitionAddedListener = null;
+            this.transitionRemovedListener = null;
         }
     }
 }

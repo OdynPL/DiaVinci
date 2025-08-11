@@ -20,8 +20,8 @@ class DiagramController {
         // Initialize Data Model Editor
         this.dataModelEditor = new DataModelEditor(eventBus);
         
-        // Initialize C# Editor Service
-        this.csharpEditorService = new CSharpEditorService();
+        // Initialize C# Editor Service with EventBus
+        this.csharpEditorService = new CSharpEditorService(eventBus);
         
         // Get terminal service for logging and commands
         this.terminalService = terminalService || window.terminalService;
@@ -900,6 +900,13 @@ class DiagramController {
         
         const added = this.currentProject.addTransition(transition);
         if (added) {
+            // Emit event for transition added
+            this.eventBus.emit('transition.added', {
+                transition: transition,
+                from: fromNode,
+                to: toNode
+            });
+            
             // Update function nodes if they are involved in the transition
             if (toNode && toNode.type === 'function') {
                 this.updateFunctionNodeDataModelReferences(toNode);
@@ -1080,6 +1087,13 @@ class DiagramController {
             const toNode = element.to;
             
             this.currentProject.removeTransition(element);
+            
+            // Emit event for transition removed
+            this.eventBus.emit('transition.removed', {
+                transition: element,
+                from: fromNode,
+                to: toNode
+            });
             
             // Update function nodes if they were involved in the removed transition
             if (toNode && toNode.type === 'function') {

@@ -1508,7 +1508,7 @@ class CanvasRenderer {
         this.ctx.stroke();
         
         // Draw data model references count with icon
-        const dmCount = node.getDataModelCounter ? node.getDataModelCounter(this.project) : 0;
+        const dmCount = (node.getDataModelCounter && this.project) ? node.getDataModelCounter(this.project) : 0;
         this.ctx.fillStyle = dmCount > 0 ? '#059669' : '#6b7280';
         this.ctx.font = '7px "Segoe UI", Arial, sans-serif';
         this.ctx.textAlign = 'left';

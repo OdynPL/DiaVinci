@@ -82,18 +82,38 @@ class FunctionNode {
     }
 
     /**
-     * Get connected Data Models via transitions from project
+     * Get connected Data Models via transitions from project (both directions)
      */
     getConnectedDataModels(project) {
         if (!project) return [];
         
         const connectedDataModels = [];
-        const incomingTransitions = project.transitions.filter(transition => transition.to === this);
         
+        // Check incoming transitions (DataModel -> Function)
+        const incomingTransitions = project.transitions.filter(transition => transition.to === this);
         incomingTransitions.forEach(transition => {
             if (transition.from && transition.from.type === 'datamodel') {
                 connectedDataModels.push(transition.from);
             }
+        });
+        
+        // Check outgoing transitions (Function -> DataModel)  
+        const outgoingTransitions = project.transitions.filter(transition => transition.from === this);
+        outgoingTransitions.forEach(transition => {
+            if (transition.to && transition.to.type === 'datamodel') {
+                // Check if not already added (avoid duplicates)
+                if (!connectedDataModels.find(model => model.id === transition.to.id)) {
+                    connectedDataModels.push(transition.to);
+                }
+            }
+        });
+        
+        // Debug logging
+        console.log(`Function ${this.label} connected models:`, {
+            incomingCount: incomingTransitions.filter(t => t.from && t.from.type === 'datamodel').length,
+            outgoingCount: outgoingTransitions.filter(t => t.to && t.to.type === 'datamodel').length,
+            totalConnected: connectedDataModels.length,
+            modelIds: connectedDataModels.map(m => `${m.label}(${(m.id || 'no-id').toString().substring(0,8)})`)
         });
         
         return connectedDataModels;
