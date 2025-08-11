@@ -25,25 +25,39 @@ class CSharpEditorService {
      * Open C# editor for function node
      */
     openEditor(functionNode, project = null) {
+        console.log('CSharpEditorService: Opening editor for:', functionNode ? functionNode.label : 'null');
+        
+        if (!functionNode) {
+            console.error('CSharpEditorService: No function node provided!');
+            return;
+        }
+        
         this.currentFunctionNode = functionNode;
         this.currentProject = project;
-        this.createEditorUI();
-        this.createEditor();
         
-        // Update counter after creating UI
-        this.updateDataModelCounter();
-        
-        // Listen for transition events to update counter in real-time
-        if (this.eventBus) {
-            this.transitionAddedListener = () => {
-                setTimeout(() => this.updateDataModelCounter(), 100);
-            };
-            this.transitionRemovedListener = () => {
-                setTimeout(() => this.updateDataModelCounter(), 100);
-            };
+        try {
+            this.createEditorUI();
+            this.createEditor();
             
-            this.eventBus.on('transition.added', this.transitionAddedListener);
-            this.eventBus.on('transition.removed', this.transitionRemovedListener);
+            // Update counter after creating UI
+            this.updateDataModelCounter();
+            
+            // Listen for transition events to update counter in real-time
+            if (this.eventBus) {
+                this.transitionAddedListener = () => {
+                    setTimeout(() => this.updateDataModelCounter(), 100);
+                };
+                this.transitionRemovedListener = () => {
+                    setTimeout(() => this.updateDataModelCounter(), 100);
+                };
+                
+                this.eventBus.on('transition.added', this.transitionAddedListener);
+                this.eventBus.on('transition.removed', this.transitionRemovedListener);
+            }
+            
+            console.log('CSharpEditorService: Editor opened successfully');
+        } catch (error) {
+            console.error('CSharpEditorService: Error opening editor:', error);
         }
     }
 
@@ -51,20 +65,31 @@ class CSharpEditorService {
      * Create modern, light editor UI overlay
      */
     createEditorUI() {
+        console.log('CSharpEditorService: Creating editor UI...');
+        
+        // Close any existing editor first
+        if (this.overlay) {
+            console.log('CSharpEditorService: Closing existing editor...');
+            this.closeEditor();
+        }
+        
         // Create overlay
         this.overlay = document.createElement('div');
         this.overlay.style.cssText = `
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             background: rgba(0, 0, 0, 0.6);
             z-index: 10000;
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: auto;
         `;
+        
+        console.log('CSharpEditorService: Overlay created, z-index:', this.overlay.style.zIndex);
 
         // Create editor window
         const editorWindow = document.createElement('div');
@@ -73,11 +98,17 @@ class CSharpEditorService {
             border-radius: 12px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
             width: 95%;
-            height: 85%;
+            height: 75vh;
+            max-height: 600px;
             max-width: 1400px;
+            min-height: 400px;
             display: flex;
             flex-direction: column;
             border: 1px solid #e5e7eb;
+            overflow: hidden;
+            position: relative;
+            z-index: 10001;
+            margin: auto;
         `;
 
         // Create header with function name input
@@ -85,12 +116,13 @@ class CSharpEditorService {
         header.style.cssText = `
             background: linear-gradient(135deg, #8B5CF6, #A78BFA);
             color: white;
-            padding: 20px 24px;
+            padding: 12px 20px;
             border-radius: 12px 12px 0 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid #e5e7eb;
+            flex-shrink: 0;
         `;
 
         // Create title container with editable function name
@@ -115,11 +147,11 @@ class CSharpEditorService {
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 6px;
             color: white;
-            padding: 8px 12px;
-            font-size: 16px;
+            padding: 6px 10px;
+            font-size: 15px;
             font-weight: 600;
-            min-width: 350px;
-            width: 350px;
+            min-width: 400px;
+            width: 400px;
         `;
         
         functionNameInput.addEventListener('change', () => {
@@ -136,8 +168,9 @@ class CSharpEditorService {
         const buttonContainer = document.createElement('div');
         buttonContainer.style.cssText = `
             display: flex;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
+            align-items: center;
         `;
 
         // Data Models button with counter
@@ -148,10 +181,10 @@ class CSharpEditorService {
             background: rgba(255, 255, 255, 0.2);
             color: white;
             border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             transition: all 0.2s;
         `;
         dataModelsButton.onmouseover = () => {
@@ -172,10 +205,10 @@ class CSharpEditorService {
             background: #10B981;
             color: white;
             border: none;
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             transition: all 0.2s;
         `;
@@ -194,10 +227,10 @@ class CSharpEditorService {
             background: #8B5CF6;
             color: white;
             border: none;
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             margin-left: 8px;
             transition: all 0.2s;
@@ -221,10 +254,10 @@ class CSharpEditorService {
             background: #6366F1;
             color: white;
             border: none;
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             transition: all 0.2s;
         `;
@@ -243,10 +276,10 @@ class CSharpEditorService {
             background: #EF4444;
             color: white;
             border: none;
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             transition: all 0.2s;
         `;
@@ -272,12 +305,20 @@ class CSharpEditorService {
             flex: 1;
             border-radius: 0 0 12px 12px;
             background: #fafafa;
+            min-height: 0;
+            overflow: hidden;
         `;
 
         editorWindow.appendChild(header);
         editorWindow.appendChild(this.editorContainer);
         this.overlay.appendChild(editorWindow);
         document.body.appendChild(this.overlay);
+        
+        console.log('CSharpEditorService: Editor UI added to DOM');
+        console.log('CSharpEditorService: Header style:', header.style.cssText);
+        console.log('CSharpEditorService: EditorContainer style:', this.editorContainer.style.cssText);
+        console.log('CSharpEditorService: Overlay style:', this.overlay.style.cssText);
+        console.log('CSharpEditorService: EditorWindow style:', editorWindow.style.cssText);
 
         // Close on overlay click
         this.overlay.addEventListener('click', (e) => {
@@ -300,16 +341,22 @@ class CSharpEditorService {
      * Create modern light-themed code editor
      */
     createEditor() {
-        if (!this.editorContainer) return;
+        console.log('CSharpEditorService: Creating code editor...');
+        if (!this.editorContainer) {
+            console.error('CSharpEditorService: No editorContainer found!');
+            return;
+        }
 
         // Create editor layout
         const editorLayout = document.createElement('div');
         editorLayout.style.cssText = `
-            height: 100%;
+            flex: 1;
             display: flex;
             flex-direction: column;
             background: #ffffff;
             border-radius: 0 0 12px 12px;
+            min-height: 0;
+            overflow: hidden;
         `;
 
         // Create toolbar
@@ -341,6 +388,8 @@ class CSharpEditorService {
             display: flex;
             background: #ffffff;
             position: relative;
+            overflow: hidden;
+            min-height: 0;
         `;
 
         // Create line numbers
@@ -360,6 +409,7 @@ class CSharpEditorService {
             flex-shrink: 0;
             position: relative;
             z-index: 3;
+            overflow: hidden;
         `;
 
         // Create syntax highlighting container
@@ -402,7 +452,12 @@ class CSharpEditorService {
             z-index: 2;
             overflow: auto;
             tab-size: 4;
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e0 transparent;
         `;
+        
+        // Add custom scrollbar styles for webkit browsers
+        this.editorTextarea.className = 'custom-scrollbar';
 
         // Set initial code with Data Models integration
         const initialCode = this.currentFunctionNode.code || this.generateInitialCodeWithDataModels();
@@ -427,9 +482,8 @@ class CSharpEditorService {
             this.checkForAutoFormat(e);
         });
 
-        this.editorTextarea.addEventListener('scroll', () => {
-            this.syntaxContainer.scrollTop = this.editorTextarea.scrollTop;
-            lineNumbers.scrollTop = this.editorTextarea.scrollTop;
+        this.editorTextarea.addEventListener('blur', () => {
+            this.hideIntelliSense();
         });
 
         // Tab support and IntelliSense
@@ -442,8 +496,10 @@ class CSharpEditorService {
             this.handleIntelliSense(e);
         });
 
-        this.editorTextarea.addEventListener('blur', () => {
-            this.hideIntelliSense();
+        // Synchronize scrolling between textarea and line numbers (single listener)
+        this.editorTextarea.addEventListener('scroll', () => {
+            lineNumbers.scrollTop = this.editorTextarea.scrollTop;
+            this.syntaxContainer.scrollTop = this.editorTextarea.scrollTop;
         });
 
         // Assemble editor
@@ -455,9 +511,17 @@ class CSharpEditorService {
         editorLayout.appendChild(editorArea);
         this.editorContainer.appendChild(editorLayout);
 
-        // Focus the editor
+        // Focus the editor and scroll to top
         setTimeout(() => {
             this.editorTextarea.focus();
+            // Reset scroll to top to show code from line 1
+            this.editorTextarea.scrollTop = 0;
+            if (this.syntaxContainer) {
+                this.syntaxContainer.scrollTop = 0;
+            }
+            if (this.lineNumbers) {
+                this.lineNumbers.scrollTop = 0;
+            }
         }, 100);
     }
 
@@ -577,10 +641,18 @@ class CSharpEditorService {
         // Update the editor
         this.editorTextarea.value = formattedCode;
         
-        // Try to preserve cursor position roughly
-        const newCursorPosition = Math.min(cursorPosition, formattedCode.length);
-        this.editorTextarea.selectionStart = newCursorPosition;
-        this.editorTextarea.selectionEnd = newCursorPosition;
+        // Set cursor to beginning instead of preserving position
+        this.editorTextarea.selectionStart = 0;
+        this.editorTextarea.selectionEnd = 0;
+        
+        // Reset scroll to top
+        this.editorTextarea.scrollTop = 0;
+        if (this.syntaxContainer) {
+            this.syntaxContainer.scrollTop = 0;
+        }
+        if (this.lineNumbers) {
+            this.lineNumbers.scrollTop = 0;
+        }
         
         // Update display
         this.updateLineNumbers();
@@ -598,80 +670,97 @@ class CSharpEditorService {
      * Highlight C# syntax with advanced patterns
      */
     highlightCSharpSyntax(code) {
-        let highlighted = code;
+        // Store original code for processing
+        let original = code;
         
-        // C# Keywords with different categories
-        const basicTypes = ['void', 'int', 'string', 'bool', 'double', 'float', 'char', 'byte', 'sbyte', 'short', 'ushort', 'uint', 'long', 'ulong', 'decimal', 'object'];
-        const complexTypes = ['DateTime', 'TimeSpan', 'Guid', 'List', 'Dictionary', 'Array', 'IEnumerable', 'Task'];
-        const controlFlow = ['if', 'else', 'for', 'foreach', 'while', 'do', 'switch', 'case', 'default', 'break', 'continue', 'goto', 'return'];
-        const modifiers = ['public', 'private', 'protected', 'internal', 'static', 'readonly', 'const', 'override', 'virtual', 'abstract', 'sealed', 'async'];
-        const specialKeywords = ['var', 'new', 'this', 'base', 'null', 'true', 'false'];
-        const contextualKeywords = ['class', 'interface', 'namespace', 'using', 'try', 'catch', 'finally', 'throw', 'await'];
+        // First, identify and mark special patterns before escaping
+        const tokens = [];
+        let tokenIndex = 0;
         
-        // 1. Multi-line comments
-        highlighted = highlighted.replace(/\/\*[\s\S]*?\*\//g, '<span style="color: #6B7280; font-style: italic;">$&</span>');
-        
-        // 2. Single-line comments
-        highlighted = highlighted.replace(/\/\/.*$/gm, '<span style="color: #6B7280; font-style: italic;">$&</span>');
-        
-        // 3. Strings (various types)
-        highlighted = highlighted.replace(/"([^"\\]|\\.)*"/g, '<span style="color: #059669; font-weight: 500;">$&</span>');
-        highlighted = highlighted.replace(/'([^'\\]|\\.)*'/g, '<span style="color: #059669; font-weight: 500;">$&</span>');
-        highlighted = highlighted.replace(/@"([^"]|"")*"/g, '<span style="color: #059669; font-weight: 500;">$&</span>');
-        
-        // 4. Numbers
-        highlighted = highlighted.replace(/\b0x[0-9A-Fa-f]+\b/g, '<span style="color: #7C2D12;">$&</span>');
-        highlighted = highlighted.replace(/\b\d+(\.\d+)?[fFdDmM]?\b/g, '<span style="color: #EA580C;">$&</span>');
-        
-        // 5. Keywords by category with better colors
-        
-        // Basic types - keep black but bold for visibility
-        basicTypes.forEach(keyword => {
-            const regex = new RegExp(`\\b${keyword}\\b`, 'g');
-            highlighted = highlighted.replace(regex, `<span style="color: #1f2937; font-weight: bold;">${keyword}</span>`);
+        // Find and tokenize comments
+        original = original.replace(/\/\*[\s\S]*?\*\//g, (match) => {
+            const token = `__TOKEN_${tokenIndex++}__`;
+            tokens.push({ token, type: 'multiline-comment', content: match });
+            return token;
         });
         
-        // Complex types - blue
-        complexTypes.forEach(keyword => {
-            const regex = new RegExp(`\\b${keyword}\\b`, 'g');
-            highlighted = highlighted.replace(regex, `<span style="color: #0284C7; font-weight: 600;">${keyword}</span>`);
+        original = original.replace(/\/\/.*$/gm, (match) => {
+            const token = `__TOKEN_${tokenIndex++}__`;
+            tokens.push({ token, type: 'comment', content: match });
+            return token;
         });
         
-        // Control flow - red
-        controlFlow.forEach(keyword => {
-            const regex = new RegExp(`\\b${keyword}\\b`, 'g');
-            highlighted = highlighted.replace(regex, `<span style="color: #DC2626; font-weight: bold;">${keyword}</span>`);
+        // Find and tokenize strings
+        original = original.replace(/"(?:[^"\\]|\\.)*"/g, (match) => {
+            const token = `__TOKEN_${tokenIndex++}__`;
+            tokens.push({ token, type: 'string', content: match });
+            return token;
         });
         
-        // Modifiers - purple
-        modifiers.forEach(keyword => {
-            const regex = new RegExp(`\\b${keyword}\\b`, 'g');
-            highlighted = highlighted.replace(regex, `<span style="color: #7C3AED; font-weight: bold;">${keyword}</span>`);
+        original = original.replace(/'(?:[^'\\]|\\.)*'/g, (match) => {
+            const token = `__TOKEN_${tokenIndex++}__`;
+            tokens.push({ token, type: 'string', content: match });
+            return token;
         });
         
-        // Special keywords like var, new, this - orange/amber
-        specialKeywords.forEach(keyword => {
-            const regex = new RegExp(`\\b${keyword}\\b`, 'g');
-            highlighted = highlighted.replace(regex, `<span style="color: #D97706; font-weight: bold;">${keyword}</span>`);
+        // Find and tokenize numbers
+        original = original.replace(/\b\d+(\.\d+)?[fFdDmM]?\b/g, (match) => {
+            const token = `__TOKEN_${tokenIndex++}__`;
+            tokens.push({ token, type: 'number', content: match });
+            return token;
         });
         
-        // Contextual keywords - dark purple
-        contextualKeywords.forEach(keyword => {
-            const regex = new RegExp(`\\b${keyword}\\b`, 'g');
-            highlighted = highlighted.replace(regex, `<span style="color: #6B21A8; font-weight: bold;">${keyword}</span>`);
+        // Now escape HTML in the remaining code
+        let highlighted = original
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+        
+        // Apply keyword highlighting to the escaped text
+        const keywordPatterns = [
+            { words: ['void', 'int', 'string', 'bool', 'double', 'float', 'char', 'byte', 'decimal', 'object'], color: '#1f2937', weight: 'bold' },
+            { words: ['DateTime', 'TimeSpan', 'Guid', 'List', 'Dictionary', 'Array', 'Task'], color: '#0284C7', weight: '600' },
+            { words: ['if', 'else', 'for', 'foreach', 'while', 'do', 'switch', 'case', 'default', 'break', 'continue', 'return'], color: '#DC2626', weight: 'bold' },
+            { words: ['public', 'private', 'protected', 'static', 'readonly', 'const', 'override', 'virtual', 'abstract', 'async'], color: '#7C3AED', weight: 'bold' },
+            { words: ['var', 'new', 'this', 'base', 'null', 'true', 'false'], color: '#D97706', weight: 'bold' },
+            { words: ['class', 'interface', 'namespace', 'using', 'try', 'catch', 'finally', 'throw', 'await'], color: '#6B21A8', weight: 'bold' }
+        ];
+        
+        keywordPatterns.forEach(pattern => {
+            pattern.words.forEach(keyword => {
+                const regex = new RegExp(`\\b${keyword}\\b`, 'g');
+                highlighted = highlighted.replace(regex, `<span style="color: ${pattern.color}; font-weight: ${pattern.weight};">${keyword}</span>`);
+            });
         });
         
-        // 6. Brackets only - dark color for visibility  
-        highlighted = highlighted.replace(/([{}[\]()])/g, '<span style="color: #1f2937; font-weight: bold;">$1</span>');
-        
-        // 7. Method calls
+        // Highlight method calls
         highlighted = highlighted.replace(/\b(\w+)(?=\s*\()/g, '<span style="color: #BE185D; font-weight: 500;">$1</span>');
         
-        // 8. Properties after dot
+        // Highlight properties after dot
         highlighted = highlighted.replace(/\.(\w+)(?!\s*\()/g, '.<span style="color: #059669; font-weight: 500;">$1</span>');
         
-        // Finally escape remaining HTML chars
-        highlighted = highlighted.replace(/&(?!amp;|lt;|gt;|#\d+;|#x[0-9a-fA-F]+;|\w+;)/g, '&amp;');
+        // Restore tokens with proper styling
+        tokens.forEach(tokenData => {
+            let styledContent = tokenData.content
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+                
+            switch(tokenData.type) {
+                case 'comment':
+                case 'multiline-comment':
+                    styledContent = `<span style="color: #6B7280; font-style: italic;">${styledContent}</span>`;
+                    break;
+                case 'string':
+                    styledContent = `<span style="color: #059669; font-weight: 500;">${styledContent}</span>`;
+                    break;
+                case 'number':
+                    styledContent = `<span style="color: #EA580C;">${styledContent}</span>`;
+                    break;
+            }
+            
+            highlighted = highlighted.replace(tokenData.token, styledContent);
+        });
         
         return highlighted;
     }
@@ -872,15 +961,37 @@ class CSharpEditorService {
      * Handle IntelliSense triggers
      */
     handleIntelliSense(e) {
-        // Show IntelliSense on dot after identifier
+        // Show IntelliSense on dot after identifier (property access)
         if (e.key === '.') {
             setTimeout(() => {
                 this.showIntelliSense();
             }, 100);
         }
         
+        // Show IntelliSense on space after "new" (constructor suggestions)
+        if (e.key === ' ') {
+            const cursor = this.editorTextarea.selectionStart;
+            const beforeCursor = this.editorTextarea.value.substring(0, cursor);
+            if (beforeCursor.match(/\bnew\s*$/)) {
+                setTimeout(() => {
+                    this.showIntelliSense();
+                }, 100);
+            }
+        }
+        
+        // Continue showing constructor suggestions while typing after "new "
+        if (e.key.length === 1 && /[a-zA-Z]/.test(e.key)) {
+            const cursor = this.editorTextarea.selectionStart;
+            const beforeCursor = this.editorTextarea.value.substring(0, cursor);
+            if (beforeCursor.match(/\bnew\s+\w*$/)) {
+                setTimeout(() => {
+                    this.showIntelliSense();
+                }, 50);
+            }
+        }
+        
         // Hide IntelliSense on certain keys
-        if (['Escape', 'Enter', ' '].includes(e.key)) {
+        if (['Escape', 'Enter', 'Tab'].includes(e.key)) {
             this.hideIntelliSense();
         }
     }
@@ -895,29 +1006,128 @@ class CSharpEditorService {
         const value = this.editorTextarea.value;
         const beforeCursor = value.substring(0, cursor);
         
-        // Check if we're after a dot
+        // Check if we're after a dot (property access)
         const dotMatch = beforeCursor.match(/(\w+)\.$/);
-        if (!dotMatch) {
-            console.log('IntelliSense: No dot pattern found, cursor position:', cursor, 'before cursor:', beforeCursor.slice(-20));
+        if (dotMatch) {
+            const variableName = dotMatch[1];
+            console.log('IntelliSense: Detected property access for variable:', variableName);
+            
+            const suggestions = this.getIntelliSenseSuggestions(variableName);
+            
+            if (suggestions.length > 0) {
+                console.log('IntelliSense: Showing property suggestions:', suggestions.length);
+                this.showIntelliSensePopup(suggestions, cursor);
+            } else {
+                console.log('IntelliSense: No property suggestions found for variable:', variableName);
+            }
             return;
         }
         
-        const variableName = dotMatch[1];
-        console.log('IntelliSense: Detected variable name:', variableName);
-        
-        const suggestions = this.getIntelliSenseSuggestions(variableName);
-        
-        if (suggestions.length > 0) {
-            console.log('IntelliSense: Showing popup with', suggestions.length, 'suggestions');
-            this.showIntelliSensePopup(suggestions, cursor);
-        } else {
-            console.log('IntelliSense: No suggestions found for variable:', variableName);
+        // Check if we're typing "new " (constructor suggestions)
+        const newMatch = beforeCursor.match(/\bnew\s+(\w*)$/);
+        if (newMatch) {
+            const partialType = newMatch[1];
+            console.log('IntelliSense: Detected constructor pattern, partial type:', partialType);
+            
+            const suggestions = this.getConstructorSuggestions(partialType);
+            
+            if (suggestions.length > 0) {
+                console.log('IntelliSense: Showing constructor suggestions:', suggestions.length);
+                this.showIntelliSensePopup(suggestions, cursor);
+            }
+            return;
         }
+        
+        console.log('IntelliSense: No pattern found, cursor position:', cursor, 'before cursor:', beforeCursor.slice(-20));
+    }
+
+    /**
+     * Get constructor suggestions for "new " pattern
+     */
+    getConstructorSuggestions(partialType = '') {
+        const suggestions = [];
+        
+        // Get connected Data Models
+        const connectedModels = this.currentFunctionNode.getConnectedDataModels(this.currentProject);
+        
+        connectedModels.forEach(model => {
+            const modelName = model.label.replace(/\s+/g, '');
+            
+            // Filter by partial type if provided
+            if (!partialType || modelName.toLowerCase().includes(partialType.toLowerCase())) {
+                suggestions.push({
+                    text: `${modelName}()`,
+                    type: 'constructor',
+                    description: `Create new instance of ${model.label} with ${model.fields ? model.fields.length : 0} properties`
+                });
+            }
+        });
+        
+        // Add common C# types if no partial type or matches
+        if (!partialType || partialType.length < 2) {
+            const commonTypes = [
+                { text: 'List<T>()', type: 'constructor', description: 'Create new generic list' },
+                { text: 'Dictionary<TKey, TValue>()', type: 'constructor', description: 'Create new dictionary' },
+                { text: 'StringBuilder()', type: 'constructor', description: 'Create new string builder' }
+            ];
+            suggestions.push(...commonTypes);
+        }
+        
+        console.log('IntelliSense: Constructor suggestions:', suggestions.map(s => s.text));
+        return suggestions;
     }
 
     /**
      * Get IntelliSense suggestions based on context
      */
+    /**
+     * Parse code to find variable declarations and their types
+     */
+    parseVariableDeclarations(code) {
+        const variableTypes = new Map();
+        
+        // Get connected Data Models
+        const connectedModels = this.currentFunctionNode.getConnectedDataModels(this.currentProject);
+        const modelNames = connectedModels.map(m => m.label.replace(/\s+/g, ''));
+        
+        // Remove comments and strings to avoid false matches
+        const cleanCode = code
+            .replace(/\/\/.*$/gm, '') // Remove single line comments
+            .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
+            .replace(/"[^"]*"/g, '""') // Replace strings with empty strings
+            .replace(/'[^']*'/g, "''"); // Replace char literals
+        
+        // Patterns to match variable declarations:
+        modelNames.forEach(modelName => {
+            const patterns = [
+                // ModelType variableName = new ModelType()
+                new RegExp(`\\b${modelName}\\s+(\\w+)\\s*=\\s*new\\s+${modelName}\\s*\\(`, 'gi'),
+                // var variableName = new ModelType()
+                new RegExp(`\\bvar\\s+(\\w+)\\s*=\\s*new\\s+${modelName}\\s*\\(`, 'gi'),
+                // auto variableName = new ModelType()
+                new RegExp(`\\bauto\\s+(\\w+)\\s*=\\s*new\\s+${modelName}\\s*\\(`, 'gi'),
+                // ModelType variableName; (without initialization)
+                new RegExp(`\\b${modelName}\\s+(\\w+)\\s*;`, 'gi'),
+                // ModelType variableName,
+                new RegExp(`\\b${modelName}\\s+(\\w+)\\s*,`, 'gi')
+            ];
+            
+            patterns.forEach(pattern => {
+                let match;
+                while ((match = pattern.exec(cleanCode)) !== null) {
+                    const variableName = match[1];
+                    if (variableName && !variableTypes.has(variableName)) {
+                        variableTypes.set(variableName, modelName);
+                        console.log(`IntelliSense: Found variable declaration: ${variableName} of type ${modelName}`);
+                    }
+                }
+            });
+        });
+        
+        console.log('IntelliSense: Parsed variable types:', Array.from(variableTypes.entries()));
+        return variableTypes;
+    }
+
     getIntelliSenseSuggestions(variableName) {
         const suggestions = [];
         
@@ -929,19 +1139,37 @@ class CSharpEditorService {
             fields: m.fields || []
         })));
         
-        // Check if variable matches a Data Model
-        const matchingModel = connectedModels.find(model => {
-            const modelName = model.label.toLowerCase();
-            const varName = variableName.toLowerCase();
-            const modelNameNoSpaces = model.label.replace(/\s+/g, '').toLowerCase();
-            
-            return modelName === varName || 
-                   modelNameNoSpaces === varName ||
-                   modelName.includes(varName) ||
-                   varName.includes(modelName);
-        });
+        // Parse current code to find variable declarations
+        const code = this.editorTextarea.value;
+        const variableTypes = this.parseVariableDeclarations(code);
         
-        console.log('IntelliSense: Variable name:', variableName, 'Matching model:', matchingModel ? matchingModel.label : 'none');
+        // Check if variable has a declared type
+        let matchingModel = null;
+        
+        if (variableTypes.has(variableName)) {
+            const variableType = variableTypes.get(variableName);
+            matchingModel = connectedModels.find(model => 
+                model.label.replace(/\s+/g, '').toLowerCase() === variableType.toLowerCase()
+            );
+        }
+        
+        // Fallback: Check if variable name matches a Data Model (old behavior)
+        if (!matchingModel) {
+            matchingModel = connectedModels.find(model => {
+                const modelName = model.label.toLowerCase();
+                const varName = variableName.toLowerCase();
+                const modelNameNoSpaces = model.label.replace(/\s+/g, '').toLowerCase();
+                
+                return modelName === varName || 
+                       modelNameNoSpaces === varName ||
+                       modelName.includes(varName) ||
+                       varName.includes(modelName);
+            });
+        }
+        
+        console.log('IntelliSense: Variable name:', variableName, 
+                   'Declared type:', variableTypes.get(variableName) || 'none',
+                   'Matching model:', matchingModel ? matchingModel.label : 'none');
         
         if (matchingModel && matchingModel.fields && Array.isArray(matchingModel.fields)) {
             // Add properties from Data Model fields
@@ -1039,7 +1267,41 @@ class CSharpEditorService {
             
             // Type icon
             const typeIcon = document.createElement('span');
-            typeIcon.textContent = suggestion.type === 'method' ? '⚙️' : '📝';
+            let iconText = '📝'; // default for properties
+            
+            switch(suggestion.type) {
+                case 'method':
+                    iconText = '⚙️';
+                    break;
+                case 'constructor':
+                    iconText = '🏗️';
+                    break;
+                case 'string':
+                    iconText = '📝';
+                    break;
+                case 'number':
+                case 'int':
+                case 'decimal':
+                case 'float':
+                case 'double':
+                    iconText = '🔢';
+                    break;
+                case 'boolean':
+                case 'bool':
+                    iconText = '✅';
+                    break;
+                case 'date':
+                case 'datetime':
+                    iconText = '📅';
+                    break;
+                case 'email':
+                    iconText = '📧';
+                    break;
+                default:
+                    iconText = '📝';
+            }
+            
+            typeIcon.textContent = iconText;
             typeIcon.style.cssText = 'font-size: 12px;';
             
             // Suggestion text
@@ -1080,8 +1342,22 @@ class CSharpEditorService {
      */
     insertIntelliSenseSuggestion(text, cursorPos) {
         const value = this.editorTextarea.value;
-        this.editorTextarea.value = value.substring(0, cursorPos) + text + value.substring(cursorPos);
-        this.editorTextarea.selectionStart = this.editorTextarea.selectionEnd = cursorPos + text.length;
+        const beforeCursor = value.substring(0, cursorPos);
+        
+        // Check if we're inserting a constructor suggestion
+        const newMatch = beforeCursor.match(/\bnew\s+(\w*)$/);
+        
+        if (newMatch) {
+            // We're completing a constructor - replace the partial type name
+            const partialType = newMatch[1];
+            const startPos = cursorPos - partialType.length;
+            this.editorTextarea.value = value.substring(0, startPos) + text + value.substring(cursorPos);
+            this.editorTextarea.selectionStart = this.editorTextarea.selectionEnd = startPos + text.length;
+        } else {
+            // Normal insertion (property/method completion)
+            this.editorTextarea.value = value.substring(0, cursorPos) + text + value.substring(cursorPos);
+            this.editorTextarea.selectionStart = this.editorTextarea.selectionEnd = cursorPos + text.length;
+        }
         
         this.updateLineNumbers();
         this.updateSyntaxHighlighting();
