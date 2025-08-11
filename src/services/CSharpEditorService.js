@@ -620,23 +620,121 @@ class CSharpEditorService {
             const modelName = document.createElement('h3');
             modelName.textContent = model.label;
             modelName.style.cssText = `
-                margin: 0 0 4px 0;
+                margin: 0 0 8px 0;
                 font-size: 18px;
                 font-weight: 600;
                 color: #1e293b;
             `;
 
-            const modelId = document.createElement('p');
-            modelId.textContent = `ID: ${(model.id || 'no-id').toString().substring(0, 12)}...`;
-            modelId.style.cssText = `
-                margin: 0;
-                font-size: 12px;
-                color: #64748b;
-                font-family: monospace;
+            // Create ID container with copy functionality
+            const idContainer = document.createElement('div');
+            idContainer.style.cssText = `
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                background: #f1f5f9;
+                padding: 8px 12px;
+                border-radius: 8px;
+                border: 1px solid #e2e8f0;
+                margin-bottom: 4px;
             `;
 
+            const modelIdLabel = document.createElement('span');
+            modelIdLabel.textContent = 'ID:';
+            modelIdLabel.style.cssText = `
+                font-size: 11px;
+                color: #64748b;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            `;
+
+            const modelIdValue = document.createElement('span');
+            const fullId = (model.id || 'no-id').toString();
+            modelIdValue.textContent = fullId;
+            modelIdValue.style.cssText = `
+                font-size: 11px;
+                color: #1e293b;
+                font-family: 'Courier New', monospace;
+                flex: 1;
+                word-break: break-all;
+                line-height: 1.3;
+            `;
+
+            const copyButton = document.createElement('button');
+            copyButton.innerHTML = '📋';
+            copyButton.title = 'Copy ID to clipboard';
+            copyButton.style.cssText = `
+                background: #3b82f6;
+                color: white;
+                border: none;
+                width: 24px;
+                height: 24px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s;
+                flex-shrink: 0;
+            `;
+
+            // Copy functionality
+            copyButton.onclick = async () => {
+                try {
+                    await navigator.clipboard.writeText(fullId);
+                    
+                    // Visual feedback
+                    const originalContent = copyButton.innerHTML;
+                    const originalBg = copyButton.style.background;
+                    
+                    copyButton.innerHTML = '✅';
+                    copyButton.style.background = '#10b981';
+                    
+                    setTimeout(() => {
+                        copyButton.innerHTML = originalContent;
+                        copyButton.style.background = originalBg;
+                    }, 1500);
+                    
+                } catch (err) {
+                    // Fallback for older browsers
+                    const textArea = document.createElement('textarea');
+                    textArea.value = fullId;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    
+                    // Visual feedback
+                    const originalContent = copyButton.innerHTML;
+                    const originalBg = copyButton.style.background;
+                    
+                    copyButton.innerHTML = '✅';
+                    copyButton.style.background = '#10b981';
+                    
+                    setTimeout(() => {
+                        copyButton.innerHTML = originalContent;
+                        copyButton.style.background = originalBg;
+                    }, 1500);
+                }
+            };
+
+            copyButton.onmouseover = () => {
+                copyButton.style.background = '#2563eb';
+                copyButton.style.transform = 'scale(1.1)';
+            };
+            copyButton.onmouseout = () => {
+                copyButton.style.background = '#3b82f6';
+                copyButton.style.transform = 'scale(1)';
+            };
+
+            idContainer.appendChild(modelIdLabel);
+            idContainer.appendChild(modelIdValue);
+            idContainer.appendChild(copyButton);
+
             modelInfo.appendChild(modelName);
-            modelInfo.appendChild(modelId);
+            modelInfo.appendChild(idContainer);
             modelHeader.appendChild(modelIcon);
             modelHeader.appendChild(modelInfo);
 
