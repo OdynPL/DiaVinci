@@ -412,13 +412,21 @@ class CSharpEditorService {
             overflow: hidden;
         `;
 
+        // Create editor container for textarea and syntax highlighting
+        const editorCodeArea = document.createElement('div');
+        editorCodeArea.style.cssText = `
+            flex: 1;
+            position: relative;
+            overflow: visible;
+        `;
+
         // Create syntax highlighting container
         this.syntaxContainer = document.createElement('div');
         this.syntaxContainer.style.cssText = `
             position: absolute;
             top: 0;
-            left: 60px;
-            right: 0;
+            left: 0;
+            right: 16px;
             bottom: 0;
             padding: 16px;
             font-family: 'Fira Code', 'Consolas', monospace;
@@ -436,10 +444,13 @@ class CSharpEditorService {
         this.editorTextarea.style.cssText = `
             position: absolute;
             top: 0;
-            left: 60px;
+            left: 0;
             right: 0;
             bottom: 0;
+            width: 100%;
+            height: 100%;
             padding: 16px;
+            margin: 0;
             border: none;
             outline: none;
             resize: none;
@@ -454,6 +465,7 @@ class CSharpEditorService {
             tab-size: 4;
             scrollbar-width: thin;
             scrollbar-color: #cbd5e0 transparent;
+            box-sizing: border-box;
         `;
         
         // Add custom scrollbar styles for webkit browsers
@@ -503,9 +515,10 @@ class CSharpEditorService {
         });
 
         // Assemble editor
+        editorCodeArea.appendChild(this.syntaxContainer);
+        editorCodeArea.appendChild(this.editorTextarea);
         editorArea.appendChild(lineNumbers);
-        editorArea.appendChild(this.syntaxContainer);
-        editorArea.appendChild(this.editorTextarea);
+        editorArea.appendChild(editorCodeArea);
 
         editorLayout.appendChild(toolbar);
         editorLayout.appendChild(editorArea);
