@@ -186,6 +186,33 @@ class CSharpEditorService {
         };
         saveButton.onclick = () => this.saveCode();
 
+        // Format button
+        const formatButton = document.createElement('button');
+        formatButton.textContent = `🎨 ${window.t ? window.t('format') : 'Format'}`;
+        formatButton.style.cssText = `
+            background: #8B5CF6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            margin-left: 8px;
+            transition: all 0.2s;
+        `;
+        formatButton.title = window.t ? window.t('formatCodeTooltip') : 'Auto-format C# code with proper indentation';
+        formatButton.onmouseover = () => {
+            formatButton.style.background = '#7C3AED';
+        };
+        formatButton.onmouseout = () => {
+            formatButton.style.background = '#8B5CF6';
+        };
+        formatButton.onclick = () => {
+            this.autoFormatCode();
+            this.showStyledAlert(window.t ? window.t('codeFormatted') : 'Code formatted successfully! 🎨', 'success');
+        };
+
         // Help button
         const helpButton = document.createElement('button');
         helpButton.textContent = `❓ ${window.t ? window.t('help') : 'Help'}`;
@@ -233,6 +260,7 @@ class CSharpEditorService {
         buttonContainer.appendChild(helpButton);
         buttonContainer.appendChild(dataModelsButton);
         buttonContainer.appendChild(saveButton);
+        buttonContainer.appendChild(formatButton);
         buttonContainer.appendChild(closeButton);
         header.appendChild(titleContainer);
         header.appendChild(buttonContainer);
@@ -382,6 +410,11 @@ class CSharpEditorService {
         // Store line numbers reference before updating
         this.lineNumbers = lineNumbers;
 
+        // Auto-format the initial code
+        setTimeout(() => {
+            this.autoFormatCode();
+        }, 100);
+
         // Update line numbers and syntax highlighting
         this.updateLineNumbers();
         this.updateSyntaxHighlighting();
@@ -453,6 +486,111 @@ class CSharpEditorService {
         code = this.highlightCSharpSyntax(code);
         
         this.syntaxContainer.innerHTML = code;
+    }
+
+    /**
+     * Format C# code with proper indentation and structure
+     */
+    formatCSharpCode(code) {
+        if (!code || code.trim() === '') return code;
+        
+        const lines = code.split('\n');
+        const formattedLines = [];
+        let indentLevel = 0;
+        let inStringLiteral = false;
+        let inComment = false;
+        let inMultiLineComment = false;
+        
+        for (let i = 0; i < lines.length; i++) {
+            let line = lines[i].trim();
+            
+            // Skip empty lines but preserve them
+            if (line === '') {
+                formattedLines.push('');
+                continue;
+            }
+            
+            // Handle multi-line comments
+            if (line.includes('/*')) {
+                inMultiLineComment = true;
+            }
+            if (inMultiLineComment) {
+                formattedLines.push('    '.repeat(indentLevel) + line);
+                if (line.includes('*/')) {
+                    inMultiLineComment = false;
+                }
+                continue;
+            }
+            
+            // Handle single-line comments
+            if (line.startsWith('//')) {
+                formattedLines.push('    '.repeat(indentLevel) + line);
+                continue;
+            }
+            
+            // Handle closing braces - decrease indent before adding line
+            if (line.startsWith('}')) {
+                indentLevel = Math.max(0, indentLevel - 1);
+                formattedLines.push('    '.repeat(indentLevel) + line);
+                continue;
+            }
+            
+            // Add current line with proper indentation
+            formattedLines.push('    '.repeat(indentLevel) + line);
+            
+            // Increase indent for opening braces and control structures
+            if (line.endsWith('{') || 
+                line.endsWith(':') ||
+                /^\s*(if|else|for|foreach|while|do|switch|case|try|catch|finally|using)\b/.test(line)) {
+                
+                if (line.endsWith('{')) {
+                    indentLevel++;
+                }
+            }
+            
+            // Handle special cases for switch statements
+            if (line.includes('case ') || line.includes('default:')) {
+                indentLevel++;
+            }
+            if (line.includes('break;') && i + 1 < lines.length && 
+                (lines[i + 1].trim().includes('case ') || lines[i + 1].trim().includes('default:') || lines[i + 1].trim() === '}')) {
+                indentLevel = Math.max(0, indentLevel - 1);
+            }
+        }
+        
+        return formattedLines.join('\n');
+    }
+
+    /**
+     * Auto-format the current code
+     */
+    autoFormatCode() {
+        if (!this.editorTextarea) return;
+        
+        const originalCode = this.editorTextarea.value;
+        const cursorPosition = this.editorTextarea.selectionStart;
+        
+        // Format the code
+        const formattedCode = this.formatCSharpCode(originalCode);
+        
+        // Update the editor
+        this.editorTextarea.value = formattedCode;
+        
+        // Try to preserve cursor position roughly
+        const newCursorPosition = Math.min(cursorPosition, formattedCode.length);
+        this.editorTextarea.selectionStart = newCursorPosition;
+        this.editorTextarea.selectionEnd = newCursorPosition;
+        
+        // Update display
+        this.updateLineNumbers();
+        this.updateSyntaxHighlighting();
+        
+        // Save the formatted code
+        if (this.currentFunctionNode) {
+            this.currentFunctionNode.code = formattedCode;
+        }
+        
+        console.log('🎨 Code auto-formatted');
     }
 
     /**
@@ -1608,6 +1746,10 @@ class CSharpEditorService {
      */
     saveCode() {
         if (this.currentFunctionNode && this.editorTextarea) {
+            // Auto-format code before saving
+            console.log('🎨 Auto-formatting code before save...');
+            this.autoFormatCode();
+            
             // Save code
             this.currentFunctionNode.updateCode(this.editorTextarea.value);
             this.currentFunctionNode.lastEditTime = new Date();
@@ -1619,7 +1761,7 @@ class CSharpEditorService {
                 this.currentFunctionNode.name = nameInput.value.trim();
             }
             
-            console.log('Code and function name saved successfully');
+            console.log('✅ Code formatted and saved successfully');
             console.log('Function name:', this.currentFunctionNode.label);
             
             // Show success feedback
