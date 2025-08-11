@@ -2135,11 +2135,59 @@ class CSharpEditorService {
 using System.Collections.Generic;
 using System.Linq;
 
+public class Person
+{
+    public string Name { get; set; }
+    public int Age { get; set; }
+    public Person(string name, int age)
+    {
+        Name = name;
+        Age = age;
+    }
+    public void SayHello()
+    {
+        Console.WriteLine($"Hello, my name is {Name} and I am {Age} years old.");
+    }
+}
+
 public void Execute()
 {
     // Your code here
     // 💡 Tip: Connect Data Models to get IntelliSense support!
     Console.WriteLine("Hello World!");
+    
+    // Example: basic math
+    int a = 5;
+    int b = 10;
+    int sum = a + b;
+    Console.WriteLine($"Sum: {sum}");
+    
+    // Example: loop
+    for (int i = 0; i < 5; i++)
+    {
+        Console.WriteLine($"Loop {i}");
+    }
+    
+    // Example: list
+    List<string> names = new List<string> { "Alice", "Bob", "Charlie" };
+    foreach (var name in names)
+    {
+        Console.WriteLine($"Name: {name}");
+    }
+    
+    // Example: conditional
+    if (sum > 10)
+    {
+        Console.WriteLine("Sum is greater than 10");
+    }
+    else
+    {
+        Console.WriteLine("Sum is 10 or less");
+    }
+    
+    // Example: class usage
+    Person p = new Person("Jan", 30);
+    p.SayHello();
 }`;
         }
 
@@ -2150,13 +2198,59 @@ public void Execute()
 using System.Collections.Generic;
 using System.Linq;
 
+public class Person
+{
+    public string Name { get; set; }
+    public int Age { get; set; }
+    public Person(string name, int age)
+    {
+        Name = name;
+        Age = age;
+    }
+    public void SayHello()
+    {
+        Console.WriteLine($"Hello, my name is {Name} and I am {Age} years old.");
+    }
+}
+
 public void Execute()
 {
     // Your code here
-    // 💡 Tip: Connect Data Models to access their properties with IntelliSense!
-    // 🔗 Draw connections from this Function to Data Models to see examples
-    
+    // 💡 Tip: Connect Data Models to get IntelliSense support!
     Console.WriteLine("Hello World!");
+    
+    // Example: basic math
+    int a = 5;
+    int b = 10;
+    int sum = a + b;
+    Console.WriteLine($"Sum: {sum}");
+    
+    // Example: loop
+    for (int i = 0; i < 5; i++)
+    {
+        Console.WriteLine($"Loop {i}");
+    }
+    
+    // Example: list
+    List<string> names = new List<string> { "Alice", "Bob", "Charlie" };
+    foreach (var name in names)
+    {
+        Console.WriteLine($"Name: {name}");
+    }
+    
+    // Example: conditional
+    if (sum > 10)
+    {
+        Console.WriteLine("Sum is greater than 10");
+    }
+    else
+    {
+        Console.WriteLine("Sum is 10 or less");
+    }
+    
+    // Example: class usage
+    Person p = new Person("Jan", 30);
+    p.SayHello();
 }`;
         }
 
@@ -2233,7 +2327,7 @@ public void Execute()
             return className.charAt(0).toLowerCase() + className.slice(1);
         }).join(', ')});
     
-    Console.WriteLine($"Processed {connectedModels.length} data model${connectedModels.length !== 1 ? 's' : ''} successfully!");
+    Console.WriteLine($"Processed ${connectedModels.length} data model${connectedModels.length !== 1 ? 's' : ''} successfully!");
 }
 
 private dynamic ProcessData(${connectedModels.map(m => {
