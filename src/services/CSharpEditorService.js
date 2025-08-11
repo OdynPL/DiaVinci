@@ -346,7 +346,7 @@ class CSharpEditorService {
             font-size: 14px;
             line-height: 1.6;
             white-space: pre-wrap;
-            color: transparent;
+            color: #1f2937;
             pointer-events: none;
             z-index: 1;
             overflow: hidden;
@@ -368,7 +368,7 @@ class CSharpEditorService {
             font-size: 14px;
             line-height: 1.6;
             background: transparent;
-            color: #1e293b;
+            color: rgba(30, 41, 59, 0.1);
             caret-color: #3b82f6;
             z-index: 2;
             overflow: auto;
@@ -459,19 +459,15 @@ class CSharpEditorService {
      * Highlight C# syntax with advanced patterns
      */
     highlightCSharpSyntax(code) {
-        // Escape HTML characters first
-        let highlighted = code
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;');
+        let highlighted = code;
         
         // C# Keywords with different categories
-        const keywords = ['public', 'private', 'protected', 'internal', 'static', 'void', 'int', 'string', 'bool', 'double', 'float', 'char', 'var', 'if', 'else', 'for', 'while', 'do', 'switch', 'case', 'break', 'continue', 'return', 'new', 'this', 'base', 'class', 'interface', 'namespace', 'using', 'try', 'catch', 'finally', 'throw', 'async', 'await', 'const', 'readonly', 'override', 'virtual', 'abstract', 'sealed'];
-        const types = ['object', 'decimal', 'byte', 'sbyte', 'short', 'ushort', 'uint', 'long', 'ulong', 'DateTime', 'TimeSpan', 'Guid', 'List', 'Dictionary', 'Array', 'IEnumerable', 'Task'];
+        const basicTypes = ['void', 'int', 'string', 'bool', 'double', 'float', 'char', 'byte', 'sbyte', 'short', 'ushort', 'uint', 'long', 'ulong', 'decimal', 'object'];
+        const complexTypes = ['DateTime', 'TimeSpan', 'Guid', 'List', 'Dictionary', 'Array', 'IEnumerable', 'Task'];
         const controlFlow = ['if', 'else', 'for', 'foreach', 'while', 'do', 'switch', 'case', 'default', 'break', 'continue', 'goto', 'return'];
         const modifiers = ['public', 'private', 'protected', 'internal', 'static', 'readonly', 'const', 'override', 'virtual', 'abstract', 'sealed', 'async'];
-        
-        // Apply highlighting in order of precedence
+        const specialKeywords = ['var', 'new', 'this', 'base', 'null', 'true', 'false'];
+        const contextualKeywords = ['class', 'interface', 'namespace', 'using', 'try', 'catch', 'finally', 'throw', 'await'];
         
         // 1. Multi-line comments
         highlighted = highlighted.replace(/\/\*[\s\S]*?\*\//g, '<span style="color: #6B7280; font-style: italic;">$&</span>');
@@ -484,53 +480,59 @@ class CSharpEditorService {
         highlighted = highlighted.replace(/'([^'\\]|\\.)*'/g, '<span style="color: #059669; font-weight: 500;">$&</span>');
         highlighted = highlighted.replace(/@"([^"]|"")*"/g, '<span style="color: #059669; font-weight: 500;">$&</span>');
         
-        // 4. Numbers (integers, floats, hex)
-        highlighted = highlighted.replace(/\b0x[0-9A-Fa-f]+\b/g, '<span style="color: #7C2D12;">$&</span>'); // Hex
-        highlighted = highlighted.replace(/\b\d+(\.\d+)?[fFdDmM]?\b/g, '<span style="color: #EA580C;">$&</span>'); // Numbers
+        // 4. Numbers
+        highlighted = highlighted.replace(/\b0x[0-9A-Fa-f]+\b/g, '<span style="color: #7C2D12;">$&</span>');
+        highlighted = highlighted.replace(/\b\d+(\.\d+)?[fFdDmM]?\b/g, '<span style="color: #EA580C;">$&</span>');
         
-        // 5. Preprocessor directives
-        highlighted = highlighted.replace(/^#.*$/gm, '<span style="color: #7C3AED; font-weight: bold;">$&</span>');
+        // 5. Keywords by category with better colors
         
-        // 6. Attributes
-        highlighted = highlighted.replace(/\[[\w\s,=()".]*\]/g, '<span style="color: #DB2777; font-weight: 500;">$&</span>');
-        
-        // 7. Types and classes (PascalCase identifiers)
-        highlighted = highlighted.replace(/\b[A-Z][a-zA-Z0-9]*(?=\s*[<\[\s]|\s*\w|\s*$)/g, '<span style="color: #0284C7; font-weight: 600;">$&</span>');
-        
-        // 8. Keywords by category
-        modifiers.forEach(keyword => {
+        // Basic types - keep black but bold for visibility
+        basicTypes.forEach(keyword => {
             const regex = new RegExp(`\\b${keyword}\\b`, 'g');
-            highlighted = highlighted.replace(regex, `<span style="color: #7C3AED; font-weight: bold;">${keyword}</span>`);
+            highlighted = highlighted.replace(regex, `<span style="color: #1f2937; font-weight: bold;">${keyword}</span>`);
         });
         
+        // Complex types - blue
+        complexTypes.forEach(keyword => {
+            const regex = new RegExp(`\\b${keyword}\\b`, 'g');
+            highlighted = highlighted.replace(regex, `<span style="color: #0284C7; font-weight: 600;">${keyword}</span>`);
+        });
+        
+        // Control flow - red
         controlFlow.forEach(keyword => {
             const regex = new RegExp(`\\b${keyword}\\b`, 'g');
             highlighted = highlighted.replace(regex, `<span style="color: #DC2626; font-weight: bold;">${keyword}</span>`);
         });
         
-        types.forEach(keyword => {
+        // Modifiers - purple
+        modifiers.forEach(keyword => {
             const regex = new RegExp(`\\b${keyword}\\b`, 'g');
-            highlighted = highlighted.replace(regex, `<span style="color: #0284C7; font-weight: 600;">${keyword}</span>`);
+            highlighted = highlighted.replace(regex, `<span style="color: #7C3AED; font-weight: bold;">${keyword}</span>`);
         });
         
-        keywords.forEach(keyword => {
-            if (!modifiers.includes(keyword) && !controlFlow.includes(keyword) && !types.includes(keyword)) {
-                const regex = new RegExp(`\\b${keyword}\\b`, 'g');
-                highlighted = highlighted.replace(regex, `<span style="color: #7C3AED; font-weight: bold;">${keyword}</span>`);
-            }
+        // Special keywords like var, new, this - orange/amber
+        specialKeywords.forEach(keyword => {
+            const regex = new RegExp(`\\b${keyword}\\b`, 'g');
+            highlighted = highlighted.replace(regex, `<span style="color: #D97706; font-weight: bold;">${keyword}</span>`);
         });
         
-        // 9. Method calls and function names
+        // Contextual keywords - dark purple
+        contextualKeywords.forEach(keyword => {
+            const regex = new RegExp(`\\b${keyword}\\b`, 'g');
+            highlighted = highlighted.replace(regex, `<span style="color: #6B21A8; font-weight: bold;">${keyword}</span>`);
+        });
+        
+        // 6. Brackets only - dark color for visibility  
+        highlighted = highlighted.replace(/([{}[\]()])/g, '<span style="color: #1f2937; font-weight: bold;">$1</span>');
+        
+        // 7. Method calls
         highlighted = highlighted.replace(/\b(\w+)(?=\s*\()/g, '<span style="color: #BE185D; font-weight: 500;">$1</span>');
         
-        // 10. Properties and fields (after dot notation)
+        // 8. Properties after dot
         highlighted = highlighted.replace(/\.(\w+)(?!\s*\()/g, '.<span style="color: #059669; font-weight: 500;">$1</span>');
         
-        // 11. Operators
-        highlighted = highlighted.replace(/(\+\+|--|==|!=|<=|>=|&&|\|\||=>|\?\?|\?\.|[+\-*/%=<>!&|^~?:])/g, '<span style="color: #78716C; font-weight: bold;">$1</span>');
-        
-        // 12. Brackets and parentheses
-        highlighted = highlighted.replace(/([{}[\]()])/g, '<span style="color: #64748B; font-weight: bold;">$1</span>');
+        // Finally escape remaining HTML chars
+        highlighted = highlighted.replace(/&(?!amp;|lt;|gt;|#\d+;|#x[0-9a-fA-F]+;|\w+;)/g, '&amp;');
         
         return highlighted;
     }
