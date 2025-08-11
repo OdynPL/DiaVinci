@@ -337,6 +337,9 @@ class CSharpEditorService {
             'public void Execute()\n{\n    // Your code here\n    Console.WriteLine("Hello World!");\n}';
         this.editorTextarea.value = initialCode;
 
+        // Store line numbers reference before updating
+        this.lineNumbers = lineNumbers;
+
         // Update line numbers and syntax highlighting
         this.updateLineNumbers();
         this.updateSyntaxHighlighting();
@@ -361,9 +364,6 @@ class CSharpEditorService {
         editorLayout.appendChild(editorArea);
         this.editorContainer.appendChild(editorLayout);
 
-        // Store line numbers reference
-        this.lineNumbers = lineNumbers;
-
         // Focus the editor
         setTimeout(() => {
             this.editorTextarea.focus();
@@ -374,13 +374,17 @@ class CSharpEditorService {
      * Update line numbers
      */
     updateLineNumbers() {
-        if (!this.lineNumbers || !this.editorTextarea) return;
+        if (!this.lineNumbers || !this.editorTextarea) {
+            console.log('updateLineNumbers: missing dependencies', !!this.lineNumbers, !!this.editorTextarea);
+            return;
+        }
 
         const lines = this.editorTextarea.value.split('\n');
         const lineNumbersHtml = lines.map((_, index) => 
             `<div style="padding: 0 8px;">${index + 1}</div>`
         ).join('');
         
+        console.log('updateLineNumbers: setting', lines.length, 'line numbers');
         this.lineNumbers.innerHTML = lineNumbersHtml;
     }
 
