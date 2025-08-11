@@ -374,17 +374,13 @@ class CSharpEditorService {
      * Update line numbers
      */
     updateLineNumbers() {
-        if (!this.lineNumbers || !this.editorTextarea) {
-            console.log('updateLineNumbers: missing dependencies', !!this.lineNumbers, !!this.editorTextarea);
-            return;
-        }
+        if (!this.lineNumbers || !this.editorTextarea) return;
 
         const lines = this.editorTextarea.value.split('\n');
         const lineNumbersHtml = lines.map((_, index) => 
             `<div style="padding: 0 8px;">${index + 1}</div>`
         ).join('');
         
-        console.log('updateLineNumbers: setting', lines.length, 'line numbers');
         this.lineNumbers.innerHTML = lineNumbersHtml;
     }
 
