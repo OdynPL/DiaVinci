@@ -1,0 +1,33 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="functionBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="codeSymbol" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff9a9e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fecfef;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Main background with modern rounded square -->
+  <rect x="8" y="8" width="48" height="48" rx="12" fill="url(#functionBg)" stroke="#4c1d95" stroke-width="2"/>
+  
+  <!-- Inner glow effect -->
+  <rect x="12" y="12" width="40" height="40" rx="8" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+  
+  <!-- Modern code symbol -->
+  <path d="M24 20 L18 26 L18 32 L24 38" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <path d="M40 20 L46 26 L46 32 L40 38" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  
+  <!-- Stylized 'fx' text -->
+  <text x="32" y="36" font-family="'SF Pro Display', 'Segoe UI', Arial, sans-serif" font-size="16" font-weight="600" fill="white" text-anchor="middle">fx</text>
+  
+  <!-- Decorative elements -->
+  <circle cx="32" cy="45" r="1.5" fill="rgba(255,255,255,0.6)"/>
+  <circle cx="28" cy="47" r="1" fill="rgba(255,255,255,0.4)"/>
+  <circle cx="36" cy="47" r="1" fill="rgba(255,255,255,0.4)"/>
+  
+  <!-- Corner accent -->
+  <path d="M48 16 L52 16 Q56 16 56 20 L56 24" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round" fill="none"/>
+</svg>

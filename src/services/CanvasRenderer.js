@@ -1458,8 +1458,8 @@ class CanvasRenderer {
      * Draw compact function node with simple, elegant design
      */
     drawFunctionContent(node) {
-        const width = node.width || 100;
-        const height = node.height || 90;
+        const width = node.width || 80;
+        const height = node.height || 110;
         const x = node.x - width/2;
         const y = node.y - height/2;
         
@@ -1467,71 +1467,141 @@ class CanvasRenderer {
         this.ctx.fillStyle = '#ffffff';
         this.ctx.strokeStyle = node.color || '#8B5CF6';
         this.ctx.lineWidth = 2;
-        this.roundRect(x, y, width, height, 8);
+        this.roundRect(x, y, width, height, 12);
         this.ctx.fill();
         this.ctx.stroke();
         
         // Draw header area with gradient
-        const gradient = this.ctx.createLinearGradient(x, y, x, y + 22);
+        const gradient = this.ctx.createLinearGradient(x, y, x, y + 26);
         gradient.addColorStop(0, node.color || '#8B5CF6');
         gradient.addColorStop(1, this.darkenColor(node.color || '#8B5CF6', 0.15));
         this.ctx.fillStyle = gradient;
-        this.roundRect(x, y, width, 22, 8, true, false);
+        this.roundRect(x, y, width, 26, 12, true, false);
         this.ctx.fill();
         
         // Draw function name in header
         this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = 'bold 9px "Segoe UI", Arial, sans-serif';
+        this.ctx.font = 'bold 10px "Segoe UI", Arial, sans-serif';
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
         const funcName = node.label || 'Function';
-        const shortName = funcName.length > 12 ? funcName.substring(0, 9) + '...' : funcName;
-        this.ctx.fillText(shortName, node.x, y + 11);
+        const shortName = funcName.length > 10 ? funcName.substring(0, 7) + '...' : funcName;
+        this.ctx.fillText(shortName, node.x, y + 13);
         
-        // Draw main content area
-        this.ctx.fillStyle = '#f8fafc';
-        this.ctx.fillRect(x + 1, y + 22, width - 2, height - 38);
+        // Draw main content area with subtle background
+        this.ctx.fillStyle = '#fafaff';
+        this.ctx.fillRect(x + 1, y + 26, width - 2, height - 42);
         
-        // Draw large "C#" text in center
-        this.ctx.fillStyle = '#6366f1';
-        this.ctx.font = 'bold 24px "Segoe UI", Arial, sans-serif';
-        this.ctx.textAlign = 'center';
-        this.ctx.textBaseline = 'middle';
-        this.ctx.fillText('C#', node.x, node.y + 8);
-        
-        // Draw small code icon below
-        this.ctx.fillStyle = '#9ca3af';
-        this.ctx.font = '12px "Segoe UI", Arial, sans-serif';
-        this.ctx.textAlign = 'center';
-        this.ctx.textBaseline = 'middle';
-        this.ctx.fillText('{ }', node.x, node.y + 26);
+        // Draw beautiful function icon in center
+        this.drawFunctionIcon(node.x, node.y + 5, node.color || '#8B5CF6');
         
         // Draw footer with data model counter
-        this.ctx.fillStyle = '#f1f5f9';
+        this.ctx.fillStyle = '#f8f9fa';
         this.ctx.fillRect(x + 1, y + height - 16, width - 2, 15);
         
         // Draw footer border
-        this.ctx.strokeStyle = '#e2e8f0';
+        this.ctx.strokeStyle = '#e9ecef';
         this.ctx.lineWidth = 1;
         this.ctx.beginPath();
         this.ctx.moveTo(x + 1, y + height - 16);
         this.ctx.lineTo(x + width - 1, y + height - 16);
         this.ctx.stroke();
         
-        // Draw data model references count with icon (show connected models via transitions)
+        // Draw data model references count with icon
         const dmCount = node.getDataModelCounter ? node.getDataModelCounter(this.project) : 0;
         this.ctx.fillStyle = dmCount > 0 ? '#059669' : '#6b7280';
-        this.ctx.font = '8px "Segoe UI", Arial, sans-serif';
+        this.ctx.font = '7px "Segoe UI", Arial, sans-serif';
         this.ctx.textAlign = 'left';
         this.ctx.textBaseline = 'middle';
-        this.ctx.fillText(`📊 ${dmCount}`, x + 4, y + height - 8);
+        this.ctx.fillText(`📊 ${dmCount}`, x + 3, y + height - 8);
         
         // Draw edit hint on right
         this.ctx.fillStyle = '#6b7280';
-        this.ctx.font = '7px "Segoe UI", Arial, sans-serif';
+        this.ctx.font = '6px "Segoe UI", Arial, sans-serif';
         this.ctx.textAlign = 'right';
         this.ctx.textBaseline = 'middle';
-        this.ctx.fillText('dbl-click', x + width - 4, y + height - 8);
+        this.ctx.fillText('dbl-click', x + width - 3, y + height - 8);
+    }
+    
+    /**
+     * Draw beautiful modern function icon
+     */
+    drawFunctionIcon(centerX, centerY, color) {
+        const iconSize = 36;
+        const x = centerX - iconSize/2;
+        const y = centerY - iconSize/2;
+        
+        // Draw modern rounded rectangle background
+        const gradient = this.ctx.createLinearGradient(x, y, x + iconSize, y + iconSize);
+        gradient.addColorStop(0, '#667eea');
+        gradient.addColorStop(1, '#764ba2');
+        
+        this.ctx.fillStyle = gradient;
+        this.roundRect(x, y, iconSize, iconSize, 8);
+        this.ctx.fill();
+        
+        // Draw border
+        this.ctx.strokeStyle = '#4c1d95';
+        this.ctx.lineWidth = 2;
+        this.ctx.stroke();
+        
+        // Draw inner glow
+        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        this.ctx.lineWidth = 1;
+        this.roundRect(x + 3, y + 3, iconSize - 6, iconSize - 6, 6);
+        this.ctx.stroke();
+        
+        // Draw left bracket
+        this.ctx.strokeStyle = '#ffffff';
+        this.ctx.lineWidth = 2.5;
+        this.ctx.lineCap = 'round';
+        this.ctx.lineJoin = 'round';
+        this.ctx.beginPath();
+        this.ctx.moveTo(centerX - 8, centerY - 7);
+        this.ctx.lineTo(centerX - 12, centerY - 3);
+        this.ctx.lineTo(centerX - 12, centerY + 3);
+        this.ctx.lineTo(centerX - 8, centerY + 7);
+        this.ctx.stroke();
+        
+        // Draw right bracket
+        this.ctx.beginPath();
+        this.ctx.moveTo(centerX + 8, centerY - 7);
+        this.ctx.lineTo(centerX + 12, centerY - 3);
+        this.ctx.lineTo(centerX + 12, centerY + 3);
+        this.ctx.lineTo(centerX + 8, centerY + 7);
+        this.ctx.stroke();
+        
+        // Draw 'fx' text
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.font = 'bold 12px "SF Pro Display", "Segoe UI", Arial, sans-serif';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText('fx', centerX, centerY + 1);
+        
+        // Draw decorative dots
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+        this.ctx.beginPath();
+        this.ctx.arc(centerX, centerY + 12, 1.5, 0, Math.PI * 2);
+        this.ctx.fill();
+        
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        this.ctx.beginPath();
+        this.ctx.arc(centerX - 4, centerY + 14, 1, 0, Math.PI * 2);
+        this.ctx.fill();
+        this.ctx.beginPath();
+        this.ctx.arc(centerX + 4, centerY + 14, 1, 0, Math.PI * 2);
+        this.ctx.fill();
+        
+        // Draw corner accent
+        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+        this.ctx.lineWidth = 1.5;
+        this.ctx.lineCap = 'round';
+        this.ctx.beginPath();
+        this.ctx.moveTo(centerX + 12, centerY - 12);
+        this.ctx.lineTo(centerX + 16, centerY - 12);
+        this.ctx.quadraticCurveTo(centerX + 18, centerY - 12, centerX + 18, centerY - 10);
+        this.ctx.lineTo(centerX + 18, centerY - 6);
+        this.ctx.stroke();
     }
     
     /**

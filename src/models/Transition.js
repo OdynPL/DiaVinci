@@ -178,8 +178,8 @@ class Transition {
             let halfWidth, halfHeight;
             
             if (this.to.type === 'function') {
-                halfWidth = (this.to.width || 100) / 2;
-                halfHeight = (this.to.height || 90) / 2;
+                halfWidth = (this.to.width || 80) / 2;
+                halfHeight = (this.to.height || 110) / 2;
             } else if (this.to.type === 'datamodel') {
                 // DataModel uses calculated dimensions based on fields
                 const width = this.to.r * 4.5;
@@ -234,8 +234,8 @@ class Transition {
             let halfWidth, halfHeight;
             
             if (this.from.type === 'function') {
-                halfWidth = (this.from.width || 100) / 2;
-                halfHeight = (this.from.height || 90) / 2;
+                halfWidth = (this.from.width || 80) / 2;
+                halfHeight = (this.from.height || 110) / 2;
             } else if (this.from.type === 'datamodel') {
                 // DataModel uses calculated dimensions based on fields
                 const width = this.from.r * 4.5;
