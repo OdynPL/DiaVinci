@@ -72,9 +72,9 @@ class CSharpEditorService {
             background: #ffffff;
             border-radius: 12px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-            width: 90%;
-            height: 80%;
-            max-width: 1200px;
+            width: 95%;
+            height: 85%;
+            max-width: 1400px;
             display: flex;
             flex-direction: column;
             border: 1px solid #e5e7eb;
@@ -118,8 +118,8 @@ class CSharpEditorService {
             padding: 8px 12px;
             font-size: 16px;
             font-weight: 600;
-            min-width: 500px;
-            width: 500px;
+            min-width: 350px;
+            width: 350px;
         `;
         
         functionNameInput.addEventListener('change', () => {
@@ -136,7 +136,8 @@ class CSharpEditorService {
         const buttonContainer = document.createElement('div');
         buttonContainer.style.cssText = `
             display: flex;
-            gap: 12px;
+            gap: 8px;
+            flex-wrap: wrap;
         `;
 
         // Data Models button with counter
@@ -896,13 +897,21 @@ class CSharpEditorService {
         
         // Check if we're after a dot
         const dotMatch = beforeCursor.match(/(\w+)\.$/);
-        if (!dotMatch) return;
+        if (!dotMatch) {
+            console.log('IntelliSense: No dot pattern found, cursor position:', cursor, 'before cursor:', beforeCursor.slice(-20));
+            return;
+        }
         
         const variableName = dotMatch[1];
+        console.log('IntelliSense: Detected variable name:', variableName);
+        
         const suggestions = this.getIntelliSenseSuggestions(variableName);
         
         if (suggestions.length > 0) {
+            console.log('IntelliSense: Showing popup with', suggestions.length, 'suggestions');
             this.showIntelliSensePopup(suggestions, cursor);
+        } else {
+            console.log('IntelliSense: No suggestions found for variable:', variableName);
         }
     }
 
@@ -914,34 +923,52 @@ class CSharpEditorService {
         
         // Get connected Data Models
         const connectedModels = this.currentFunctionNode.getConnectedDataModels(this.currentProject);
+        console.log('IntelliSense: Connected models:', connectedModels.map(m => ({
+            label: m.label,
+            fieldsCount: m.fields ? m.fields.length : 0,
+            fields: m.fields || []
+        })));
         
         // Check if variable matches a Data Model
-        const matchingModel = connectedModels.find(model => 
-            model.label.toLowerCase() === variableName.toLowerCase() ||
-            model.label.replace(/\s+/g, '').toLowerCase() === variableName.toLowerCase()
-        );
+        const matchingModel = connectedModels.find(model => {
+            const modelName = model.label.toLowerCase();
+            const varName = variableName.toLowerCase();
+            const modelNameNoSpaces = model.label.replace(/\s+/g, '').toLowerCase();
+            
+            return modelName === varName || 
+                   modelNameNoSpaces === varName ||
+                   modelName.includes(varName) ||
+                   varName.includes(modelName);
+        });
         
-        if (matchingModel && matchingModel.schema && matchingModel.schema.properties) {
-            // Add properties from Data Model
-            Object.keys(matchingModel.schema.properties).forEach(prop => {
-                const property = matchingModel.schema.properties[prop];
+        console.log('IntelliSense: Variable name:', variableName, 'Matching model:', matchingModel ? matchingModel.label : 'none');
+        
+        if (matchingModel && matchingModel.fields && Array.isArray(matchingModel.fields)) {
+            // Add properties from Data Model fields
+            matchingModel.fields.forEach(field => {
                 suggestions.push({
-                    text: prop,
-                    type: property.type || 'string',
-                    description: property.description || `Property from ${matchingModel.label}`
+                    text: field.name,
+                    type: field.type || 'string',
+                    description: `${field.type || 'string'} property from ${matchingModel.label}${field.required ? ' (required)' : ''}`
                 });
             });
+            
+            console.log('IntelliSense: Added fields:', matchingModel.fields.map(f => f.name));
         }
         
-        // Add common C# suggestions
-        const commonSuggestions = [
-            { text: 'ToString()', type: 'method', description: 'Returns a string representation' },
-            { text: 'Equals()', type: 'method', description: 'Determines equality' },
-            { text: 'GetHashCode()', type: 'method', description: 'Returns hash code' }
-        ];
+        // Add common C# suggestions only if we found a matching model
+        if (matchingModel) {
+            const commonSuggestions = [
+                { text: 'ToString()', type: 'method', description: 'Returns a string representation' },
+                { text: 'Equals()', type: 'method', description: 'Determines equality' },
+                { text: 'GetHashCode()', type: 'method', description: 'Returns hash code' },
+                { text: 'GetType()', type: 'method', description: 'Gets the Type of the current instance' }
+            ];
+            
+            suggestions.push(...commonSuggestions);
+        }
         
-        suggestions.push(...commonSuggestions);
-        
+        console.log('IntelliSense: Total suggestions:', suggestions.length);
         return suggestions;
     }
 
