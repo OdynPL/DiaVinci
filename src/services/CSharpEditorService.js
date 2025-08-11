@@ -816,102 +816,20 @@ class CSharpEditorService {
         const footer = document.createElement('div');
         footer.style.cssText = `
             background: #f8fafc;
-            padding: 24px;
+            padding: 20px 24px;
             border-top: 1px solid #e2e8f0;
-        `;
-
-        // Create usage instructions
-        const usageTitle = document.createElement('h3');
-        usageTitle.textContent = `🚀 ${window.t ? window.t('howToUseDataModels') : 'How to use Data Models in your C# code:'}`;
-        usageTitle.style.cssText = `
-            margin: 0 0 16px 0;
-            font-size: 16px;
-            font-weight: 600;
-            color: #1e293b;
             text-align: center;
         `;
 
-        const instructionsContainer = document.createElement('div');
-        instructionsContainer.style.cssText = `
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 16px;
-            margin-bottom: 20px;
+        const footerText = document.createElement('p');
+        footerText.innerHTML = `💡 <strong>Tip:</strong> ${window.t ? window.t('tipDataModelsAvailable') : 'These Data Models are available for IntelliSense in your C# code.'}`;
+        footerText.style.cssText = `
+            margin: 0;
+            font-size: 14px;
+            color: #64748b;
         `;
 
-        // Create code examples for each model
-        connectedModels.slice(0, 2).forEach((model, index) => { // Show max 2 examples
-            const className = model.label.replace(/\s+/g, '');
-            const variableName = className.charAt(0).toLowerCase() + className.slice(1);
-            
-            const exampleCard = document.createElement('div');
-            exampleCard.style.cssText = `
-                background: #1e293b;
-                border-radius: 8px;
-                padding: 16px;
-                border-left: 4px solid #3b82f6;
-            `;
-
-            const exampleTitle = document.createElement('div');
-            exampleTitle.textContent = `${index + 1}. Using ${model.label}:`;
-            exampleTitle.style.cssText = `
-                color: #94a3b8;
-                font-size: 12px;
-                font-weight: 600;
-                margin-bottom: 8px;
-            `;
-
-            const codeExample = document.createElement('pre');
-            let code = `var ${variableName} = new ${className}();\n`;
-            
-            if (model.fields && model.fields.length > 0) {
-                const field = model.fields[0];
-                const exampleValue = this.getExampleValue(field.type);
-                code += `${variableName}.${field.name} = ${exampleValue};`;
-            }
-
-            codeExample.textContent = code;
-            codeExample.style.cssText = `
-                color: #e2e8f0;
-                font-family: 'Fira Code', monospace;
-                font-size: 11px;
-                line-height: 1.4;
-                margin: 0;
-                overflow-x: auto;
-            `;
-
-            exampleCard.appendChild(exampleTitle);
-            exampleCard.appendChild(codeExample);
-            instructionsContainer.appendChild(exampleCard);
-        });
-
-        // General tips
-        const tipsContainer = document.createElement('div');
-        tipsContainer.style.cssText = `
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-            border-radius: 8px;
-            padding: 16px;
-            color: white;
-            text-align: center;
-        `;
-
-        const tipsText = document.createElement('div');
-        tipsText.innerHTML = `
-            <strong>💡 Pro Tips:</strong><br>
-            • All connected Data Models are automatically available as C# classes<br>
-            • Use IntelliSense (Ctrl+Space) to see available properties<br>
-            • Classes are generated with proper C# naming conventions
-        `;
-        tipsText.style.cssText = `
-            font-size: 13px;
-            line-height: 1.5;
-        `;
-
-        tipsContainer.appendChild(tipsText);
-
-        footer.appendChild(usageTitle);
-        footer.appendChild(instructionsContainer);
-        footer.appendChild(tipsContainer);
+        footer.appendChild(footerText);
 
         // Assemble modal
         modal.appendChild(header);
