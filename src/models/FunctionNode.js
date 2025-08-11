@@ -90,12 +90,9 @@ class FunctionNode {
         const connectedDataModels = [];
         const incomingTransitions = project.transitions.filter(transition => transition.to === this);
         
-        console.log('FunctionNode:', this.label, 'checking', project.transitions.length, 'transitions, found', incomingTransitions.length, 'incoming');
-        
         incomingTransitions.forEach(transition => {
             if (transition.from && transition.from.type === 'datamodel') {
                 connectedDataModels.push(transition.from);
-                console.log('Found connected DataModel:', transition.from.label);
             }
         });
         
@@ -106,9 +103,7 @@ class FunctionNode {
      * Get count of connected Data Models
      */
     getDataModelCounter(project) {
-        const count = this.getConnectedDataModels(project).length;
-        console.log('FunctionNode:', this.label, 'has', count, 'connected data models');
-        return count;
+        return this.getConnectedDataModels(project).length;
     }
 
     /**

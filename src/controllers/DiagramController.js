@@ -284,8 +284,6 @@ class DiagramController {
         this.updateFunctionNodeDataModelReferences(node);
         
         // Open the built-in C# editor with project context
-        console.log('DiagramController: Opening editor with currentProject:', !!this.currentProject);
-        console.log('Project transitions count:', this.currentProject ? this.currentProject.transitions.length : 'no project');
         this.csharpEditorService.openEditor(node, this.currentProject);
     }
 

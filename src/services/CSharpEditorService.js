@@ -102,7 +102,8 @@ class CSharpEditorService {
             padding: 8px 12px;
             font-size: 16px;
             font-weight: 600;
-            min-width: 200px;
+            min-width: 300px;
+            width: 300px;
         `;
         
         functionNameInput.addEventListener('change', () => {
@@ -283,6 +284,10 @@ class CSharpEditorService {
             user-select: none;
             border-right: 1px solid #e9ecef;
             min-width: 60px;
+            width: 60px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 3;
         `;
 
         // Create syntax highlighting container
@@ -302,6 +307,7 @@ class CSharpEditorService {
             pointer-events: none;
             z-index: 1;
             overflow: hidden;
+            display: none;
         `;
 
         // Create textarea for editing
@@ -405,7 +411,7 @@ class CSharpEditorService {
         // Keywords
         keywords.forEach(keyword => {
             const regex = new RegExp(`\\b${keyword}\\b`, 'g');
-            highlighted = highlighted.replace(regex, `<span style="color: #7C3AED; font-weight: 600;">${keyword}</span>`);
+            highlighted = highlighted.replace(regex, `<span style="color: #7C3AED; font-weight: bold;">${keyword}</span>`);
         });
         
         // Strings
@@ -416,7 +422,7 @@ class CSharpEditorService {
         highlighted = highlighted.replace(/\/\*[\s\S]*?\*\//g, '<span style="color: #6B7280; font-style: italic;">$&</span>');
         
         // Methods/Functions
-        highlighted = highlighted.replace(/\b(\w+)(?=\s*\()/g, '<span style="color: #DC2626; font-weight: 500;">$1</span>');
+        highlighted = highlighted.replace(/\b(\w+)(?=\s*\()/g, '<span style="color: #DC2626; font-weight: normal;">$1</span>');
         
         // Numbers (only standalone numbers, not in function names)
         highlighted = highlighted.replace(/\b\d+(\.\d+)?\b/g, '<span style="color: #EA580C;">$&</span>');
@@ -428,18 +434,9 @@ class CSharpEditorService {
      * Update Data Model counter in editor header
      */
     updateDataModelCounter() {
-        console.log('CSharpEditor: updateDataModelCounter called');
-        console.log('dataModelsButton:', !!this.dataModelsButton);
-        console.log('currentProject:', !!this.currentProject);
-        console.log('currentFunctionNode:', !!this.currentFunctionNode);
-        
-        if (!this.dataModelsButton || !this.currentProject || !this.currentFunctionNode) {
-            console.log('CSharpEditor: updateDataModelCounter - missing dependencies, returning');
-            return;
-        }
+        if (!this.dataModelsButton || !this.currentProject || !this.currentFunctionNode) return;
         
         const connectedModelsCount = this.currentFunctionNode.getDataModelCounter(this.currentProject);
-        console.log('CSharpEditor: Updating counter to', connectedModelsCount, 'for function', this.currentFunctionNode.label);
         this.dataModelsButton.textContent = `📊 Data Models (${connectedModelsCount})`;
     }
 
