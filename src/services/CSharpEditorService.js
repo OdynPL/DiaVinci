@@ -8,6 +8,7 @@ class CSharpEditorService {
         this.editorContainer = null;
         this.editorTextarea = null;
         this.syntaxContainer = null;
+        this.dataModelsButton = null;
     }
 
     /**
@@ -25,6 +26,9 @@ class CSharpEditorService {
         this.currentProject = project;
         this.createEditorUI();
         this.createEditor();
+        
+        // Update counter after creating UI
+        this.updateDataModelCounter();
     }
 
     /**
@@ -116,9 +120,8 @@ class CSharpEditorService {
 
         // Data Models button with counter
         const dataModelsButton = document.createElement('button');
-        const connectedModelsCount = this.currentProject ? 
-            this.currentFunctionNode.getDataModelCounter(this.currentProject) : 0;
-        dataModelsButton.textContent = `📊 Data Models (${connectedModelsCount})`;
+        // Initialize with 0 - will be updated later
+        dataModelsButton.textContent = `📊 Data Models (0)`;
         dataModelsButton.style.cssText = `
             background: rgba(255, 255, 255, 0.2);
             color: white;
@@ -136,6 +139,9 @@ class CSharpEditorService {
             dataModelsButton.style.background = 'rgba(255, 255, 255, 0.2)';
         };
         dataModelsButton.onclick = () => this.showDataModelsInfo();
+        
+        // Store reference for updates
+        this.dataModelsButton = dataModelsButton;
 
         // Save button
         const saveButton = document.createElement('button');
@@ -412,10 +418,29 @@ class CSharpEditorService {
         // Methods/Functions
         highlighted = highlighted.replace(/\b(\w+)(?=\s*\()/g, '<span style="color: #DC2626; font-weight: 500;">$1</span>');
         
-        // Numbers
-        highlighted = highlighted.replace(/\b\d+\.?\d*\b/g, '<span style="color: #EA580C;">$&</span>');
+        // Numbers (only standalone numbers, not in function names)
+        highlighted = highlighted.replace(/\b\d+(\.\d+)?\b/g, '<span style="color: #EA580C;">$&</span>');
         
         return highlighted;
+    }
+
+    /**
+     * Update Data Model counter in editor header
+     */
+    updateDataModelCounter() {
+        console.log('CSharpEditor: updateDataModelCounter called');
+        console.log('dataModelsButton:', !!this.dataModelsButton);
+        console.log('currentProject:', !!this.currentProject);
+        console.log('currentFunctionNode:', !!this.currentFunctionNode);
+        
+        if (!this.dataModelsButton || !this.currentProject || !this.currentFunctionNode) {
+            console.log('CSharpEditor: updateDataModelCounter - missing dependencies, returning');
+            return;
+        }
+        
+        const connectedModelsCount = this.currentFunctionNode.getDataModelCounter(this.currentProject);
+        console.log('CSharpEditor: Updating counter to', connectedModelsCount, 'for function', this.currentFunctionNode.label);
+        this.dataModelsButton.textContent = `📊 Data Models (${connectedModelsCount})`;
     }
 
     /**
@@ -426,6 +451,9 @@ class CSharpEditorService {
             alert('No project loaded.');
             return;
         }
+
+        // Update counter first
+        this.updateDataModelCounter();
 
         const connectedModels = this.currentFunctionNode.getConnectedDataModels(this.currentProject);
         
@@ -477,6 +505,7 @@ class CSharpEditorService {
             this.editorContainer = null;
             this.editorTextarea = null;
             this.syntaxContainer = null;
+            this.dataModelsButton = null;
             this.currentFunctionNode = null;
         }
     }

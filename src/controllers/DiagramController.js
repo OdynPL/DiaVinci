@@ -284,7 +284,9 @@ class DiagramController {
         this.updateFunctionNodeDataModelReferences(node);
         
         // Open the built-in C# editor with project context
-        this.csharpEditorService.openEditor(node, this.project);
+        console.log('DiagramController: Opening editor with currentProject:', !!this.currentProject);
+        console.log('Project transitions count:', this.currentProject ? this.currentProject.transitions.length : 'no project');
+        this.csharpEditorService.openEditor(node, this.currentProject);
     }
 
     /**
@@ -295,12 +297,12 @@ class DiagramController {
         
         // Update data model references based on connections
         if (typeof functionNode.updateDataModelReferences === 'function') {
-            functionNode.updateDataModelReferences(this.project);
+            functionNode.updateDataModelReferences(this.currentProject);
         }
         
         // Get connected models count
         const connectedModelsCount = typeof functionNode.getDataModelCounter === 'function' ? 
-            functionNode.getDataModelCounter(this.project) : 0;
+            functionNode.getDataModelCounter(this.currentProject) : 0;
         
         if (this.terminalService) {
             this.terminalService.addLine(`🔗 ${functionNode.label} has ${connectedModelsCount} connected Data Model(s)`, 'info');
@@ -900,6 +902,22 @@ class DiagramController {
         
         const added = this.currentProject.addTransition(transition);
         if (added) {
+            // Update function nodes if they are involved in the transition
+            if (toNode && toNode.type === 'function') {
+                this.updateFunctionNodeDataModelReferences(toNode);
+                // Update editor if open for this function
+                if (this.csharpEditorService && this.csharpEditorService.currentFunctionNode === toNode) {
+                    this.csharpEditorService.updateDataModelCounter();
+                }
+            }
+            if (fromNode && fromNode.type === 'function') {
+                this.updateFunctionNodeDataModelReferences(fromNode);
+                // Update editor if open for this function
+                if (this.csharpEditorService && this.csharpEditorService.currentFunctionNode === fromNode) {
+                    this.csharpEditorService.updateDataModelCounter();
+                }
+            }
+            
             this.render();
             // Trigger auto-save after creating transition
             this.triggerAutoSave();
@@ -1058,7 +1076,28 @@ class DiagramController {
             if (element.from.type === 'if' && element.fromCorner) {
                 return;
             }
+            
+            // Store nodes before removing transition for later update
+            const fromNode = element.from;
+            const toNode = element.to;
+            
             this.currentProject.removeTransition(element);
+            
+            // Update function nodes if they were involved in the removed transition
+            if (toNode && toNode.type === 'function') {
+                this.updateFunctionNodeDataModelReferences(toNode);
+                // Update editor if open for this function
+                if (this.csharpEditorService && this.csharpEditorService.currentFunctionNode === toNode) {
+                    this.csharpEditorService.updateDataModelCounter();
+                }
+            }
+            if (fromNode && fromNode.type === 'function') {
+                this.updateFunctionNodeDataModelReferences(fromNode);
+                // Update editor if open for this function
+                if (this.csharpEditorService && this.csharpEditorService.currentFunctionNode === fromNode) {
+                    this.csharpEditorService.updateDataModelCounter();
+                }
+            }
         }
         
         this.clearSelection();
