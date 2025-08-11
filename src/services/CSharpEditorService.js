@@ -142,7 +142,7 @@ class CSharpEditorService {
         // Data Models button with counter
         const dataModelsButton = document.createElement('button');
         // Initialize with 0 - will be updated later
-        dataModelsButton.textContent = `📊 Data Models (0)`;
+        dataModelsButton.textContent = `📊 ${window.t ? window.t('dataModels') : 'Data Models'} (0)`;
         dataModelsButton.style.cssText = `
             background: rgba(255, 255, 255, 0.2);
             color: white;
@@ -166,7 +166,7 @@ class CSharpEditorService {
 
         // Save button
         const saveButton = document.createElement('button');
-        saveButton.textContent = '💾 Save';
+        saveButton.textContent = `💾 ${window.t ? window.t('save') : 'Save'}`;
         saveButton.style.cssText = `
             background: #10B981;
             color: white;
@@ -186,9 +186,31 @@ class CSharpEditorService {
         };
         saveButton.onclick = () => this.saveCode();
 
+        // Help button
+        const helpButton = document.createElement('button');
+        helpButton.textContent = `❓ ${window.t ? window.t('help') : 'Help'}`;
+        helpButton.style.cssText = `
+            background: #6366F1;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        `;
+        helpButton.onmouseover = () => {
+            helpButton.style.background = '#4F46E5';
+        };
+        helpButton.onmouseout = () => {
+            helpButton.style.background = '#6366F1';
+        };
+        helpButton.onclick = () => this.showDataModelsHelp();
+
         // Close button
         const closeButton = document.createElement('button');
-        closeButton.textContent = '✕ Close';
+        closeButton.textContent = `✕ ${window.t ? window.t('close') : 'Close'}`;
         closeButton.style.cssText = `
             background: #EF4444;
             color: white;
@@ -208,6 +230,7 @@ class CSharpEditorService {
         };
         closeButton.onclick = () => this.closeEditor();
 
+        buttonContainer.appendChild(helpButton);
         buttonContainer.appendChild(dataModelsButton);
         buttonContainer.appendChild(saveButton);
         buttonContainer.appendChild(closeButton);
@@ -352,9 +375,8 @@ class CSharpEditorService {
             overflow-y: auto;
         `;
 
-        // Set initial code
-        const initialCode = this.currentFunctionNode.code || 
-            'public void Execute()\n{\n    // Your code here\n    Console.WriteLine("Hello World!");\n}';
+        // Set initial code with Data Models integration
+        const initialCode = this.currentFunctionNode.code || this.generateInitialCodeWithDataModels();
         this.editorTextarea.value = initialCode;
 
         // Store line numbers reference before updating
@@ -457,7 +479,7 @@ class CSharpEditorService {
         if (!this.dataModelsButton || !this.currentProject || !this.currentFunctionNode) return;
         
         const connectedModelsCount = this.currentFunctionNode.getDataModelCounter(this.currentProject);
-        this.dataModelsButton.textContent = `📊 Data Models (${connectedModelsCount})`;
+        this.dataModelsButton.textContent = `📊 ${window.t ? window.t('dataModels') : 'Data Models'} (${connectedModelsCount})`;
     }
 
     /**
@@ -528,7 +550,7 @@ class CSharpEditorService {
         `;
 
         const title = document.createElement('h2');
-        title.textContent = `📊 Connected Data Models (${connectedModels.length})`;
+        title.textContent = `📊 ${window.t ? window.t('connectedDataModels') : 'Connected Data Models'} (${connectedModels.length})`;
         title.style.cssText = `
             margin: 0;
             font-size: 20px;
@@ -663,7 +685,7 @@ class CSharpEditorService {
 
             const copyButton = document.createElement('button');
             copyButton.innerHTML = '📋';
-            copyButton.title = 'Copy ID to clipboard';
+            copyButton.title = window.t ? window.t('copyIdToClipboard') : 'Copy ID to clipboard';
             copyButton.style.cssText = `
                 background: #3b82f6;
                 color: white;
@@ -741,7 +763,7 @@ class CSharpEditorService {
             // Fields section
             if (model.fields && model.fields.length > 0) {
                 const fieldsHeader = document.createElement('h4');
-                fieldsHeader.textContent = `Fields (${model.fields.length}):`;
+                fieldsHeader.textContent = `${window.t ? window.t('fieldsCount') : 'Fields'} (${model.fields.length}):`;
                 fieldsHeader.style.cssText = `
                     margin: 16px 0 8px 0;
                     font-size: 14px;
@@ -776,7 +798,7 @@ class CSharpEditorService {
                 modelCard.appendChild(fieldsList);
             } else {
                 const noFields = document.createElement('p');
-                noFields.textContent = 'No fields defined';
+                noFields.textContent = window.t ? window.t('noFieldsDefined') : 'No fields defined';
                 noFields.style.cssText = `
                     margin: 16px 0 0 0;
                     font-size: 14px;
@@ -794,20 +816,102 @@ class CSharpEditorService {
         const footer = document.createElement('div');
         footer.style.cssText = `
             background: #f8fafc;
-            padding: 20px 24px;
+            padding: 24px;
             border-top: 1px solid #e2e8f0;
+        `;
+
+        // Create usage instructions
+        const usageTitle = document.createElement('h3');
+        usageTitle.textContent = `🚀 ${window.t ? window.t('howToUseDataModels') : 'How to use Data Models in your C# code:'}`;
+        usageTitle.style.cssText = `
+            margin: 0 0 16px 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
             text-align: center;
         `;
 
-        const footerText = document.createElement('p');
-        footerText.innerHTML = '💡 <strong>Tip:</strong> These Data Models are available for IntelliSense in your C# code.';
-        footerText.style.cssText = `
-            margin: 0;
-            font-size: 14px;
-            color: #64748b;
+        const instructionsContainer = document.createElement('div');
+        instructionsContainer.style.cssText = `
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
         `;
 
-        footer.appendChild(footerText);
+        // Create code examples for each model
+        connectedModels.slice(0, 2).forEach((model, index) => { // Show max 2 examples
+            const className = model.label.replace(/\s+/g, '');
+            const variableName = className.charAt(0).toLowerCase() + className.slice(1);
+            
+            const exampleCard = document.createElement('div');
+            exampleCard.style.cssText = `
+                background: #1e293b;
+                border-radius: 8px;
+                padding: 16px;
+                border-left: 4px solid #3b82f6;
+            `;
+
+            const exampleTitle = document.createElement('div');
+            exampleTitle.textContent = `${index + 1}. Using ${model.label}:`;
+            exampleTitle.style.cssText = `
+                color: #94a3b8;
+                font-size: 12px;
+                font-weight: 600;
+                margin-bottom: 8px;
+            `;
+
+            const codeExample = document.createElement('pre');
+            let code = `var ${variableName} = new ${className}();\n`;
+            
+            if (model.fields && model.fields.length > 0) {
+                const field = model.fields[0];
+                const exampleValue = this.getExampleValue(field.type);
+                code += `${variableName}.${field.name} = ${exampleValue};`;
+            }
+
+            codeExample.textContent = code;
+            codeExample.style.cssText = `
+                color: #e2e8f0;
+                font-family: 'Fira Code', monospace;
+                font-size: 11px;
+                line-height: 1.4;
+                margin: 0;
+                overflow-x: auto;
+            `;
+
+            exampleCard.appendChild(exampleTitle);
+            exampleCard.appendChild(codeExample);
+            instructionsContainer.appendChild(exampleCard);
+        });
+
+        // General tips
+        const tipsContainer = document.createElement('div');
+        tipsContainer.style.cssText = `
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 8px;
+            padding: 16px;
+            color: white;
+            text-align: center;
+        `;
+
+        const tipsText = document.createElement('div');
+        tipsText.innerHTML = `
+            <strong>💡 Pro Tips:</strong><br>
+            • All connected Data Models are automatically available as C# classes<br>
+            • Use IntelliSense (Ctrl+Space) to see available properties<br>
+            • Classes are generated with proper C# naming conventions
+        `;
+        tipsText.style.cssText = `
+            font-size: 13px;
+            line-height: 1.5;
+        `;
+
+        tipsContainer.appendChild(tipsText);
+
+        footer.appendChild(usageTitle);
+        footer.appendChild(instructionsContainer);
+        footer.appendChild(tipsContainer);
 
         // Assemble modal
         modal.appendChild(header);
@@ -898,7 +1002,7 @@ class CSharpEditorService {
         `;
 
         const title = document.createElement('h2');
-        title.textContent = 'No Data Models Connected';
+        title.textContent = window.t ? window.t('noConnectedModels') : 'No Data Models Connected';
         title.style.cssText = `
             margin: 0;
             font-size: 20px;
@@ -915,9 +1019,9 @@ class CSharpEditorService {
         `;
 
         const steps = [
-            { icon: '🗃️', title: 'Create a Data Model', desc: 'Add a Data Model node to your diagram' },
-            { icon: '🔗', title: 'Draw Connection', desc: 'Draw a transition from Data Model to Function or vice versa' },
-            { icon: '📊', title: 'See Counter Update', desc: 'The counter will increase automatically' }
+            { icon: '🗃️', title: window.t ? window.t('connectModelsInstructions1') : 'Create a Data Model', desc: window.t ? window.t('connectModelsInstructions1Desc') : 'Add a Data Model node to your diagram' },
+            { icon: '🔗', title: window.t ? window.t('connectModelsInstructions2') : 'Draw Connection', desc: window.t ? window.t('connectModelsInstructions2Desc') : 'Draw a transition from Data Model to Function or vice versa' },
+            { icon: '📊', title: window.t ? window.t('connectModelsInstructions3') : 'See Counter Update', desc: window.t ? window.t('connectModelsInstructions3Desc') : 'The counter will increase automatically' }
         ];
 
         steps.forEach((step, index) => {
@@ -1181,5 +1285,450 @@ class CSharpEditorService {
             this.transitionAddedListener = null;
             this.transitionRemovedListener = null;
         }
+    }
+
+    /**
+     * Generate initial code with Data Models integration examples
+     */
+    generateInitialCodeWithDataModels() {
+        if (!this.currentProject) {
+            return 'public void Execute()\n{\n    // Your code here\n    Console.WriteLine("Hello World!");\n}';
+        }
+
+        const connectedModels = this.currentFunctionNode.getConnectedDataModels(this.currentProject);
+        
+        if (connectedModels.length === 0) {
+            return `public void Execute()
+{
+    // Your code here
+    // 💡 Tip: Connect Data Models to access their classes automatically!
+    Console.WriteLine("Hello World!");
+}`;
+        }
+
+        // Generate code with connected Data Models examples
+        let code = `public void Execute()
+{
+    // 🗃️ Connected Data Models (${connectedModels.length}):
+`;
+
+        connectedModels.forEach((model, index) => {
+            const className = model.label.replace(/\s+/g, ''); // Remove spaces for class name
+            const variableName = className.charAt(0).toLowerCase() + className.slice(1);
+            
+            code += `    // ${index + 1}. ${model.label}\n`;
+            code += `    var ${variableName} = new ${className}();\n`;
+            
+            if (model.fields && model.fields.length > 0) {
+                // Show examples of setting fields
+                const firstField = model.fields[0];
+                const fieldName = firstField.name;
+                const exampleValue = this.getExampleValue(firstField.type);
+                
+                code += `    ${variableName}.${fieldName} = ${exampleValue}; // ${firstField.type}\n`;
+                
+                if (model.fields.length > 1) {
+                    code += `    // ... and ${model.fields.length - 1} more field${model.fields.length > 2 ? 's' : ''}\n`;
+                }
+            }
+            code += `\n`;
+        });
+
+        code += `    // Your business logic here
+    Console.WriteLine($"Processing {connectedModels.length} data model${connectedModels.length !== 1 ? 's' : ''}");
+}`;
+
+        return code;
+    }
+
+    /**
+     * Show Data Models help and usage instructions
+     */
+    showDataModelsHelp() {
+        if (!this.currentProject) {
+            this.showStyledAlert('No project loaded.', 'warning');
+            return;
+        }
+
+        const connectedModels = this.currentFunctionNode.getConnectedDataModels(this.currentProject);
+        
+        // Create modal overlay
+        const modalOverlay = document.createElement('div');
+        modalOverlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 11000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s ease-out;
+        `;
+
+        // Create modal content
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            width: 90%;
+            max-width: 700px;
+            max-height: 85vh;
+            overflow: hidden;
+            transform: scale(0.9);
+            animation: modalIn 0.3s ease-out forwards;
+        `;
+
+        // Create header
+        const header = document.createElement('div');
+        header.style.cssText = `
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        `;
+
+        const title = document.createElement('h2');
+        title.innerHTML = `❓ ${window.t ? window.t('helpTitle') : 'How to Use Data Models in C# Functions'}`;
+        title.style.cssText = `
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+        `;
+
+        const closeBtn = document.createElement('button');
+        closeBtn.innerHTML = '✕';
+        closeBtn.style.cssText = `
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        `;
+        closeBtn.onmouseover = () => closeBtn.style.background = 'rgba(255, 255, 255, 0.3)';
+        closeBtn.onmouseout = () => closeBtn.style.background = 'rgba(255, 255, 255, 0.2)';
+        closeBtn.onclick = () => document.body.removeChild(modalOverlay);
+
+        header.appendChild(title);
+        header.appendChild(closeBtn);
+
+        // Create content area
+        const content = document.createElement('div');
+        content.style.cssText = `
+            padding: 24px;
+            max-height: 60vh;
+            overflow-y: auto;
+        `;
+
+        // Step 1: Connection
+        const step1 = this.createHelpStep(
+            `1. ${window.t ? window.t('connectDataModels') : 'Connect Data Models'}`,
+            '🔗',
+            window.t ? window.t('connectDataModelsDesc') : 'Draw transitions between Data Model nodes and this Function component',
+            `// No connected models yet
+public void Execute() {
+    // Connect Data Models first!
+    Console.WriteLine("Hello World!");
+}`
+        );
+
+        // Step 2: Usage (if models are connected)
+        let step2Content = '';
+        if (connectedModels.length > 0) {
+            const model = connectedModels[0];
+            const className = model.label.replace(/\s+/g, '');
+            const variableName = className.charAt(0).toLowerCase() + className.slice(1);
+            
+            step2Content = `// ${connectedModels.length} model${connectedModels.length !== 1 ? 's' : ''} connected!
+var ${variableName} = new ${className}();`;
+            
+            if (model.fields && model.fields.length > 0) {
+                const field = model.fields[0];
+                const exampleValue = this.getExampleValue(field.type);
+                step2Content += `\n${variableName}.${field.name} = ${exampleValue};`;
+            }
+        } else {
+            step2Content = `// After connecting models:
+var userModel = new UserModel();
+userModel.Name = "John Doe";
+userModel.Email = "john@example.com";`;
+        }
+
+        const step2 = this.createHelpStep(
+            `2. ${window.t ? window.t('useInCode') : 'Use in Your Code'}`,
+            '💻',
+            window.t ? window.t('useInCodeDesc') : 'Access connected Data Models as C# classes with IntelliSense support',
+            step2Content
+        );
+
+        // Step 3: IntelliSense
+        const step3 = this.createHelpStep(
+            `3. ${window.t ? window.t('intelliSenseSupport') : 'IntelliSense Support'}`,
+            '⚡',
+            window.t ? window.t('intelliSenseSupportDesc') : 'All model properties are available with auto-completion',
+            `// Type "userModel." to see:
+userModel.Name     // string
+userModel.Email    // string
+userModel.Age      // int
+userModel.IsActive // bool`
+        );
+
+        // Tips section
+        const tipsSection = document.createElement('div');
+        tipsSection.style.cssText = `
+            background: linear-gradient(135deg, #f59e0b, #f97316);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 24px;
+            color: white;
+        `;
+
+        const tipsTitle = document.createElement('h3');
+        tipsTitle.innerHTML = `💡 ${window.t ? window.t('proTips') : 'Pro Tips'}`;
+        tipsTitle.style.cssText = `
+            margin: 0 0 12px 0;
+            font-size: 18px;
+            font-weight: 600;
+        `;
+
+        const tipsList = document.createElement('ul');
+        tipsList.innerHTML = `
+            <li>${window.t ? window.t('proTip1') : 'Connected models automatically become C# classes'}</li>
+            <li>${window.t ? window.t('proTip2') : 'Field types are converted to proper C# types (string, int, DateTime, etc.)'}</li>
+            <li>${window.t ? window.t('proTip3') : 'Use Ctrl+Space for IntelliSense in the code editor'}</li>
+            <li>${window.t ? window.t('proTip4') : 'Changes to Data Model fields update automatically in your code'}</li>
+            <li>${window.t ? window.t('proTip5') : 'Click "📊 Data Models" to see all connected models and their details'}</li>
+        `;
+        tipsList.style.cssText = `
+            margin: 0;
+            padding-left: 20px;
+            line-height: 1.6;
+        `;
+
+        tipsSection.appendChild(tipsTitle);
+        tipsSection.appendChild(tipsList);
+
+        content.appendChild(step1);
+        content.appendChild(step2);
+        content.appendChild(step3);
+        content.appendChild(tipsSection);
+
+        // Create footer
+        const footer = document.createElement('div');
+        footer.style.cssText = `
+            background: #f8fafc;
+            padding: 20px 24px;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+        `;
+
+        const footerButtons = document.createElement('div');
+        footerButtons.style.cssText = `
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        `;
+
+        const dataModelsBtn = document.createElement('button');
+        dataModelsBtn.textContent = `📊 ${window.t ? window.t('viewConnectedModels') : 'View Connected Models'}`;
+        dataModelsBtn.style.cssText = `
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.2s;
+        `;
+        dataModelsBtn.onmouseover = () => dataModelsBtn.style.background = '#2563eb';
+        dataModelsBtn.onmouseout = () => dataModelsBtn.style.background = '#3b82f6';
+        dataModelsBtn.onclick = () => {
+            document.body.removeChild(modalOverlay);
+            this.showDataModelsInfo();
+        };
+
+        const gotItBtn = document.createElement('button');
+        gotItBtn.textContent = window.t ? window.t('gotIt') : 'Got it!';
+        gotItBtn.style.cssText = `
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.2s;
+        `;
+        gotItBtn.onmouseover = () => gotItBtn.style.background = '#059669';
+        gotItBtn.onmouseout = () => gotItBtn.style.background = '#10b981';
+        gotItBtn.onclick = () => document.body.removeChild(modalOverlay);
+
+        footerButtons.appendChild(dataModelsBtn);
+        footerButtons.appendChild(gotItBtn);
+        footer.appendChild(footerButtons);
+
+        // Assemble modal
+        modal.appendChild(header);
+        modal.appendChild(content);
+        modal.appendChild(footer);
+        modalOverlay.appendChild(modal);
+
+        // Add animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            @keyframes modalIn {
+                from { transform: scale(0.9) translateY(-20px); opacity: 0; }
+                to { transform: scale(1) translateY(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Close on overlay click
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                document.body.removeChild(modalOverlay);
+            }
+        });
+
+        // Close on Escape key
+        const escapeHandler = (e) => {
+            if (e.key === 'Escape') {
+                document.body.removeChild(modalOverlay);
+                document.removeEventListener('keydown', escapeHandler);
+            }
+        };
+        document.addEventListener('keydown', escapeHandler);
+
+        document.body.appendChild(modalOverlay);
+    }
+
+    /**
+     * Create a help step element
+     */
+    createHelpStep(title, icon, description, codeExample) {
+        const stepContainer = document.createElement('div');
+        stepContainer.style.cssText = `
+            margin-bottom: 24px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+        `;
+
+        // Step header
+        const stepHeader = document.createElement('div');
+        stepHeader.style.cssText = `
+            background: #f8fafc;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        `;
+
+        const stepIcon = document.createElement('div');
+        stepIcon.innerHTML = icon;
+        stepIcon.style.cssText = `
+            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        `;
+
+        const stepInfo = document.createElement('div');
+        stepInfo.style.cssText = `
+            flex: 1;
+        `;
+
+        const stepTitle = document.createElement('h3');
+        stepTitle.textContent = title;
+        stepTitle.style.cssText = `
+            margin: 0 0 4px 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+        `;
+
+        const stepDesc = document.createElement('p');
+        stepDesc.textContent = description;
+        stepDesc.style.cssText = `
+            margin: 0;
+            font-size: 14px;
+            color: #64748b;
+            line-height: 1.5;
+        `;
+
+        stepInfo.appendChild(stepTitle);
+        stepInfo.appendChild(stepDesc);
+        stepHeader.appendChild(stepIcon);
+        stepHeader.appendChild(stepInfo);
+
+        // Code example
+        const codeContainer = document.createElement('div');
+        codeContainer.style.cssText = `
+            background: #1e293b;
+            padding: 16px 20px;
+        `;
+
+        const codeBlock = document.createElement('pre');
+        codeBlock.textContent = codeExample;
+        codeBlock.style.cssText = `
+            margin: 0;
+            color: #e2e8f0;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            overflow-x: auto;
+        `;
+
+        codeContainer.appendChild(codeBlock);
+        stepContainer.appendChild(stepHeader);
+        stepContainer.appendChild(codeContainer);
+
+        return stepContainer;
+    }
+
+    /**
+     * Get example value for a field type
+     */
+    getExampleValue(fieldType) {
+        const examples = {
+            'string': '"Example Text"',
+            'text': '"Long text content..."',
+            'number': '42',
+            'int': '100',
+            'decimal': '99.99m',
+            'float': '3.14f',
+            'boolean': 'true',
+            'bool': 'false',
+            'date': 'DateTime.Now',
+            'datetime': 'DateTime.Now',
+            'list': 'new List<string> { "item1", "item2" }',
+            'array': 'new string[] { "value1", "value2" }'
+        };
+        
+        return examples[fieldType.toLowerCase()] || '"DefaultValue"';
     }
 }

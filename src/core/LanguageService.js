@@ -996,7 +996,45 @@ const translations = {
         duplicateIds: "Duplicate IDs found:",
         orphanedTransition: "Transition $1 references non-existent source node $2",
         orphanedTransitionTarget: "Transition $1 references non-existent target node $2",
-        emptyLabelsWarning: "$1 elements have empty labels"
+        emptyLabelsWarning: "$1 elements have empty labels",
+        
+        // Function Editor
+        help: "Help",
+        dataModels: "Data Models",
+        save: "Save",
+        close: "Close",
+        
+        // Function Editor Help
+        helpTitle: "How to Use Data Models in C# Functions",
+        connectDataModels: "Connect Data Models",
+        connectDataModelsDesc: "Draw transitions between Data Model nodes and this Function component",
+        useInCode: "Use in Your Code",
+        useInCodeDesc: "Access connected Data Models as C# classes with IntelliSense support",
+        intelliSenseSupport: "IntelliSense Support",
+        intelliSenseSupportDesc: "All model properties are available with auto-completion",
+        proTips: "Pro Tips",
+        proTip1: "Connected models automatically become C# classes",
+        proTip2: "Field types are converted to proper C# types (string, int, DateTime, etc.)",
+        proTip3: "Use Ctrl+Space for IntelliSense in the code editor",
+        proTip4: "Changes to Data Model fields update automatically in your code",
+        proTip5: "Click \"📊 Data Models\" to see all connected models and their details",
+        viewConnectedModels: "View Connected Models",
+        gotIt: "Got it!",
+        
+        // Connected Data Models
+        connectedDataModels: "Connected Data Models",
+        noConnectedModels: "No Data Models Connected",
+        connectModelsInstructions1: "Create a Data Model",
+        connectModelsInstructions1Desc: "Add a Data Model node to your diagram",
+        connectModelsInstructions2: "Draw Connection",
+        connectModelsInstructions2Desc: "Draw a transition from Data Model to Function or vice versa",
+        connectModelsInstructions3: "See Counter Update",
+        connectModelsInstructions3Desc: "The counter will increase automatically",
+        howToUseDataModels: "How to use Data Models in C# code:",
+        tipDataModelsAvailable: "These Data Models are available for IntelliSense in your C# code",
+        copyIdToClipboard: "Copy ID to clipboard",
+        fieldsCount: "Fields",
+        noFieldsDefined: "No fields defined"
     },
     
     pl: {
@@ -1992,7 +2030,45 @@ const translations = {
         duplicateIds: "Znaleziono duplikaty ID:",
         orphanedTransition: "Przejscie $1 odwoluje sie do nieistniejacego wezla zrodlowego $2",
         orphanedTransitionTarget: "Przejscie $1 odwoluje sie do nieistniejacego wezla docelowego $2",
-        emptyLabelsWarning: "$1 elementow ma puste etykiety"
+        emptyLabelsWarning: "$1 elementow ma puste etykiety",
+        
+        // Function Editor
+        help: "Pomoc",
+        dataModels: "Modele Danych",
+        save: "Zapisz",
+        close: "Zamknij",
+        
+        // Function Editor Help
+        helpTitle: "Jak Uzywac Modeli Danych w Funkcjach C#",
+        connectDataModels: "Polacz Modele Danych",
+        connectDataModelsDesc: "Narysuj polaczenia miedzy nodami Model Danych a tym komponentem Funkcji",
+        useInCode: "Uzyj w Swoim Kodzie",
+        useInCodeDesc: "Uzyskaj dostep do polaczonych Modeli Danych jako klas C# z obsługa IntelliSense",
+        intelliSenseSupport: "Obsługa IntelliSense",
+        intelliSenseSupportDesc: "Wszystkie właściwości modelu sa dostepne z auto-uzupełnianiem",
+        proTips: "Profesjonalne Wskazowki",
+        proTip1: "Polaczone modele automatycznie staja sie klasami C#",
+        proTip2: "Typy pol sa konwertowane na wlasciwe typy C# (string, int, DateTime, itp.)",
+        proTip3: "Uzyj Ctrl+Space dla IntelliSense w edytorze kodu",
+        proTip4: "Zmiany w polach Modelu Danych aktualizuja sie automatycznie w kodzie",
+        proTip5: "Kliknij \"📊 Modele Danych\" aby zobaczyc wszystkie polaczone modele i ich szczegoly",
+        viewConnectedModels: "Pokaz Polaczone Modele",
+        gotIt: "Rozumiem!",
+        
+        // Connected Data Models
+        connectedDataModels: "Polaczone Modele Danych",
+        noConnectedModels: "Brak Polaczonych Modeli Danych",
+        connectModelsInstructions1: "Utworz node Model Danych",
+        connectModelsInstructions1Desc: "Dodaj node Model Danych do swojego diagramu",
+        connectModelsInstructions2: "Narysuj Polaczenie",
+        connectModelsInstructions2Desc: "Narysuj przejscie z Modelu Danych do Funkcji lub na odwrot",
+        connectModelsInstructions3: "Zobacz Aktualizacje Licznika",
+        connectModelsInstructions3Desc: "Licznik zostanie automatycznie zwiekszony",
+        howToUseDataModels: "Jak uzywac Modeli Danych w kodzie C#:",
+        tipDataModelsAvailable: "Te Modele Danych sa dostepne dla IntelliSense w Twoim kodzie C#",
+        copyIdToClipboard: "Skopiuj ID do schowka",
+        fieldsCount: "Pola",
+        noFieldsDefined: "Nie zdefiniowano pol"
     },
     
     de: {
